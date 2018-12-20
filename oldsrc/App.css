@@ -1,0 +1,635 @@
+body {
+  background-color: black;
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+button {
+  outline: 0;
+}
+
+p {
+  color: white;
+}
+
+h3 {
+  color: white;
+}
+h2 {
+  color: white;
+}
+
+.videoLoader {
+  display: block;
+  margin: auto;
+  font-size: 500%;
+  height: 90vh;
+  color: gray;
+}
+
+.video {
+  object-fit: contain;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: -53px;
+  border-radius: 20px;
+  height: 100vh;
+  width: 100vw;
+  max-width: 100vw;
+  max-height: 100%;
+  z-index: 3;
+}
+
+.videoDiv {
+  height: 100vh;
+}
+.imgDiv {
+  height: 100vh;
+  color: white;
+}
+
+.image {
+  z-index: 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 15spx;
+}
+
+.loading {
+  font-size: 16px;
+  display: block;
+}
+
+.imgDiv p {
+  text-align: center;
+  max-height: 5vh;
+}
+.videoDiv p {
+  text-align: center;
+  max-height: 5vh;
+}
+.titleText {
+  position: relative;
+  z-index: 0;
+  margin: auto;
+  width: 100%;
+
+  overflow: visible;
+}
+
+button {
+  border: 0;
+  background-color: black;
+  color: gray;
+}
+.starterButton {
+  display: flex;
+  max-height: 100vh;
+  min-height: 100vh;
+}
+.subRedditTitle {
+  display: block;
+  margin: auto;
+  font-size: 500%;
+  height: 90vh;
+  color: gray;
+}
+
+.upDiv {
+  position: absolute;
+  display: flex;
+  left: 50%;
+  flex-direction: column;
+}
+
+.loaderIcon {
+  font-size: 200%;
+  color: white;
+  z-index: 1;
+  position: absolute;
+}
+
+.downDiv {
+  position: absolute;
+  display: flex;
+  text-align: right;
+  bottom: -0%;
+  width: 100%;
+  flex-direction: column;
+  z-index: 1;
+  vertical-align: bottom;
+
+}
+@media (max-width: 600px) {
+  .downDiv {
+    bottom: -1%;
+  }
+}
+
+.iconDownClicker {
+  padding-top: 5%;
+  background-color: transparent;
+  z-index: 1;
+  color: white;
+  bottom: 1px;
+}
+.iconDown {
+  opacity: 1;
+  z-index: 1;
+  color: white;
+  font-size: 29px;
+  transition: font-size 250ms;
+}
+.iconDown:hover {
+  cursor: pointer;
+  opacity: 1;
+  z-index: 1;
+  color: white;
+  font-size: 40px;
+  transition: font-size 250ms;
+}
+
+.iconUpClicker {
+  background-color: transparent;
+  position: absolute;
+  z-index: 1;
+  top: 1px;
+  color: white;
+  padding-left: 100%;
+  height: 20%;
+}
+.iconUp {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  padding-bottom: 5vh;
+  opacity: 0.4;
+  font-size: 20px;
+  color: white;
+}
+.categoryModal {
+  position: absolute;
+  background-color: rgb(0, 0, 0, 0.8);
+  height: 100%;
+  width: 100%;
+  z-index: 3;
+}
+.grid-container button {
+  font-size: 20px;
+  font-weight: 1000;
+  color: white;
+  border-radius: 30px;
+  border-color: transparent;
+}
+.description {
+  margin: auto;
+  font-family: "Varela Round", sans-serif;
+  color: white;
+  font-size: 22px;
+  text-align: center;
+  margin-top: 12%;
+  margin-bottom: -12%;
+}
+.item1 {
+  grid-area: header;
+  min-height: 100px;
+  background-color: #ec6262;
+}
+.item2 {
+  grid-area: menu;
+  height: 100%;
+  background-color: #83d6b7;
+}
+.item3 {
+  grid-area: main;
+  min-height: 50px;
+  background-color: #e1d267;
+}
+.item4 {
+  grid-area: right;
+  min-height: 50px;
+  background-color: #e4a8f9;
+}
+.item5 {
+  grid-area: footer;
+  min-height: 100px;
+  background-color: #99ea86;
+}
+
+.grid-container {
+  max-height: 100%;
+  display: grid;
+  grid-template-areas:
+    "header header header header header header"
+    "menu main main main right right"
+    "menu footer footer footer footer footer";
+  grid-gap: 10px;
+  background-color: transparent;
+  padding: 20%;
+}
+
+.grid-container > div {
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding: 20px 0;
+  font-size: 30px;
+}
+
+.categorymodal-buttons {
+  max-width: 50%;
+  margin: auto;
+  margin-top: 30%;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  padding: 10px;
+}
+
+.categorymodal-buttons > button {
+  background-color: red;
+}
+
+.iconRight {
+  position: absolute;
+  right: 1%;
+  opacity: 0.4;
+}
+.iconRightButton {
+  opacity: 1;
+  font-size: 40px;
+  position: absolute;
+  margin: auto;
+  z-index: 1;
+  color: white;
+  right: 1;
+  top: 50%;
+  color: #1bb76e;
+}
+.iconLeft {
+  opacity: 0.4;
+  font-size: 40px;
+  position: absolute;
+  margin: auto;
+  z-index: 1;
+  color: white;
+  left: 1;
+  top: 50%;
+}
+
+.iconBack {
+  font-size: 40px;
+  z-index: 1;
+  color: white;
+  opacity: 0.4;
+}
+
+.titlesLeft {
+  font-size: 20px;
+  margin: auto;
+  z-index: 1;
+  color: white;
+  left: 50%;
+  text-align: center;
+  max-width: 100vw;
+  /* overflow: hidden; */
+  opacity: 0.8;
+}
+
+.inputFocus {
+  position: absolute;
+  bottom: 1px;
+  opacity: 1;
+  color: red;
+}
+
+.wrapperRow {
+  display: flex;
+  flex-direction: column;
+}
+.wrapper {
+  background-color: black;
+  /* width: 100%;
+  height: 100%;
+  max-height: 100vh;
+  overflow: hidden; */
+}
+
+.logoTexts {
+  display: relative;
+  height: 70vw;
+}
+.flexer {
+  display: flex !important;
+  flex-direction: row !important;
+}
+.logo {
+  margin-bottom: 0 !important;
+  font-family: "Varela Round", sans-serif;
+  color: white;
+  font-size: 40px;
+}
+
+.sloganText {
+  font-style: italic;
+  font-size: 16px;
+}
+
+.searchWrapper {
+  z-index: 3;
+  width: 50px;
+}
+
+.autocomplete--entering,
+.autocomplete--entered {
+  opacity: 1;
+  transition: opacity 2200ms;
+  margin: 5px 0px 0px 5px;
+  padding-bottom: 30px;
+  display: inline-block;
+  font-size: 16px;
+  max-width: 200px;
+  position: absolute;
+}
+
+.autocomplete--exiting,
+.autocomplete--exited {
+  opacity: 0.3;
+  transition: opacity 2200ms;
+  margin: 5px 0px 0px 5px;
+  padding-bottom: 30px;
+  position: absolute;
+  font-size: 16px;
+  display: inline-block;
+  max-width: 200px;
+}
+.transition--entering,
+.transition--entered {
+  opacity: 1;
+  transition: opacity 900ms;
+}
+.transition--exiting,
+.transition--exited {
+  opacity: 0.3;
+  transition: opacity 900ms;
+}
+
+.searchButton--entering,
+.searchButton--entered {
+  border: 0 !important;
+  position: relative;
+  opacity: 1;
+  transition: opacity 2200ms;
+  border: 1px dashed white;
+  margin: 5px 0px 0px 5px;
+  font-size: 28px;
+
+  z-index: 3;
+  display: inline-block;
+}
+
+.searchButton--exiting,
+.searchButton--exited {
+  border: 0 !important;
+  position: relative;
+  opacity: 0.3;
+  transition: opacity 2200ms;
+  border: 1px dashed white;
+  margin: 5px 0px 0px 5px;
+  font-size: 28px;
+
+  z-index: 3;
+  display: inline-block;
+}
+.iconSetting {
+  margin: 5px 5px 0px 0px;
+  font-size: 35px;
+  z-index: 2;
+  display: inline-block;
+  max-width: 100px;
+  white-space: wrap;
+  border: 0;
+}
+
+.example-enter {
+  opacity: 0.01;
+}
+
+.example-enter.example-enter-active {
+  opacity: 1;
+  transition: opacity 5000ms ease-in;
+}
+
+.example-leave {
+  opacity: 1;
+}
+
+.example-leave.example-leave-active {
+  opacity: 0.01;
+  transition: opacity 3000ms ease-in;
+}
+.middleWrapper {
+  color: white;
+}
+.scrollLogo {
+  font-family: "Varela Round", sans-serif;
+  color: white;
+  font-size: 26px;
+}
+
+.switchTitle {
+  
+  min-height: 5vh;
+  background-color: #252120;
+  max-width: 100vw;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  z-index: 2;
+  position: absolute;
+  justify-content: space-between;
+  border-bottom: 1px solid #1890ff;
+}
+.switchTitle .ant-btn:focus {
+  color: white;
+}
+
+.startWrap {
+  display: flex;
+  flex-direction: row;
+  height: 120vh;
+}
+
+.startWrap button {
+  border: 0 !important;
+  border-radius: 0.1px;
+  font-family: "Roboto", sans-serif;
+  color: white;
+  font-size: 20px;
+}
+
+.ageConsent button {
+  background-color: black !important;
+}
+
+.randomCat {
+  width: 100%;
+  height: 35vh;
+  margin-top: 1%;
+  background-color: #6ed3cf;
+  color: black;
+  background-image: url("./pics/sfw.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: right;
+  margin: 1%;
+  z-index: 0;
+  font-size: 40px !important;
+}
+
+.NSFW {
+  width: 100%;
+  height: 50vh;
+  background-image: url("./pics/nsfw.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: right;
+  margin: 1%;
+  z-index: 0;
+  font-size: 40px !important;
+}
+
+.OTHER2 {
+  width: 100%;
+  height: 50vh;
+  background-image: url("./pics/food.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: left;
+  margin: 1%;
+  font-size: 40px !important;
+}
+.OTHER1 {
+  background-color: #e1e8f0;
+  height: 35vh;
+  width: 100%;
+  background-color: pink;
+  background-image: url("./pics/art.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: left;
+  text-shadow: 0.5px 0.5px gray;
+  margin: 1%;
+  font-size: 40px !important;
+}
+.OTHER3 {
+  background-color: #e1e8f0;
+  height: 55vh;
+  width: 100%;
+  background-image: url("./pics/animals.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  margin: 1%;
+  font-size: 40px !important;
+}
+.randomCat:hover {
+  background-image: url("./pics/sfw.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: right;
+  color: white;
+  font-size: 45px !important;
+}
+
+.NSFW:hover {
+  background-image: url("./pics/nsfw.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: white;
+  background-position: right;
+  font-size: 45px !important;
+}
+
+.startWrap h1 {
+  color: white !important;
+  font-size: 40px !important;
+}
+.startWrap p {
+  max-width: 300px;
+  margin: auto;
+}
+
+.OTHER1:hover {
+  background-image: url("./pics/art.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: white;
+  font-size: 45px !important;
+  background-position: left;
+}
+.smallText {
+  font-size: 12px !important;
+  background-color: black;
+}
+.OTHER2:hover {
+  background-image: url("./pics/food.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: white;
+  font-size: 45px !important;
+  background-position: left;
+}
+
+.OTHER3:hover {
+  background-image: url("./pics/animals.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: white;
+  font-size: 45px !important;
+}
+.footerDiv {
+  margin-top: 1%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: sticky;
+  bottom: 0;
+}
+
+.footerDiv p,
+h3 {
+  color: lightgray;
+}
+.instructions p,
+h3 {
+  color: lightgray !important;
+}
+
+.rightCol {
+  text-align: center;
+  width: 49%;
+  display: flex;
+  flex-direction: column;
+  margin-left: 1%;
+  opacity: 0.9;
+}
+.leftCol {
+  text-align: center;
+  width: 48%;
+  margin-left: 0.5%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ant-switch-inner {
+  font-size: 19px;
+}
+
+.ageConsent {
+  position: relative;
+  margin: auto;
+  text-align: center;
+}

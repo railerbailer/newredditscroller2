@@ -1,0 +1,38 @@
+{
+  "name": "sliddit",
+  "homepage": "http://www.sliddit.com",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "antd": "^3.3.3",
+    "focus-trap-react": "^3.1.2",
+    "gh-pages": "^1.1.0",
+    "http-server": "^0.11.1",
+    "lodash": "^4.17.11",
+    "react": "^16.3.2",
+    "react-dom": "^16.2.0",
+    "react-html5video": "^2.5.1",
+    "react-joyride": "^1.11.4",
+    "react-keydown": "^1.9.7",
+    "react-player": "^1.3.0",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "1.1.1",
+    "react-slick": "^0.23.1",
+    "react-snap": "^1.10.1",
+    "react-swipeable": "^4.2.0",
+    "react-transition-group": "^2.5.0"
+  },
+  "scripts": {
+    "start": "export HTTPS=true&&react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
+    "postbuild": "react-snap"
+  },
+  "devDependencies": {
+    "react-snapshot": "^1.3.0"
+  }
+}

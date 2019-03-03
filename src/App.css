@@ -3,9 +3,11 @@ body {
   font-family: "Roboto", sans-serif;
   margin: 0;
   padding: 0;
+  position: fixed;
 }
 button {
   outline: 0;
+  border: 0;
 }
 
 p {
@@ -26,38 +28,37 @@ h2 {
   height: 90vh;
   color: gray;
 }
-
-.video {
-  object-fit: contain;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: -53px;
-  border-radius: 20px;
-  height: 100vh;
-  width: 100vw;
-  max-width: 100vw;
-  max-height: 100%;
-  z-index: 3;
+.contentZen .imgDiv p, .videoDiv p {
+  top: 0vh;
+} 
+.videoDiv p, .imgDiv p {
+  z-index: 1;
+  opacity: 0.8;
+  text-shadow: 1px 1px 1px black;
+  position: absolute;
+  top: 5vh;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  
 }
-
-.videoDiv {
-  height: 100vh;
-}
-.imgDiv {
-  height: 100vh;
+.imgDiv, .videoDiv {
+  width: 100%;
+  height: 100%;
   color: white;
 }
 
-.image {
-  z-index: 0;
+.image, .video {
+  z-index: 12313123s;
   display: block;
   margin-left: auto;
   margin-right: auto;
-
+  height: 100%;
   object-fit: contain;
   max-width: 100%;
   max-height: 100%;
-  border-radius: 15spx;
+  border-radius: 10px;
 }
 
 .loading {
@@ -65,14 +66,8 @@ h2 {
   display: block;
 }
 
-.imgDiv p {
-  text-align: center;
-  max-height: 5vh;
-}
-.videoDiv p {
-  text-align: center;
-  max-height: 5vh;
-}
+
+
 .titleText {
   position: relative;
   z-index: 0;
@@ -115,6 +110,7 @@ button {
 }
 
 .downDiv {
+  opacity: 0.8;
   position: absolute;
   display: flex;
   text-align: right;
@@ -123,24 +119,18 @@ button {
   flex-direction: column;
   z-index: 1;
   vertical-align: bottom;
+}
 
-}
-@media (max-width: 600px) {
-  .downDiv {
-    bottom: -1%;
-  }
-}
 
 .iconDownClicker {
-  padding-top: 5%;
+  z-index: 222;
   background-color: transparent;
-  z-index: 1;
   color: white;
   bottom: 1px;
+  width: 100%;
 }
 .iconDown {
   opacity: 1;
-  z-index: 1;
   color: white;
   font-size: 29px;
   transition: font-size 250ms;
@@ -157,7 +147,6 @@ button {
 .iconUpClicker {
   background-color: transparent;
   position: absolute;
-  z-index: 1;
   top: 1px;
   color: white;
   padding-left: 100%;
@@ -172,6 +161,8 @@ button {
   font-size: 20px;
   color: white;
 }
+
+
 .categoryModal {
   position: absolute;
   background-color: rgb(0, 0, 0, 0.8);
@@ -179,13 +170,7 @@ button {
   width: 100%;
   z-index: 3;
 }
-.grid-container button {
-  font-size: 20px;
-  font-weight: 1000;
-  color: white;
-  border-radius: 30px;
-  border-color: transparent;
-}
+
 .description {
   margin: auto;
   font-family: "Varela Round", sans-serif;
@@ -193,64 +178,88 @@ button {
   font-size: 22px;
   text-align: center;
   margin-top: 12%;
-  margin-bottom: -12%;
-}
-.item1 {
-  grid-area: header;
-  min-height: 100px;
-  background-color: #ec6262;
-}
-.item2 {
-  grid-area: menu;
-  height: 100%;
-  background-color: #83d6b7;
-}
-.item3 {
-  grid-area: main;
-  min-height: 50px;
-  background-color: #e1d267;
-}
-.item4 {
-  grid-area: right;
-  min-height: 50px;
-  background-color: #e4a8f9;
-}
-.item5 {
-  grid-area: footer;
-  min-height: 100px;
-  background-color: #99ea86;
 }
 
 .grid-container {
   max-height: 100%;
+  width: 100vw;
   display: grid;
   grid-template-areas:
-    "header header header header header header"
-    "menu main main main right right"
-    "menu footer footer footer footer footer";
+    "header header header header header"
+    "menu main main main right"
+    "menu footer footer footer footer";
   grid-gap: 10px;
   background-color: transparent;
-  padding: 20%;
+  padding: 2% 30% 0 30%;
+}
+@media (max-width: 600px) {
+  .grid-container {
+    padding: 5%;
+  }
 }
 
-.grid-container > div {
-  background-color: rgba(255, 255, 255, 0.8);
-  text-align: center;
-  padding: 20px 0;
-  font-size: 30px;
+.grid-container button {
+  font-size: 20px;
+  font-weight: 1000;
+  color: white;
+  border-radius: 30px;
+  border-color: transparent;
 }
 
-.categorymodal-buttons {
-  max-width: 50%;
-  margin: auto;
-  margin-top: 30%;
-  display: grid;
-  grid-template-columns: auto auto auto;
-  padding: 10px;
+.grid-container button:hover {
+  border: 0;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: right;
 }
 
-.categorymodal-buttons > button {
-  background-color: red;
+.item1 {
+  grid-area: header;
+  min-height: 20vh;
+  background-color: #ec6262;
+}
+
+.item2 {
+  grid-area: menu;
+  min-height: 100%;
+  background-color: #83d6b7;
+}
+
+.item3 {
+  grid-area: main;
+  min-height: 10vh;
+  background-color: #e1d267;
+}
+.item4 {
+  grid-area: right;
+  min-height: 10vh;
+  background-color: #e4a8f9;
+}
+.item5 {
+  grid-area: footer;
+  min-height: 20vh;
+  background-color: #99ea86;
+}
+
+.item1:hover{
+  background-image: url("./pics/nsfw.jpeg");
+  color: #ec6262;
+}
+.item2:hover{
+  background-image: url("./pics/art.jpeg");
+  color: #83d6b7;
+}
+.item3:hover{
+  background-image: url("./pics/food.jpeg");
+  color:#e1d267;
+}
+.item4:hover{
+  background-image: url("./pics/sfw.jpeg");
+  color: #e4a8f9;
+}
+.item5:hover{
+  background-image: url("./pics/animals.jpg");
+  color: #99ea86;
 }
 
 .iconRight {
@@ -258,6 +267,7 @@ button {
   right: 1%;
   opacity: 0.4;
 }
+
 .iconRightButton {
   opacity: 1;
   font-size: 40px;
@@ -287,22 +297,21 @@ button {
   opacity: 0.4;
 }
 
-.titlesLeft {
-  font-size: 20px;
-  margin: auto;
-  z-index: 1;
-  color: white;
-  left: 50%;
+.subredditName {
+  font-size: 16px;
   text-align: center;
-  max-width: 100vw;
-  /* overflow: hidden; */
-  opacity: 0.8;
+  padding-top: 5%;
 }
 
 .inputFocus {
   position: absolute;
-  bottom: 1px;
-  opacity: 1;
+  display: block;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  background-color: transparent;
   color: red;
 }
 
@@ -339,17 +348,25 @@ button {
 }
 
 .searchWrapper {
-  z-index: 3;
   width: 50px;
+}
+
+.fullscreen-icon{
+  z-index: 123123;
+  color: white;
+  position: absolute;
+  top: 95%;
+  left: 95%;
+  right: 0;
+
 }
 
 .autocomplete--entering,
 .autocomplete--entered {
   opacity: 1;
   transition: opacity 2200ms;
-  margin: 5px 0px 0px 5px;
+  margin: 5px 0 0 5px;
   padding-bottom: 30px;
-  display: inline-block;
   font-size: 16px;
   max-width: 200px;
   position: absolute;
@@ -359,11 +376,11 @@ button {
 .autocomplete--exited {
   opacity: 0.3;
   transition: opacity 2200ms;
-  margin: 5px 0px 0px 5px;
+
   padding-bottom: 30px;
   position: absolute;
   font-size: 16px;
-  display: inline-block;
+  
   max-width: 200px;
 }
 .transition--entering,
@@ -384,11 +401,7 @@ button {
   opacity: 1;
   transition: opacity 2200ms;
   border: 1px dashed white;
-  margin: 5px 0px 0px 5px;
   font-size: 28px;
-
-  z-index: 3;
-  display: inline-block;
 }
 
 .searchButton--exiting,
@@ -398,20 +411,26 @@ button {
   opacity: 0.3;
   transition: opacity 2200ms;
   border: 1px dashed white;
-  margin: 5px 0px 0px 5px;
   font-size: 28px;
-
-  z-index: 3;
-  display: inline-block;
 }
+@media (max-width: 600px) {
+  .ant-dropdown{
+    width: 100vw
+   }
+}
+
 .iconSetting {
-  margin: 5px 5px 0px 0px;
   font-size: 35px;
   z-index: 2;
-  display: inline-block;
+  padding-top: 5px;
   max-width: 100px;
   white-space: wrap;
   border: 0;
+  padding-bottom:3vh;
+}
+
+.iconSetting .anticon{
+  display: inline;
 }
 
 .example-enter {
@@ -440,20 +459,54 @@ button {
   font-size: 26px;
 }
 
-.switchTitle {
+.topbarZen .scrollLogo {
+ opacity: 0;
+}
+
+.content{
+  height: 95vh;
+}
+.contentZen{
+  height: 100vh;
+}
+
+.topbarZen{
+  opacity: 0.3;
+    height: 5vh;
+    background-color: transparent;
+    max-width: 100vw;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    z-index: 2;
+    position: absolute;
+    
+    justify-content: space-between;
+    border: 0;
   
-  min-height: 5vh;
+}
+
+.topBar {
+  height: 5vh;
   background-color: #252120;
   max-width: 100vw;
   width: 100%;
   display: flex;
   flex-direction: row;
   z-index: 2;
-  position: absolute;
+  
   justify-content: space-between;
   border-bottom: 1px solid #1890ff;
 }
-.switchTitle .ant-btn:focus {
+@media screen and (orientation: landscape) {
+  .imgDiv p, .videoDiv p {
+    top: 10vh;
+  } 
+  .topBar {
+    height: 10vh;
+  }
+}
+.topBar .ant-btn:focus {
   color: white;
 }
 
@@ -475,101 +528,7 @@ button {
   background-color: black !important;
 }
 
-.randomCat {
-  width: 100%;
-  height: 35vh;
-  margin-top: 1%;
-  background-color: #6ed3cf;
-  color: black;
-  background-image: url("./pics/sfw.jpeg");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: right;
-  margin: 1%;
-  z-index: 0;
-  font-size: 40px !important;
-}
 
-.NSFW {
-  width: 100%;
-  height: 50vh;
-  background-image: url("./pics/nsfw.jpeg");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: right;
-  margin: 1%;
-  z-index: 0;
-  font-size: 40px !important;
-}
-
-.OTHER2 {
-  width: 100%;
-  height: 50vh;
-  background-image: url("./pics/food.jpeg");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: left;
-  margin: 1%;
-  font-size: 40px !important;
-}
-.OTHER1 {
-  background-color: #e1e8f0;
-  height: 35vh;
-  width: 100%;
-  background-color: pink;
-  background-image: url("./pics/art.jpeg");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: left;
-  text-shadow: 0.5px 0.5px gray;
-  margin: 1%;
-  font-size: 40px !important;
-}
-.OTHER3 {
-  background-color: #e1e8f0;
-  height: 55vh;
-  width: 100%;
-  background-image: url("./pics/animals.jpg");
-  background-size: cover;
-  background-repeat: no-repeat;
-  margin: 1%;
-  font-size: 40px !important;
-}
-.randomCat:hover {
-  background-image: url("./pics/sfw.jpeg");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: right;
-  color: white;
-  font-size: 45px !important;
-}
-
-.NSFW:hover {
-  background-image: url("./pics/nsfw.jpeg");
-  background-size: cover;
-  background-repeat: no-repeat;
-  color: white;
-  background-position: right;
-  font-size: 45px !important;
-}
-
-.startWrap h1 {
-  color: white !important;
-  font-size: 40px !important;
-}
-.startWrap p {
-  max-width: 300px;
-  margin: auto;
-}
-
-.OTHER1:hover {
-  background-image: url("./pics/art.jpeg");
-  background-size: cover;
-  background-repeat: no-repeat;
-  color: white;
-  font-size: 45px !important;
-  background-position: left;
-}
 .smallText {
   font-size: 12px !important;
   background-color: black;

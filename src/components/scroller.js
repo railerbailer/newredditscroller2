@@ -58,7 +58,8 @@ class Scroller extends Component {
       underage: true,
       isLoadingVideo: true,
       after: "",
-      before: ""
+      before: "",
+      fullscreen: false
     };
   }
 
@@ -283,15 +284,7 @@ class Scroller extends Component {
   menu = () => {
     return (
       <Menu theme="dark">
-        <Menu.Item>
-          <Icon
-            onClick={this.showDropDown}
-            type="close"
-            style={{ color: "white", fontSize: "22px" }}
-          />
-        </Menu.Item>
-
-        <Menu.Item disabled>{this.props.category}</Menu.Item>
+        <Menu.Item disabled>Current: {this.props.category}</Menu.Item>
         <Menu.Divider />
         <Menu.Item>
           <div onClick={e => this.changeCat(e, "NSFW")}>NSFW</div>
@@ -381,8 +374,8 @@ class Scroller extends Component {
           </div>
         ) : null}
         {/* <Icon onClick={this.previous} className="iconUp" type="up" /> */}
-        
-        <div className="switchTitle">
+
+        <div className={this.state.fullscreen ? "topbarZen" : "topBar"}>
           <div className="searchWrapper">
             <Transition
               in={this.state.isSearchActivated}
@@ -434,43 +427,39 @@ class Scroller extends Component {
             onClick={this.showDropDown}
           >
             <Button ghost className="iconSetting">
-              <Icon type="setting" className="chooseCat" />
+              <Icon
+                type={this.state.isDropDownShowing ? "close" : "setting"}
+                className="chooseCat"
+              />
             </Button>
           </Dropdown>
         </div>
-        <div className="content">
-        {!this.state.isSearchActivated && (
-          <button
-            ref={button =>
-              button && !this.state.isSearchActivated && button.focus()
-            }
-          />
-        )}
-        <button onClick={this.switchCat} style={styles.iconRight}>
-          <Icon type="arrow-right" />
-        </button>
-        <button onClick={this.goBackToLast} style={styles.iconLeft}>
-          <Icon type="arrow-left" />
-        </button>
-
-        <Icon type="close" />
-       
-        <button
-          className="inputFocus"
-          // ref={button => button && button.focus()}
-        />
-
-        {this.state.isLoading ? (
-          <button autoFocus className="subRedditTitle">
-            <Spin wrapperClassName="subRedditTitle" size="large" />
-            <p className="loading">
-              Loading <Icon type="tag-o" />
-              {this.state.subreddit}
-            </p>
+        <div className={this.state.fullscreen ? "contentZen" : "content"}>
+          {!this.state.isSearchActivated && (
+            <button
+              className="inputFocus"
+              ref={button =>
+                button && !this.state.isSearchActivated && button.focus()
+              }
+            />
+          )}
+          <button onClick={this.switchCat} style={styles.iconRight}>
+            <Icon type="arrow-right" />
           </button>
-        ) : (
-          <div>
-            
+          <button onClick={this.goBackToLast} style={styles.iconLeft}>
+            <Icon type="arrow-left" />
+          </button>
+
+          {this.state.isLoading ? (
+            <button autoFocus className="subRedditTitle">
+              <Spin wrapperClassName="subRedditTitle" size="large" />
+              <p className="loading">
+                Loading <Icon type="tag-o" />
+                {this.state.subreddit}
+              </p>
+            </button>
+          ) : (
+            <React.Fragment>
               {this.videoPlayer && this.state.isVideoLoading && (
                 <Icon
                   style={{
@@ -486,15 +475,26 @@ class Scroller extends Component {
               )}
 
               {this.state.sliderData[this.state.activeSlide]}
+            </React.Fragment>
+          )}
 
+          <div className="downDiv">
+            <button onClick={this.next} className="iconDownClicker">
+              <h2 className="subredditName">
+                <Icon type="tag-o" />
+                {this.state.subreddit}
+              </h2>
+              <Icon className="iconDown" type="arrow-down" />
+            </button>
           </div>
-        )}
-         <div className="downDiv">
-          <button onClick={this.next} className="iconDownClicker">
 
-            <Icon className="iconDown" type="arrow-down" />
-          </button>
-        </div>
+          <Icon
+            className="fullscreen-icon"
+            onClick={() =>
+              this.setState({ fullscreen: !this.state.fullscreen })
+            }
+            type={this.state.fullscreen ? "close" : "setting"}
+          />
         </div>
       </Swipeable>
     );
@@ -805,10 +805,6 @@ class Scroller extends Component {
           zeroNullData = true;
           return (
             <div className="imgDiv" key={i}>
-               <h2 className="titlesLeft">
-              <Icon type="tag-o" />
-              {this.state.subreddit}
-            </h2>
               <p className="titleText">{children.data.title}</p>
               <Transition
                 in={true}
@@ -838,10 +834,6 @@ class Scroller extends Component {
           zeroNullData = true;
           return (
             <div className="imgDiv" key={i}>
-               <h2 className="titlesLeft">
-              <Icon type="tag-o" />
-              {this.state.subreddit}
-            </h2>
               <p className="titleText">{children.data.title}</p>
               <Transition
                 in={true}
@@ -871,10 +863,6 @@ class Scroller extends Component {
           zeroNullData = true;
           return (
             <div className="imgDiv" key={i}>
-               <h2 className="titlesLeft">
-              <Icon type="tag-o" />
-              {this.state.subreddit}
-            </h2>
               <p className="titleText">{children.data.title}</p>
               <Transition
                 in={true}

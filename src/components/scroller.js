@@ -38,6 +38,7 @@ class Scroller extends Component {
       isDropDownShowing: false,
       isLoading: false,
       isOnlyGifsShowing: false,
+      isOnlyPicsShowing: false,
       isSearchActivated: false,
       dataSource: [],
       isHeartModeOn: false,
@@ -308,8 +309,12 @@ class Scroller extends Component {
         </Menu.Item> */}
         <Menu.Divider />
         <Menu.Item>
-          Gif only:
+          Gifs only:
           <Switch onChange={this.toggleGifsOnly} />
+        </Menu.Item>
+        <Menu.Item>
+          Pics only:
+          <Switch onChange={this.togglePicsOnly} />
         </Menu.Item>
       </Menu>
     );
@@ -317,6 +322,10 @@ class Scroller extends Component {
 
   toggleGifsOnly = () => {
     this.setState({ isOnlyGifsShowing: !this.state.isOnlyGifsShowing });
+    this.getSubreddit(this.state.subreddit);
+  };
+  togglePicsOnly = () => {
+    this.setState({ isOnlyPicsShowing: !this.state.isOnlyPicsShowing });
     this.getSubreddit(this.state.subreddit);
   };
 
@@ -381,7 +390,7 @@ class Scroller extends Component {
               in={this.state.isSearchActivated}
               unmountOnExit
               mountOnEnter
-              timeout={100}
+              timeout={5500}
             >
               {status => (
                 <AutoComplete
@@ -443,10 +452,10 @@ class Scroller extends Component {
               }
             />
           )}
-          <button onClick={this.switchCat} style={styles.iconRight}>
+          <button onClick={this.switchCat} className="iconRight">
             <Icon type="arrow-right" />
           </button>
-          <button onClick={this.goBackToLast} style={styles.iconLeft}>
+          <button className="iconLeft" onClick={this.goBackToLast}>
             <Icon type="arrow-left" />
           </button>
 
@@ -586,217 +595,223 @@ class Scroller extends Component {
     let zeroNullData = false;
     let datavar = data.map((children, i) => {
       if (
-        children.data.post_hint === "link" &&
-        children.data.preview.reddit_video_preview
+        !this.state.isOnlyPicsShowing ||
+        (this.state.isOnlyPicsShowing && this.state.isOnlyGifsShowing)
       ) {
-        zeroNullData = true;
-        return (
-          <div className="videoDiv" key={i}>
-            <p className="titleText">{children.data.title}</p>
-            <Transition
-              in={true}
-              appear={true}
-              unmountOnExit
-              mountOnEnter
-              timeout={1000}
-            >
-              {status => (
-                <video
-                  onCanPlay={() => this.setState({ isVideoLoading: false })}
-                  className={`video transition--${status}`}
-                  ref={el => (this.videoPlayer = el)}
-                  muted
-                  playsInline
-                  autoPlay={this.state.autoPlay}
-                  poster={this.imageParser(
-                    children.data.preview.images[0].resolutions[1].url || ""
-                  )}
-                  preload="none"
-                  loop={this.state.loop}
-                >
-                  <source
-                    type="video/mp4"
-                    src={
-                      children.data.preview.reddit_video_preview
-                        .scrubber_media_url
-                    }
-                  />
-
-                  <p>
-                    Your browser doesn't support HTML5 video. Here is a{" "}
-                    <a
-                      href={
+        if (
+          children.data.post_hint === "link" &&
+          children.data.preview.reddit_video_preview
+        ) {
+          zeroNullData = true;
+          return (
+            <div className="videoDiv" key={i}>
+              <p className="titleText">{children.data.title}</p>
+              <Transition
+                in={true}
+                appear={true}
+                unmountOnExit
+                mountOnEnter
+                
+              >
+                {status => (
+                  <video
+                    onCanPlay={() => this.setState({ isVideoLoading: false })}
+                    className={`video transition--${status}`}
+                    ref={el => (this.videoPlayer = el)}
+                    muted
+                    playsInline
+                    autoPlay={this.state.autoPlay}
+                    poster={children.data.thumbnail || ""}
+                    preload="none"
+                    loop={this.state.loop}
+                  >
+                    <source
+                      type="video/mp4"
+                      src={
                         children.data.preview.reddit_video_preview
                           .scrubber_media_url
                       }
-                    >
-                      link to the video
-                    </a>{" "}
-                    instead.
-                  </p>
-                </video>
-              )}
-            </Transition>
-          </div>
-        );
-      }
+                    />
 
-      if (
-        children.data.post_hint === "rich:video" &&
-        children.data.preview.reddit_video_preview
-      ) {
-        zeroNullData = true;
-        return (
-          <div className="videoDiv" key={i}>
-            <p className="titleText">{children.data.title}</p>
-            <Transition
-              in={true}
-              appear={true}
-              unmountOnExit
-              mountOnEnter
-              timeout={1000}
-            >
-              {status => (
-                <video
-                  onCanPlay={() => this.setState({ isVideoLoading: false })}
-                  className={`video transition--${status}`}
-                  ref={el => (this.videoPlayer = el)}
-                  muted
-                  preload="none"
-                  playsInline
-                  autoPlay={this.state.autoPlay}
-                  poster={children.data.thumbnail || ""}
-                  loop={this.state.loop}
-                >
-                  <source
-                    type="video/mp4"
-                    src={
-                      children.data.preview.reddit_video_preview
-                        .scrubber_media_url
-                    }
-                  />
-                  <p>
-                    Your browser doesn't support HTML5 video. Here is a{" "}
-                    <a
-                      href={
+                    <p>
+                      Your browser doesn't support HTML5 video. Here is a{" "}
+                      <a
+                        href={
+                          children.data.preview.reddit_video_preview
+                            .scrubber_media_url
+                        }
+                      >
+                        link to the video
+                      </a>{" "}
+                      instead.
+                    </p>
+                  </video>
+                )}
+              </Transition>
+            </div>
+          );
+        }
+
+        if (
+          children.data.post_hint === "rich:video" &&
+          children.data.preview.reddit_video_preview
+        ) {
+          zeroNullData = true;
+          return (
+            <div className="videoDiv" key={i}>
+              <p className="titleText">{children.data.title}</p>
+              <Transition
+                in={true}
+                appear={true}
+                unmountOnExit
+                mountOnEnter
+                
+              >
+                {status => (
+                  <video
+                    onCanPlay={() => this.setState({ isVideoLoading: false })}
+                    className={`video transition--${status}`}
+                    ref={el => (this.videoPlayer = el)}
+                    muted
+                    preload="none"
+                    playsInline
+                    autoPlay={this.state.autoPlay}
+                    poster={children.data.thumbnail || ""}
+                    loop={this.state.loop}
+                  >
+                    <source
+                      type="video/mp4"
+                      src={
                         children.data.preview.reddit_video_preview
                           .scrubber_media_url
                       }
-                    >
-                      link to the video
-                    </a>{" "}
-                    instead.
-                  </p>
-                </video>
-              )}
-            </Transition>
-          </div>
-        );
-      }
-      if (
-        children.data.post_hint === "hosted:video" &&
-        children.data.media.reddit_video
-      ) {
-        zeroNullData = true;
-        return (
-          <div className="videoDiv" key={i}>
-            <p className="titleText">{children.data.title}</p>
-            <Transition
-              in={true}
-              appear={true}
-              unmountOnExit
-              mountOnEnter
-              timeout={1000}
-            >
-              {status => (
-                <video
-                  onCanPlay={() => this.setState({ isVideoLoading: false })}
-                  className={`video transition--${status}`}
-                  ref={el => (this.videoPlayer = el)}
-                  muted
-                  playsInline
-                  autoPlay={this.state.autoPlay}
-                  loop={this.state.loop}
-                  preload="none"
-                >
-                  <source
-                    type="video/mp4"
-                    src={children.data.media.reddit_video.scrubber_media_url}
-                  />
-                  <p>
-                    Your browser doesn't support HTML5 video. Here is a{" "}
-                    <a
-                      href={children.data.media.reddit_video.scrubber_media_url}
-                    >
-                      link to the video
-                    </a>{" "}
-                    instead.
-                  </p>
-                </video>
-              )}
-            </Transition>
-          </div>
-        );
-      }
+                    />
+                    <p>
+                      Your browser doesn't support HTML5 video. Here is a{" "}
+                      <a
+                        href={
+                          children.data.preview.reddit_video_preview
+                            .scrubber_media_url
+                        }
+                      >
+                        link to the video
+                      </a>{" "}
+                      instead.
+                    </p>
+                  </video>
+                )}
+              </Transition>
+            </div>
+          );
+        }
+        if (
+          children.data.post_hint === "hosted:video" &&
+          children.data.media.reddit_video
+        ) {
+          zeroNullData = true;
+          return (
+            <div className="videoDiv" key={i}>
+              <p className="titleText">{children.data.title}</p>
+              <Transition
+                in={true}
+                appear={true}
+                unmountOnExit
+                mountOnEnter
+                
+              >
+                {status => (
+                  <video
+                    onCanPlay={() => this.setState({ isVideoLoading: false })}
+                    className={`video transition--${status}`}
+                    ref={el => (this.videoPlayer = el)}
+                    muted
+                    playsInline
+                    autoPlay={this.state.autoPlay}
+                    loop={this.state.loop}
+                    preload="none"
+                    poster={children.data.thumbnail || ""}
+                  >
+                    <source
+                      type="video/mp4"
+                      src={children.data.media.reddit_video.scrubber_media_url}
+                    />
+                    <p>
+                      Your browser doesn't support HTML5 video. Here is a{" "}
+                      <a
+                        href={
+                          children.data.media.reddit_video.scrubber_media_url
+                        }
+                      >
+                        link to the video
+                      </a>{" "}
+                      instead.
+                    </p>
+                  </video>
+                )}
+              </Transition>
+            </div>
+          );
+        }
 
-      if (
-        children.data.post_hint === "image" &&
-        children.data.preview.reddit_video_preview
-      ) {
-        zeroNullData = true;
-        return (
-          <div className="videoDiv" key={i}>
-            <p className="titleText">{children.data.title}</p>
-            <Transition
-              in={true}
-              appear={true}
-              unmountOnExit
-              mountOnEnter
-              timeout={1000}
-            >
-              {status => (
-                <video
-                  onCanPlay={() => this.setState({ isVideoLoading: false })}
-                  className={`video transition--${status}`}
-                  ref={el => (this.videoPlayer = el)}
-                  muted
-                  playsInline
-                  autoPlay={this.state.autoPlay}
-                  poster={this.imageParser(
-                    children.data.preview.images[0].resolutions[1].url || ""
-                  )}
-                  loop={this.state.loop}
-                  preload="none"
-                >
-                  <source
-                    type="video/mp4"
-                    src={
-                      children.data.preview.reddit_video_preview
-                        .scrubber_media_url
-                    }
-                  />
-                  <p className="titleText">
-                    Your browser doesn't support HTML5 video. Here is a{" "}
-                    <a
-                      href={
+        if (
+          children.data.post_hint === "image" &&
+          children.data.preview.reddit_video_preview
+        ) {
+          zeroNullData = true;
+          return (
+            <div className="videoDiv" key={i}>
+              <p className="titleText">{children.data.title}</p>
+              <Transition
+                in={true}
+                appear={true}
+                unmountOnExit
+                mountOnEnter
+                
+              >
+                {status => (
+                  <video
+                    onCanPlay={() => this.setState({ isVideoLoading: false })}
+                    className={`video transition--${status}`}
+                    ref={el => (this.videoPlayer = el)}
+                    muted
+                    playsInline
+                    autoPlay={this.state.autoPlay}
+                    poster={children.data.thumbnail || ""}
+                    loop={this.state.loop}
+                    preload="none"
+                  >
+                    <source
+                      type="video/mp4"
+                      src={
                         children.data.preview.reddit_video_preview
                           .scrubber_media_url
                       }
-                    >
-                      link to the video
-                    </a>{" "}
-                    instead.
-                  </p>
-                </video>
-              )}
-            </Transition>
-          </div>
-        );
+                    />
+                    <p className="titleText">
+                      Your browser doesn't support HTML5 video. Here is a{" "}
+                      <a
+                        href={
+                          children.data.preview.reddit_video_preview
+                            .scrubber_media_url
+                        }
+                      >
+                        link to the video
+                      </a>{" "}
+                      instead.
+                    </p>
+                  </video>
+                )}
+              </Transition>
+            </div>
+          );
+        }
       }
-
       if (
-        children.data.post_hint === "image" &&
-        !this.state.isOnlyGifsShowing
+        (children.data.post_hint === "image" &&
+          !this.state.isOnlyGifsShowing) ||
+        (children.data.post_hint === "image" &&
+          this.state.isOnlyPicsShowing &&
+          this.state.isOnlyGifsShowing)
       ) {
         let sizeRatio =
           children.data.preview.images[0].source.height +
@@ -811,7 +826,7 @@ class Scroller extends Component {
                 appear={true}
                 unmountOnExit
                 mountOnEnter
-                timeout={1000}
+                
               >
                 {status => (
                   <img
@@ -840,7 +855,7 @@ class Scroller extends Component {
                 appear={true}
                 unmountOnExit
                 mountOnEnter
-                timeout={1000}
+                
               >
                 {status => (
                   <img
@@ -869,7 +884,7 @@ class Scroller extends Component {
                 appear={true}
                 unmountOnExit
                 mountOnEnter
-                timeout={1000}
+                
               >
                 {status => (
                   <img
@@ -915,7 +930,7 @@ class Scroller extends Component {
               appear={true}
               unmountOnExit
               mountOnEnter
-              timeout={1000}
+              
             >
               {status => (
                 <video
@@ -926,7 +941,8 @@ class Scroller extends Component {
                   playsInline
                   autoPlay={this.state.autoPlay}
                   poster={this.imageParser(
-                    children.data.preview.images[0].resolutions[1].url
+                    children.data.preview.images[0].resolutions[1].url &&
+                      children.data.preview.images[0].resolutions[1].url
                   )}
                   preload="none"
                   loop={this.state.loop}
@@ -977,7 +993,7 @@ class Scroller extends Component {
               appear={true}
               unmountOnExit
               mountOnEnter
-              timeout={1000}
+              
             >
               {status => (
                 <video
@@ -988,7 +1004,10 @@ class Scroller extends Component {
                   preload="none"
                   playsInline
                   autoPlay={this.state.autoPlay}
-                  poster={children.data.thumbnail}
+                  poster={
+                    children.data.preview.images[0].resolutions[1].url &&
+                    children.data.preview.images[0].resolutions[1].url
+                  }
                   loop={this.state.loop}
                 >
                   <source
@@ -1035,7 +1054,7 @@ class Scroller extends Component {
               appear={true}
               unmountOnExit
               mountOnEnter
-              timeout={1000}
+              
             >
               {status => (
                 <video
@@ -1087,7 +1106,7 @@ class Scroller extends Component {
               appear={true}
               unmountOnExit
               mountOnEnter
-              timeout={1000}
+              
             >
               {status => (
                 <video
@@ -1098,7 +1117,8 @@ class Scroller extends Component {
                   playsInline
                   autoPlay={this.state.autoPlay}
                   poster={this.imageParser(
-                    children.data.preview.images[0].resolutions[1].url
+                    children.data.preview.images[0].resolutions[1].url &&
+                      children.data.preview.images[0].resolutions[1].url
                   )}
                   loop={this.state.loop}
                   preload="none"
@@ -1152,7 +1172,7 @@ class Scroller extends Component {
                 appear={true}
                 unmountOnExit
                 mountOnEnter
-                timeout={1000}
+                
               >
                 {status => (
                   <img
@@ -1181,7 +1201,7 @@ class Scroller extends Component {
                 appear={true}
                 unmountOnExit
                 mountOnEnter
-                timeout={1000}
+                
               >
                 {status => (
                   <img
@@ -1210,7 +1230,7 @@ class Scroller extends Component {
                 appear={true}
                 unmountOnExit
                 mountOnEnter
-                timeout={1000}
+                
               >
                 {status => (
                   <img
@@ -1242,33 +1262,3 @@ class Scroller extends Component {
 }
 
 export default Scroller;
-
-const styles = {
-  iconLeft: {
-    cursor: "pointer",
-    backgroundColor: "transparent",
-    opacity: 0.6,
-    height: "100%",
-    position: "absolute",
-    zIndex: 1,
-    paddingRight: "20%",
-    right: 1,
-    textAlign: "left",
-    fontSize: "24px",
-    color: "white",
-    left: 0
-  },
-  iconRight: {
-    cursor: "pointer",
-    backgroundColor: "transparent",
-    opacity: 0.6,
-    height: "100%",
-    position: "absolute",
-    zIndex: 1,
-    paddingLeft: "20%",
-    right: 1,
-    textAlign: "right",
-    fontSize: "24px",
-    color: "white"
-  }
-};

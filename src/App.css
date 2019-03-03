@@ -28,10 +28,10 @@ h2 {
   height: 90vh;
   color: gray;
 }
-.contentZen .imgDiv p, .videoDiv p {
+.contentZen .titleText {
   top: 0vh;
 } 
-.videoDiv p, .imgDiv p {
+.titleText {
   z-index: 1;
   opacity: 0.8;
   text-shadow: 1px 1px 1px black;
@@ -41,8 +41,8 @@ h2 {
   left: 0;
   right: 0;
   text-align: center;
-  
 }
+
 .imgDiv, .videoDiv {
   width: 100%;
   height: 100%;
@@ -50,7 +50,7 @@ h2 {
 }
 
 .image, .video {
-  z-index: 12313123s;
+  z-index: 2;
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -66,16 +66,6 @@ h2 {
   display: block;
 }
 
-
-
-.titleText {
-  position: relative;
-  z-index: 0;
-  margin: auto;
-  width: 100%;
-
-  overflow: visible;
-}
 
 button {
   border: 0;
@@ -110,6 +100,7 @@ button {
 }
 
 .downDiv {
+  cursor: pointer;
   opacity: 0.8;
   position: absolute;
   display: flex;
@@ -268,26 +259,28 @@ button {
   opacity: 0.4;
 }
 
-.iconRightButton {
-  opacity: 1;
-  font-size: 40px;
+.iconLeft, .iconRight {
+  cursor: pointer;
+  background-color: transparent;
+  opacity: 0.6;
+  height: 100%;
   position: absolute;
-  margin: auto;
-  z-index: 1;
+  padding-right: 20%;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  font-size: 24px;
   color: white;
-  right: 1;
-  top: 50%;
-  color: #1bb76e;
+  transition: font-size 250ms;
 }
-.iconLeft {
-  opacity: 0.4;
-  font-size: 40px;
-  position: absolute;
-  margin: auto;
-  z-index: 1;
-  color: white;
-  left: 1;
-  top: 50%;
+
+.iconRight i{
+position: absolute;
+right: 1px;
+text-align: right;
+}
+.iconRight i, .iconLeft i{
+  transition: font-size 250ms;
 }
 
 .iconBack {
@@ -349,6 +342,7 @@ button {
 
 .searchWrapper {
   width: 50px;
+  z-index: 3;
 }
 
 .fullscreen-icon{
@@ -376,7 +370,7 @@ button {
 .autocomplete--exited {
   opacity: 0.3;
   transition: opacity 2200ms;
-
+  margin: 5px 0 0 5px;
   padding-bottom: 30px;
   position: absolute;
   font-size: 16px;
@@ -386,12 +380,14 @@ button {
 .transition--entering,
 .transition--entered {
   opacity: 1;
-  transition: opacity 900ms;
+  transition: margin 100ms;
+  margin-top: 0;
 }
 .transition--exiting,
 .transition--exited {
   opacity: 0.3;
-  transition: opacity 900ms;
+  transition: margin 100ms ms;
+  margin-top: 20%;
 }
 
 .searchButton--entering,
@@ -421,7 +417,7 @@ button {
 
 .iconSetting {
   font-size: 35px;
-  z-index: 2;
+  z-index: 3;
   padding-top: 5px;
   max-width: 100px;
   white-space: wrap;
@@ -433,23 +429,8 @@ button {
   display: inline;
 }
 
-.example-enter {
-  opacity: 0.01;
-}
 
-.example-enter.example-enter-active {
-  opacity: 1;
-  transition: opacity 5000ms ease-in;
-}
 
-.example-leave {
-  opacity: 1;
-}
-
-.example-leave.example-leave-active {
-  opacity: 0.01;
-  transition: opacity 3000ms ease-in;
-}
 .middleWrapper {
   color: white;
 }
@@ -470,22 +451,27 @@ button {
   height: 100vh;
 }
 
+
+
+.contentZen i, .contentZen h2 {
+  transition: font-size 250ms;
+  font-size: 14px;
+}
 .topbarZen{
-  opacity: 0.3;
+  opacity: 0.5;
     height: 5vh;
     background-color: transparent;
     max-width: 100vw;
     width: 100%;
     display: flex;
     flex-direction: row;
-    z-index: 2;
+    z-index: 222222;
     position: absolute;
-    
+    top: 0;
     justify-content: space-between;
     border: 0;
   
 }
-
 .topBar {
   height: 5vh;
   background-color: #252120;
@@ -498,12 +484,12 @@ button {
   justify-content: space-between;
   border-bottom: 1px solid #1890ff;
 }
-@media screen and (orientation: landscape) {
-  .imgDiv p, .videoDiv p {
-    top: 10vh;
+@media screen and (orientation: landscape) and (max-width: 1000px) {
+  .titleText{
+    top: 8vh;
   } 
   .topBar {
-    height: 10vh;
+    height: 8vh;
   }
 }
 .topBar .ant-btn:focus {

@@ -515,7 +515,7 @@ class Scroller extends Component {
             onClick={() =>
               this.setState({ fullscreen: !this.state.fullscreen })
             }
-            type={this.state.fullscreen ? "close" : "setting"}
+            type={this.state.fullscreen ? "shrink" : "arrows-alt"}
           />
         </div>
       </Swipeable>

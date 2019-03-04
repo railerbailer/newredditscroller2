@@ -29,6 +29,7 @@ import "react-html5video/dist/styles.css";
 let goBack = [];
 let goBackIndex = 0;
 let heart = [];
+let subredditTitles = [];
 class Scroller extends Component {
   constructor(props) {
     super(props);
@@ -60,11 +61,14 @@ class Scroller extends Component {
       isLoadingVideo: true,
       after: "",
       before: "",
-      fullscreen: false
+      fullscreen: false,
+      category: ""
     };
   }
 
   componentDidMount() {
+    this.props.match.params.subreddit ? 
+    this.getSubreddit(this.props.match.params.subreddit):
     this.getSubreddit(this.shuffleArray(this.dataHandler("SFW")));
   }
 
@@ -126,9 +130,12 @@ class Scroller extends Component {
       this.setState({ isVideoLoading: this.videoPlayer && true });
     }
     // this.state.activeSlide===0 && this.goBackSubreddits();
+    this.props.history.push(`/${this.state.subreddit}`)
+
   };
 
   switchCat = async () => {
+    subredditTitles = [];
     this.state.isDropDownShowing && this.showDropDown();
     this.setState({ isVideoLoading: true });
     await this.setState({ activeSlide: 0 });
@@ -143,7 +150,7 @@ class Scroller extends Component {
     } else {
       !this.state.isLoading &&
         this.getSubreddit(
-          this.shuffleArray(this.dataHandler(this.props.category))
+          this.shuffleArray(this.dataHandler(this.state.category))
         );
       if (
         goBackIndex === 0 &&
@@ -151,7 +158,7 @@ class Scroller extends Component {
       ) {
         await goBack.push(this.state.subreddit);
       }
-    }
+    }   
   };
 
   goBackToLast = async () => {
@@ -241,9 +248,15 @@ class Scroller extends Component {
       : this.setState({ spinning: false });
   };
 
+  categorySet = val => {
+    this.setState({
+      category: val
+    });
+  };
+
   changeCat = async (e, cat) => {
     await e.preventDefault();
-    await this.props.categorySet(cat);
+    await this.categorySet(cat);
     await this.getSubreddit(this.shuffleArray(this.dataHandler(cat)));
     message.info(
       `Category is ${cat}, press or swipe right to shuffle subreddit`
@@ -265,7 +278,7 @@ class Scroller extends Component {
     if (!value) {
       value = "Type your search";
     }
-    let result = this.dataHandler(this.props.category).filter(str =>
+    let result = this.dataHandler(this.state.category).filter(str =>
       str.toLowerCase().includes(value.toLowerCase())
     );
     result = result.reverse();
@@ -285,7 +298,7 @@ class Scroller extends Component {
   menu = () => {
     return (
       <Menu theme="dark">
-        <Menu.Item disabled>Current: {this.props.category}</Menu.Item>
+        <Menu.Item disabled>Current: {this.state.category}</Menu.Item>
         <Menu.Divider />
         <Menu.Item>
           <div onClick={e => this.changeCat(e, "NSFW")}>NSFW</div>
@@ -334,6 +347,7 @@ class Scroller extends Component {
   };
 
   render() {
+    console.log(subredditTitles[this.state.activeSlide])
     return (
       <Swipeable
         className="wrapper"
@@ -343,7 +357,7 @@ class Scroller extends Component {
         onSwipedLeft={this.swipedLeft}
         onSwipedRight={this.swipedRight}
       >
-        {this.props.category === "Switch category" ? (
+        {this.state.category === "" && !this.props.match.params.subreddit ? (
           <div className="categoryModal">
             <div className="description">
               Welcome to Sliddit.com!
@@ -390,7 +404,7 @@ class Scroller extends Component {
               in={this.state.isSearchActivated}
               unmountOnExit
               mountOnEnter
-              timeout={5500}
+              timeout={500}
             >
               {status => (
                 <AutoComplete
@@ -413,7 +427,7 @@ class Scroller extends Component {
               in={!this.state.isSearchActivated}
               unmountOnExit
               mountOnEnter
-              timeout={0}
+              timeout={500}
             >
               {status => (
                 <Button
@@ -482,7 +496,6 @@ class Scroller extends Component {
                   type="loading"
                 />
               )}
-
               {this.state.sliderData[this.state.activeSlide]}
             </React.Fragment>
           )}
@@ -520,6 +533,7 @@ class Scroller extends Component {
       sliderData: [],
       isLoading: true
     });
+    this.props.history.push(`/${this.state.subreddit}`)
 
     //Om det blev fel kan det vara annat än url som inte finns...
     await fetch(
@@ -529,15 +543,15 @@ class Scroller extends Component {
       .then(jsonData => {
         this.setState({
           after: jsonData.data.after,
-          before: jsonData.data.after
+          before: jsonData.data.after,
+          subredditData: jsonData.data.children
         });
-        let childs = jsonData.data.children;
-        this.dataToHtml(childs);
+        this.dataToHtml(jsonData.data.children);
         console.log(this.state.activeSlide);
       })
       .catch(() => {
         this.getSubreddit(
-          this.shuffleArray(this.dataHandler(this.props.category))
+          this.shuffleArray(this.dataHandler(this.state.category))
         );
       });
     this.setState({ isLoading: false });
@@ -561,7 +575,7 @@ class Scroller extends Component {
       })
       .catch(() => {
         this.getSubreddit(
-          this.shuffleArray(this.dataHandler(this.props.category))
+          this.shuffleArray(this.dataHandler(this.state.category))
         );
       });
     this.setState({ isLoading: false });
@@ -585,7 +599,7 @@ class Scroller extends Component {
       })
       .catch(() => {
         this.getSubreddit(
-          this.shuffleArray(this.dataHandler(this.props.category))
+          this.shuffleArray(this.dataHandler(this.state.category))
         );
       });
     this.setState({ isLoading: false });
@@ -603,6 +617,7 @@ class Scroller extends Component {
           children.data.preview.reddit_video_preview
         ) {
           zeroNullData = true;
+          subredditTitles.push(children.data.title) 
           return (
             <div className="videoDiv" key={i}>
               <p className="titleText">{children.data.title}</p>
@@ -611,7 +626,7 @@ class Scroller extends Component {
                 appear={true}
                 unmountOnExit
                 mountOnEnter
-                
+                timeout={500}
               >
                 {status => (
                   <video
@@ -657,6 +672,7 @@ class Scroller extends Component {
           children.data.preview.reddit_video_preview
         ) {
           zeroNullData = true;
+          subredditTitles.push(children.data.title) 
           return (
             <div className="videoDiv" key={i}>
               <p className="titleText">{children.data.title}</p>
@@ -665,7 +681,7 @@ class Scroller extends Component {
                 appear={true}
                 unmountOnExit
                 mountOnEnter
-                
+                timeout={500}
               >
                 {status => (
                   <video
@@ -709,6 +725,7 @@ class Scroller extends Component {
           children.data.media.reddit_video
         ) {
           zeroNullData = true;
+          subredditTitles.push(children.data.title) 
           return (
             <div className="videoDiv" key={i}>
               <p className="titleText">{children.data.title}</p>
@@ -717,7 +734,7 @@ class Scroller extends Component {
                 appear={true}
                 unmountOnExit
                 mountOnEnter
-                
+                timeout={500}
               >
                 {status => (
                   <video
@@ -758,6 +775,7 @@ class Scroller extends Component {
           children.data.preview.reddit_video_preview
         ) {
           zeroNullData = true;
+          subredditTitles.push(children.data.title) 
           return (
             <div className="videoDiv" key={i}>
               <p className="titleText">{children.data.title}</p>
@@ -766,7 +784,7 @@ class Scroller extends Component {
                 appear={true}
                 unmountOnExit
                 mountOnEnter
-                
+                timeout={500}
               >
                 {status => (
                   <video
@@ -818,6 +836,7 @@ class Scroller extends Component {
           children.data.preview.images[0].source.width;
         if (children.data.preview.images[0].source.height < 300) {
           zeroNullData = true;
+          subredditTitles.push(children.data.title) 
           return (
             <div className="imgDiv" key={i}>
               <p className="titleText">{children.data.title}</p>
@@ -826,7 +845,7 @@ class Scroller extends Component {
                 appear={true}
                 unmountOnExit
                 mountOnEnter
-                
+                timeout={500}
               >
                 {status => (
                   <img
@@ -847,6 +866,7 @@ class Scroller extends Component {
           sizeRatio > 1500
         ) {
           zeroNullData = true;
+          subredditTitles.push(children.data.title) 
           return (
             <div className="imgDiv" key={i}>
               <p className="titleText">{children.data.title}</p>
@@ -855,7 +875,7 @@ class Scroller extends Component {
                 appear={true}
                 unmountOnExit
                 mountOnEnter
-                
+                timeout={500}
               >
                 {status => (
                   <img
@@ -876,6 +896,7 @@ class Scroller extends Component {
           sizeRatio < 1500
         ) {
           zeroNullData = true;
+          subredditTitles.push(children.data.title) 
           return (
             <div className="imgDiv" key={i}>
               <p className="titleText">{children.data.title}</p>
@@ -884,7 +905,7 @@ class Scroller extends Component {
                 appear={true}
                 unmountOnExit
                 mountOnEnter
-                
+                timeout={500}
               >
                 {status => (
                   <img
@@ -909,7 +930,7 @@ class Scroller extends Component {
     } else {
       // this.state.subredditOrHeart &&
       this.getSubreddit(
-        this.shuffleArray(this.dataHandler(this.props.category))
+        this.shuffleArray(this.dataHandler(this.state.category))
       );
     }
   };
@@ -930,7 +951,7 @@ class Scroller extends Component {
               appear={true}
               unmountOnExit
               mountOnEnter
-              
+              timeout={500}
             >
               {status => (
                 <video
@@ -993,7 +1014,7 @@ class Scroller extends Component {
               appear={true}
               unmountOnExit
               mountOnEnter
-              
+              timeout={500}
             >
               {status => (
                 <video
@@ -1054,7 +1075,7 @@ class Scroller extends Component {
               appear={true}
               unmountOnExit
               mountOnEnter
-              
+              timeout={500}
             >
               {status => (
                 <video
@@ -1106,7 +1127,7 @@ class Scroller extends Component {
               appear={true}
               unmountOnExit
               mountOnEnter
-              
+              timeout={500}
             >
               {status => (
                 <video
@@ -1172,7 +1193,7 @@ class Scroller extends Component {
                 appear={true}
                 unmountOnExit
                 mountOnEnter
-                
+                timeout={500}
               >
                 {status => (
                   <img
@@ -1201,7 +1222,7 @@ class Scroller extends Component {
                 appear={true}
                 unmountOnExit
                 mountOnEnter
-                
+                timeout={500}
               >
                 {status => (
                   <img
@@ -1230,7 +1251,7 @@ class Scroller extends Component {
                 appear={true}
                 unmountOnExit
                 mountOnEnter
-                
+                timeout={500}
               >
                 {status => (
                   <img
@@ -1255,7 +1276,7 @@ class Scroller extends Component {
     } else {
       // this.state.subredditOrHeart &&
       this.getSubreddit(
-        this.shuffleArray(this.dataHandler(this.props.category))
+        this.shuffleArray(this.dataHandler(this.state.category))
       );
     }
   };

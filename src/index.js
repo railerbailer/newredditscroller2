@@ -6,7 +6,7 @@ import { hydrate, render } from 'react-dom';
 
 const rootElement = document.getElementById('root');
 if (rootElement.hasChildNodes()) {
-  hydrate(<BrowserRouter><App /></BrowserRouter>, rootElement);
+  hydrate(<App />, rootElement);
 } else {
-  render(<BrowserRouter><App /></BrowserRouter>, rootElement);
+  render(<App />, rootElement);
 }

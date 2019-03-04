@@ -2,37 +2,17 @@ import React, { Component } from "react";
 import "antd/dist/antd.css";
 import "./App.css";
 import Scroller from "./components/scroller";
+import { BrowserRouter, Route } from "react-router-dom";
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-
-    this.categorySet = this.categorySet.bind(this);
-    this.autoplayPress = this.autoplayPress.bind(this);
-
-    this.state = {
-      nsfwAccept: false,
-      category: "Switch category",
-      autoplay: false
-    };
-  }
-
-  categorySet = async val => {
-    await this.setState({
-      category: val
-    });
-  };
-
-  autoplayPress() {
-    this.setState({ autoplay: !this.state.autoplay });
-  }
   render() {
     return (
-      <Scroller
-        autoplay={this.state.autoplay}
-        categorySet={this.categorySet}
-        category={this.state.category}
-      />
+      <BrowserRouter>
+        <React.Fragment>
+          <Route path="/" exact component={Scroller} />
+          <Route path="/:subreddit" exact component={Scroller} />
+        </React.Fragment>
+      </BrowserRouter>
     );
   }
 }

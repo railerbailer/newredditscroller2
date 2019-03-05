@@ -24,7 +24,6 @@ import {
   animalsArray
 } from "../subreddits";
 import "../App.css";
-import "react-html5video/dist/styles.css";
 
 let goBack = [];
 let goBackIndex = 0;

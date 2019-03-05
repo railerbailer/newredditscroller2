@@ -474,12 +474,17 @@ class Scroller extends Component {
           <button className="iconLeft" onClick={this.goBackToLast}>
             <Icon type="arrow-left" />
           </button>
-          {(!this.videoPlayer && this.state.isImageLoading) ||
-            (this.videoPlayer && this.state.isLoadingVideo) && (
-              <button autoFocus className="subRedditTitle">
-                <Spin wrapperClassName="subRedditTitle" size="large" />
-              </button>
-            )}
+          {!this.videoPlayer && this.state.isImageLoading && (
+            <button autoFocus className="subRedditTitle">
+              <Spin wrapperClassName="subRedditTitle" size="large" />
+            </button>
+          )}
+
+          {this.videoPlayer && this.state.isLoadingVideo && (
+            <button autoFocus className="subRedditTitle">
+              <Spin wrapperClassName="subRedditTitle" size="large" />
+            </button>
+          )}
 
           {this.state.isLoading ? (
             <button autoFocus className="subRedditTitle">

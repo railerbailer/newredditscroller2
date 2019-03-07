@@ -314,6 +314,10 @@ text-align: right;
   overflow: hidden; */
 }
 
+.lazy{
+  display: none;
+}
+
 .logoTexts {
   display: relative;
   height: 70vw;

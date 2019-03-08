@@ -69,7 +69,7 @@ class Scroller extends Component {
   componentDidMount() {
     this.props.match.params.subreddit
       ? this.getSubreddit(this.props.match.params.subreddit)
-      : this.getSubreddit(this.shuffleArray(this.dataHandler("SFW")));
+      : this.getSubreddit(this.shuffleArray(this.dataHandler("ART")));
   }
 
   dataHandler(props) {
@@ -133,7 +133,6 @@ class Scroller extends Component {
       this.setState({ isVideoLoading: this.videoPlayer && true });
     }
     // this.state.activeSlide===0 && this.goBackSubreddits();
-    this.props.history.push(`/${this.state.subreddit}`);
   };
 
   switchCat = async () => {
@@ -274,7 +273,6 @@ class Scroller extends Component {
   };
   changeYourHeart = input => {
     input !== heart[heart.length - 1] && heart.push(input);
-    console.log("=========", heart);
   };
   handleSearch = value => {
     if (!value) {
@@ -349,7 +347,6 @@ class Scroller extends Component {
   };
 
   render() {
-    console.log("LOADING:", this.state.isImageLoading);
     return (
       <Swipeable
         className="wrapper"
@@ -480,12 +477,6 @@ class Scroller extends Component {
             </button>
           )}
 
-          {this.videoPlayer && this.state.isLoadingVideo && (
-            <button autoFocus className="subRedditTitle">
-              <Spin wrapperClassName="subRedditTitle" size="large" />
-            </button>
-          )}
-
           {this.state.isLoading ? (
             <button autoFocus className="subRedditTitle">
               <Spin wrapperClassName="subRedditTitle" size="large" />
@@ -546,7 +537,8 @@ class Scroller extends Component {
       sliderData: [],
       isLoading: true
     });
-    this.props.history.push(`/${this.state.subreddit}`);
+    this.state.category !== "" &&
+      this.props.history.push(`/${this.state.subreddit}`);
 
     //Om det blev fel kan det vara annat än url som inte finns...
     await fetch(

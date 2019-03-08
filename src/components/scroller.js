@@ -88,7 +88,7 @@ class Scroller extends Component {
     if (props === "Animals") {
       return animalsArray;
     } else {
-      return subredditArray;
+      return subredditArray.concat(NSFW, artArray, foodArray, animalsArray);
     }
   }
 
@@ -329,6 +329,7 @@ class Scroller extends Component {
           Pics only:
           <Switch onChange={this.togglePicsOnly} />
         </Menu.Item>
+        
       </Menu>
     );
   };

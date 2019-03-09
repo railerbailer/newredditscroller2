@@ -61,24 +61,26 @@ class Scroller extends Component {
       after: "",
       before: "",
       fullscreen: false,
-      category: "",
+      category: "intial",
       isImageLoading: false,
       lazyLoaded: "",
-      postTitle: []
+      postTitle: [],
+      startPage: false,
     };
   }
 
   componentDidMount() {
-    this.props.match.params.subreddit
+    this.props.match.params.subreddit && this.props.match.params.subreddit !== 'startpage'
       ? this.getSubreddit(this.props.match.params.subreddit)
-      : this.getSubreddit(this.shuffleArray(this.dataHandler("")));
+      : this.setState({startPage: true});
+      /* this.getSubreddit(this.shuffleArray(this.dataHandler("asd"))) */
   }
 
   lazyLoading = async () => {
     const timing = performance.timing;
     const loadTime = timing.loadEventEnd - timing.navigationStart;
     const { sliderData, activeSlide } = this.state;
-    let intervalMs = loadTime < 10000 ? loadTime : loadTime * 1.3;
+    let intervalMs = loadTime < 10000 ? loadTime : loadTime * 2;
 
     if (loadTime > 1000) intervalMs = 1500;
     if (loadTime > 10000) intervalMs = 10000;
@@ -98,19 +100,20 @@ class Scroller extends Component {
   };
 
   dataHandler(props) {
-    if (props === "NSFW") {
+    let lowerCaseCategory = props.toLowerCase();
+    if (lowerCaseCategory === "nsfw") {
       return NSFW;
     }
-    if (props === "SFW") {
+    if (lowerCaseCategory === "sfw") {
       return subredditArray;
     }
-    if (props === "Art") {
+    if (lowerCaseCategory === "art") {
       return artArray;
     }
-    if (props === "Food") {
+    if (lowerCaseCategory === "food") {
       return foodArray;
     }
-    if (props === "Animals") {
+    if (lowerCaseCategory === "animals") {
       return animalsArray;
     } else {
       return subredditArray.concat(artArray, foodArray, animalsArray);
@@ -176,6 +179,7 @@ class Scroller extends Component {
         !this.state.isLoading &&
           this.getSubreddit(goBack[goBack.length - 1 - goBackIndex]);
     } else {
+      console.log('WE HERE BRO')
       !this.state.isLoading &&
         this.getSubreddit(
           this.shuffleArray(this.dataHandler(this.state.category))
@@ -283,13 +287,14 @@ class Scroller extends Component {
   };
 
   changeCat = async (e, cat) => {
+    this.setState({startPage: false})
     await e.preventDefault();
     await this.categorySet(cat);
     await this.getSubreddit(this.shuffleArray(this.dataHandler(cat)));
     message.info(
       `Category is ${cat}, press or swipe right to shuffle subreddit`
     );
-    this.showDropDown()
+    this.setState({isDropDownShowing: false})
   };
   openNotification = () => {
     notification.open({
@@ -313,7 +318,6 @@ class Scroller extends Component {
     result.push(value);
     result = result.reverse();
     this.setState({ dataSource: result.slice(0, 7) });
-    console.log(this.state.dataSource);
   };
   onSelect = value => {
     this.getSubreddit(value);
@@ -375,7 +379,6 @@ class Scroller extends Component {
   };
 
   render() {
-    console.log("POSTTILTE ALL", this.state.postTitle);
     return (
       <Swipeable
         className="wrapper"
@@ -385,7 +388,7 @@ class Scroller extends Component {
         onSwipedLeft={this.swipedLeft}
         onSwipedRight={this.swipedRight}
       >
-        {this.state.category === "" && !this.props.match.params.subreddit ? (
+        {this.state.category === "intial" && this.state.startPage ? (
           <div className="categoryModal">
             <div className="description">
               Welcome to Sliddit.com!
@@ -396,7 +399,7 @@ class Scroller extends Component {
               <Button
                 className="item1"
                 onClick={e => this.changeCat(e, "NSFW")}
-              >
+                >
                 NSFW
               </Button>
 
@@ -538,10 +541,6 @@ class Scroller extends Component {
           <div className="downDiv">
             <button onClick={this.next} className="iconDownClicker">
               <p style={{ zIndex: 1231231312313123, color: "white" }}>
-                {console.log(
-                  "LOGLOG",
-                  this.state.postTitle[this.state.activeSlide]
-                )}
                 {this.state.postTitle[this.state.activeSlide]}
               </p>
               <h2 className="subredditName">
@@ -575,7 +574,7 @@ class Scroller extends Component {
       sliderData: [],
       isLoading: true
     });
-    this.state.category === "" && !this.props.match.params.subreddit
+    this.state.category === "intial" && !this.props.match.params.subreddit
       ? null
       : this.props.history.push(`/${this.state.subreddit}`);
 

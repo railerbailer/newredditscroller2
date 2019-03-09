@@ -28,7 +28,7 @@ import "../App.css";
 let goBack = [];
 let goBackIndex = 0;
 let heart = [];
-let subredditTitles = [];
+let lazyLoadedSlide = 0;
 class Scroller extends Component {
   constructor(props) {
     super(props);
@@ -62,15 +62,40 @@ class Scroller extends Component {
       before: "",
       fullscreen: false,
       category: "",
-      isImageLoading: false
+      isImageLoading: false,
+      lazyLoaded: "",
+      postTitle: []
     };
   }
 
   componentDidMount() {
     this.props.match.params.subreddit
       ? this.getSubreddit(this.props.match.params.subreddit)
-      : this.getSubreddit(this.shuffleArray(this.dataHandler("ART")));
+      : this.getSubreddit(this.shuffleArray(this.dataHandler("")));
   }
+
+  lazyLoading = async () => {
+    const timing = performance.timing;
+    const loadTime = timing.loadEventEnd - timing.navigationStart;
+    const { sliderData, activeSlide } = this.state;
+    let intervalMs = loadTime < 10000 ? loadTime : loadTime * 1.3;
+
+    if (loadTime > 1000) intervalMs = 1500;
+    if (loadTime > 10000) intervalMs = 10000;
+    var lazyLoadingInterval = setInterval(() => {
+      if (sliderData.length && !this.state.isVideoLoading) {
+        lazyLoadedSlide = lazyLoadedSlide + 1;
+        if (activeSlide + lazyLoadedSlide < sliderData.length)
+          this.setState({
+            lazyLoaded: sliderData[activeSlide + lazyLoadedSlide]
+          });
+        else {
+          console.log("interval done");
+          clearInterval(lazyLoadingInterval);
+        }
+      }
+    }, intervalMs);
+  };
 
   dataHandler(props) {
     if (props === "NSFW") {
@@ -88,7 +113,7 @@ class Scroller extends Component {
     if (props === "Animals") {
       return animalsArray;
     } else {
-      return subredditArray.concat(NSFW, artArray, foodArray, animalsArray);
+      return subredditArray.concat(artArray, foodArray, animalsArray);
     }
   }
 
@@ -121,22 +146,24 @@ class Scroller extends Component {
 
     !this.state.activeSlide &&
       this.state.sliderData.length &&
-      this.moreSubreddits();
+      this.moreSubreddits("after");
   }, 100);
+
   previous = async () => {
-    if (this.state.activeSlide) {
-      const infiniteScroll =
-        (await this.state.activeSlide) <= 0
-          ? this.state.sliderData.length && this.state.sliderData.length - 1
-          : this.state.activeSlide - 1;
-      this.setState({ activeSlide: infiniteScroll });
-      this.setState({ isVideoLoading: this.videoPlayer && true });
-    }
-    // this.state.activeSlide===0 && this.goBackSubreddits();
+    const infiniteScroll =
+      (await this.state.activeSlide) <= 0
+        ? this.state.sliderData.length && this.state.sliderData.length - 1
+        : this.state.activeSlide - 1;
+    this.setState({ activeSlide: infiniteScroll });
+    this.setState({ isVideoLoading: this.videoPlayer && true });
+    if (this.state.activeSlide === -1)
+      this.state.activeSlide === 0 && this.moreSubreddits("before");
   };
 
   switchCat = async () => {
-    subredditTitles = [];
+    lazyLoadedSlide = 0;
+    this.lazyLoading();
+
     this.state.isDropDownShowing && this.showDropDown();
     this.setState({ isVideoLoading: true, isImageLoading: true });
     await this.setState({ activeSlide: 0 });
@@ -262,6 +289,7 @@ class Scroller extends Component {
     message.info(
       `Category is ${cat}, press or swipe right to shuffle subreddit`
     );
+    this.showDropDown()
   };
   openNotification = () => {
     notification.open({
@@ -329,7 +357,6 @@ class Scroller extends Component {
           Pics only:
           <Switch onChange={this.togglePicsOnly} />
         </Menu.Item>
-        
       </Menu>
     );
   };
@@ -348,6 +375,7 @@ class Scroller extends Component {
   };
 
   render() {
+    console.log("POSTTILTE ALL", this.state.postTitle);
     return (
       <Swipeable
         className="wrapper"
@@ -501,12 +529,21 @@ class Scroller extends Component {
                   type="loading"
                 />
               )}
+
               {this.state.sliderData[this.state.activeSlide]}
+              <div className="lazy">{this.state.lazyLoaded}</div>
             </React.Fragment>
           )}
 
           <div className="downDiv">
             <button onClick={this.next} className="iconDownClicker">
+              <p style={{ zIndex: 1231231312313123, color: "white" }}>
+                {console.log(
+                  "LOGLOG",
+                  this.state.postTitle[this.state.activeSlide]
+                )}
+                {this.state.postTitle[this.state.activeSlide]}
+              </p>
               <h2 className="subredditName">
                 <Icon type="tag-o" />
                 {this.state.subreddit}
@@ -538,8 +575,9 @@ class Scroller extends Component {
       sliderData: [],
       isLoading: true
     });
-    this.state.category !== "" &&
-      this.props.history.push(`/${this.state.subreddit}`);
+    this.state.category === "" && !this.props.match.params.subreddit
+      ? null
+      : this.props.history.push(`/${this.state.subreddit}`);
 
     //Om det blev fel kan det vara annat än url som inte finns...
     await fetch(
@@ -553,7 +591,6 @@ class Scroller extends Component {
           subredditData: jsonData.data.children
         });
         this.dataToHtml(jsonData.data.children);
-        console.log(this.state.activeSlide);
       })
       .catch(() => {
         this.getSubreddit(
@@ -587,10 +624,11 @@ class Scroller extends Component {
     this.setState({ isLoading: false });
   };
 
-  moreSubreddits = async () => {
+  moreSubreddits = async beforeOrAfter => {
+    this.setState({ isLoading: true });
     await fetch(
-      `https://www.reddit.com/r/${this.state.subreddit}.json?after=${
-        this.state.after
+      `https://www.reddit.com/r/${this.state.subreddit}.json?${beforeOrAfter}=${
+        this.state[beforeOrAfter]
       }&limit=100`
     )
       .then(response => response.json())
@@ -603,15 +641,16 @@ class Scroller extends Component {
           before: jsonData.data.after
         });
       })
-      .catch(() => {
-        this.getSubreddit(
-          this.shuffleArray(this.dataHandler(this.state.category))
-        );
+      .catch(error => {
+        console.log("error", error);
       });
+    beforeOrAfter === "before" &&
+      this.setState({ activeSlide: this.state.sliderData.length - 1 });
     this.setState({ isLoading: false });
   };
 
   dataToHtml = data => {
+    let postTitle = [];
     let zeroNullData = false;
     let datavar = data.map((children, i) => {
       if (
@@ -623,10 +662,10 @@ class Scroller extends Component {
           children.data.preview.reddit_video_preview
         ) {
           zeroNullData = true;
-          subredditTitles.push(children.data.title);
+          postTitle.push(children.data.title);
+
           return (
             <div className="videoDiv" key={i}>
-              <p className="titleText">{children.data.title}</p>
               <Transition
                 in={true}
                 appear={true}
@@ -678,10 +717,9 @@ class Scroller extends Component {
           children.data.preview.reddit_video_preview
         ) {
           zeroNullData = true;
-          subredditTitles.push(children.data.title);
+          postTitle.push(children.data.title);
           return (
             <div className="videoDiv" key={i}>
-              <p className="titleText">{children.data.title}</p>
               <Transition
                 in={true}
                 appear={true}
@@ -731,10 +769,9 @@ class Scroller extends Component {
           children.data.media.reddit_video
         ) {
           zeroNullData = true;
-          subredditTitles.push(children.data.title);
+          postTitle.push(children.data.title);
           return (
             <div className="videoDiv" key={i}>
-              <p className="titleText">{children.data.title}</p>
               <Transition
                 in={true}
                 appear={true}
@@ -781,10 +818,9 @@ class Scroller extends Component {
           children.data.preview.reddit_video_preview
         ) {
           zeroNullData = true;
-          subredditTitles.push(children.data.title);
+          postTitle.push(children.data.title);
           return (
             <div className="videoDiv" key={i}>
-              <p className="titleText">{children.data.title}</p>
               <Transition
                 in={true}
                 appear={true}
@@ -842,10 +878,9 @@ class Scroller extends Component {
           children.data.preview.images[0].source.width;
         if (children.data.preview.images[0].source.height < 300) {
           zeroNullData = true;
-          subredditTitles.push(children.data.title);
+          postTitle.push(children.data.title);
           return (
             <div className="imgDiv" key={i}>
-              <p className="titleText">{children.data.title}</p>
               <Transition
                 in={true}
                 appear={true}
@@ -873,10 +908,9 @@ class Scroller extends Component {
           sizeRatio > 1500
         ) {
           zeroNullData = true;
-          subredditTitles.push(children.data.title);
+          postTitle.push(children.data.title);
           return (
             <div className="imgDiv" key={i}>
-              <p className="titleText">{children.data.title}</p>
               <Transition
                 in={true}
                 appear={true}
@@ -904,10 +938,9 @@ class Scroller extends Component {
           sizeRatio < 1500
         ) {
           zeroNullData = true;
-          subredditTitles.push(children.data.title);
+          postTitle.push(children.data.title);
           return (
             <div className="imgDiv" key={i}>
-              <p className="titleText">{children.data.title}</p>
               <Transition
                 in={true}
                 appear={true}
@@ -932,6 +965,7 @@ class Scroller extends Component {
       } else {
         return null;
       }
+      this.setState({ postTitle: postTitle });
       return null;
     });
     if (zeroNullData === true) {
@@ -954,7 +988,6 @@ class Scroller extends Component {
         zeroNullData = true;
         return (
           <div className="videoDiv" key={i}>
-            <p className="titleText">{children.data.title}</p>
             <Transition
               in={true}
               appear={true}
@@ -1017,7 +1050,6 @@ class Scroller extends Component {
         zeroNullData = true;
         return (
           <div className="videoDiv" key={i}>
-            <p className="titleText">{children.data.title}</p>
             <Transition
               in={true}
               appear={true}
@@ -1078,7 +1110,6 @@ class Scroller extends Component {
         zeroNullData = true;
         return (
           <div className="videoDiv" key={i}>
-            <p className="titleText">{children.data.title}</p>
             <Transition
               in={true}
               appear={true}
@@ -1130,7 +1161,6 @@ class Scroller extends Component {
         zeroNullData = true;
         return (
           <div className="videoDiv" key={i}>
-            <p className="titleText">{children.data.title}</p>
             <Transition
               in={true}
               appear={true}
@@ -1196,7 +1226,6 @@ class Scroller extends Component {
           zeroNullData = true;
           return (
             <div className="imgDiv" key={i}>
-              <p className="titleText">{children.data.title}</p>
               <Transition
                 in={true}
                 appear={true}
@@ -1225,7 +1254,6 @@ class Scroller extends Component {
           zeroNullData = true;
           return (
             <div className="imgDiv" key={i}>
-              <p className="titleText">{children.data.title}</p>
               <Transition
                 in={true}
                 appear={true}
@@ -1254,7 +1282,6 @@ class Scroller extends Component {
           zeroNullData = true;
           return (
             <div className="imgDiv" key={i}>
-              <p className="titleText">{children.data.title}</p>
               <Transition
                 in={true}
                 appear={true}

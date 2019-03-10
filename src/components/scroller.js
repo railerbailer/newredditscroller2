@@ -408,7 +408,7 @@ class Scroller extends Component {
         {this.state.category === "intial" && this.state.startPage ? (
           <div className="categoryModal">
             <div className="description">
-              Welcome to Sliddit.com!
+              Welcome to sliddit.com!
               <br />
               Choose a category:
             </div>

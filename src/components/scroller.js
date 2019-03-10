@@ -87,13 +87,15 @@ class Scroller extends Component {
     var lazyLoadingInterval = setInterval(() => {
       if (sliderData.length && !this.state.isVideoLoading) {
         lazyLoadedSlide = lazyLoadedSlide + 1;
-        if (activeSlide + lazyLoadedSlide < sliderData.length){
+        if (activeSlide + lazyLoadedSlide < sliderData.length) {
           this.setState({
-            lazyLoaded: this.state.postTitle.length && this.state.postTitle[activeSlide + lazyLoadedSlide] && this.state.postTitle[activeSlide + lazyLoadedSlide]
+            lazyLoaded:
+              this.state.postTitle.length &&
+              this.state.postTitle[activeSlide + lazyLoadedSlide] &&
+              this.state.postTitle[activeSlide + lazyLoadedSlide]
           });
-          this.lazyLoadingObject()
-          }
-        else {
+          this.lazyLoadingObject();
+        } else {
           console.log("interval done");
           clearInterval(lazyLoadingInterval);
         }
@@ -102,18 +104,17 @@ class Scroller extends Component {
   };
 
   lazyLoadingObject = () => {
-    let videoObj = document.createElement("video")
-    let imageObj = new Image()
-    if(this.state.lazyLoaded){
-      if(this.state.lazyLoaded.videoSrc){
-        videoObj.src = this.state.lazyLoaded.videoSrc
+    let videoObj = document.createElement("video");
+    let imageObj = new Image();
+    if (this.state.lazyLoaded) {
+      if (this.state.lazyLoaded.videoSrc) {
+        videoObj.src = this.state.lazyLoaded.videoSrc;
         document.body.appendChild(videoObj);
-      }
-      else if(this.state.lazyLoaded.imgSrc){
-        imageObj.src =  this.state.lazyLoaded.imgSrc
+      } else if (this.state.lazyLoaded.imgSrc) {
+        imageObj.src = this.state.lazyLoaded.imgSrc;
       }
     }
-  }
+  };
 
   dataHandler(props) {
     let lowerCaseCategory = props.toLowerCase();
@@ -181,7 +182,7 @@ class Scroller extends Component {
 
   switchCat = async () => {
     lazyLoadedSlide = 0;
-    this.lazyLoading();
+    /* this.lazyLoading(); */
 
     this.state.isDropDownShowing && this.showDropDown();
     this.setState({ isVideoLoading: true, isImageLoading: true });
@@ -393,9 +394,8 @@ class Scroller extends Component {
   showDropDown = () => {
     this.setState({ isDropDownShowing: !this.state.isDropDownShowing });
   };
-  
+
   render() {
-    
     return (
       <Swipeable
         className="wrapper"
@@ -520,11 +520,13 @@ class Scroller extends Component {
           <button className="iconLeft" onClick={this.goBackToLast}>
             <Icon type="arrow-left" />
           </button>
-          {!this.videoPlayer && this.state.isImageLoading && !this.state.isLoading && (
-            <button autoFocus className="subRedditTitle">
-              <Spin wrapperClassName="subRedditTitle" size="large" />
-            </button>
-          )}
+          {!this.videoPlayer &&
+            this.state.isImageLoading &&
+            !this.state.isLoading && (
+              <button autoFocus className="subRedditTitle">
+                <Spin wrapperClassName="subRedditTitle" size="large" />
+              </button>
+            )}
 
           {this.state.isLoading ? (
             <button autoFocus className="subRedditTitle">
@@ -550,20 +552,23 @@ class Scroller extends Component {
                 />
               )}
 
-              {this.state.sliderData[this.state.activeSlide]}
+              <div className="gridMedia">
+                {this.state.sliderData.map(element => element)}
+              </div>
             </React.Fragment>
           )}
 
           <div className="downDiv">
             <button onClick={this.next} className="iconDownClicker">
               <p style={{ zIndex: 1231231312313123, color: "white" }}>
-                {this.state.postTitle.length && this.state.postTitle[this.state.activeSlide] &&this.state.postTitle[this.state.activeSlide].title}
+                {this.state.postTitle.length &&
+                  this.state.postTitle[this.state.activeSlide] &&
+                  this.state.postTitle[this.state.activeSlide].title}
               </p>
               <h2 className="subredditName">
                 <Icon type="tag-o" />
                 {this.state.subreddit}
               </h2>
-              <Icon className="iconDown" type="arrow-down" />
             </button>
           </div>
 
@@ -684,217 +689,165 @@ class Scroller extends Component {
           });
 
           return (
-            <div className="videoDiv" key={i}>
-              <Transition
-                in={true}
-                appear={true}
-                unmountOnExit
-                mountOnEnter
-                timeout={500}
-              >
-                {status => (
-                  <video
-                    onCanPlay={() => this.setState({ isVideoLoading: false })}
-                    className={`video transition--${status}`}
-                    ref={el => (this.videoPlayer = el)}
-                    muted
-                    playsInline
-                    autoPlay={this.state.autoPlay}
-                    poster={children.data.thumbnail || ""}
-                    preload="none"
-                    loop={this.state.loop}
-                  >
-                    <source
-                      type="video/mp4"
-                      src={
-                        children.data.preview.reddit_video_preview
-                          .scrubber_media_url
-                      }
-                    />
+            <video
+              onClick={() => this[i].requestFullscreen()}
+              onCanPlay={() => this.setState({ isVideoLoading: false })}
+              className={`video `}
+              ref={el => (this[i] = el)}
+              muted
+              playsInline
+              autoPlay={this.state.autoPlay}
+              poster={children.data.thumbnail || ""}
+              preload="none"
+              loop={this.state.loop}
+            >
+              <source
+                type="video/mp4"
+                src={
+                  children.data.preview.reddit_video_preview.scrubber_media_url
+                }
+              />
 
-                    <p>
-                      Your browser doesn't support HTML5 video. Here is a{" "}
-                      <a
-                        href={
-                          children.data.preview.reddit_video_preview
-                            .scrubber_media_url
-                        }
-                      >
-                        link to the video
-                      </a>{" "}
-                      instead.
-                    </p>
-                  </video>
-                )}
-              </Transition>
-            </div>
+              <p>
+                Your browser doesn't support HTML5 video. Here is a{" "}
+                <a
+                  href={
+                    children.data.preview.reddit_video_preview
+                      .scrubber_media_url
+                  }
+                >
+                  link to the video
+                </a>{" "}
+                instead.
+              </p>
+            </video>
           );
         }
+      }
 
-        if (
-          children.data.post_hint === "rich:video" &&
-          children.data.preview.reddit_video_preview
-        ) {
-          zeroNullData = true;
-          postTitle.push({
-            title: children.data.title,
-            videoSrc:
-              children.data.preview.reddit_video_preview.scrubber_media_url
-          });
-          return (
-            <div className="videoDiv" key={i}>
-              <Transition
-                in={true}
-                appear={true}
-                unmountOnExit
-                mountOnEnter
-                timeout={500}
+      if (
+        children.data.post_hint === "rich:video" &&
+        children.data.preview.reddit_video_preview
+      ) {
+        zeroNullData = true;
+        postTitle.push({
+          title: children.data.title,
+          videoSrc:
+            children.data.preview.reddit_video_preview.scrubber_media_url
+        });
+        return (
+          <video
+            onClick={() => this[i].requestFullscreen()}
+            onCanPlay={() => this.setState({ isVideoLoading: false })}
+            className={`video `}
+            ref={el => (this[i] = el)}
+            muted
+            preload="none"
+            playsInline
+            autoPlay={this.state.autoPlay}
+            poster={children.data.thumbnail || ""}
+            loop={this.state.loop}
+          >
+            <source
+              type="video/mp4"
+              src={
+                children.data.preview.reddit_video_preview.scrubber_media_url
+              }
+            />
+            <p>
+              Your browser doesn't support HTML5 video. Here is a{" "}
+              <a
+                href={
+                  children.data.preview.reddit_video_preview.scrubber_media_url
+                }
               >
-                {status => (
-                  <video
-                    onCanPlay={() => this.setState({ isVideoLoading: false })}
-                    className={`video transition--${status}`}
-                    ref={el => (this.videoPlayer = el)}
-                    muted
-                    preload="none"
-                    playsInline
-                    autoPlay={this.state.autoPlay}
-                    poster={children.data.thumbnail || ""}
-                    loop={this.state.loop}
-                  >
-                    <source
-                      type="video/mp4"
-                      src={
-                        children.data.preview.reddit_video_preview
-                          .scrubber_media_url
-                      }
-                    />
-                    <p>
-                      Your browser doesn't support HTML5 video. Here is a{" "}
-                      <a
-                        href={
-                          children.data.preview.reddit_video_preview
-                            .scrubber_media_url
-                        }
-                      >
-                        link to the video
-                      </a>{" "}
-                      instead.
-                    </p>
-                  </video>
-                )}
-              </Transition>
-            </div>
-          );
-        }
-        if (
-          children.data.post_hint === "hosted:video" &&
-          children.data.media.reddit_video
-        ) {
-          zeroNullData = true;
-          postTitle.push({
-            title: children.data.title,
-            videoSrc: children.data.media.reddit_video.scrubber_media_url
-          });
-          return (
-            <div className="videoDiv" key={i}>
-              <Transition
-                in={true}
-                appear={true}
-                unmountOnExit
-                mountOnEnter
-                timeout={500}
-              >
-                {status => (
-                  <video
-                    onCanPlay={() => this.setState({ isVideoLoading: false })}
-                    className={`video transition--${status}`}
-                    ref={el => (this.videoPlayer = el)}
-                    muted
-                    playsInline
-                    autoPlay={this.state.autoPlay}
-                    loop={this.state.loop}
-                    preload="none"
-                    poster={children.data.thumbnail || ""}
-                  >
-                    <source
-                      type="video/mp4"
-                      src={children.data.media.reddit_video.scrubber_media_url}
-                    />
-                    <p>
-                      Your browser doesn't support HTML5 video. Here is a{" "}
-                      <a
-                        href={
-                          children.data.media.reddit_video.scrubber_media_url
-                        }
-                      >
-                        link to the video
-                      </a>{" "}
-                      instead.
-                    </p>
-                  </video>
-                )}
-              </Transition>
-            </div>
-          );
-        }
+                link to the video
+              </a>{" "}
+              instead.
+            </p>
+          </video>
+        );
+      }
+      if (
+        children.data.post_hint === "hosted:video" &&
+        children.data.media.reddit_video
+      ) {
+        zeroNullData = true;
+        postTitle.push({
+          title: children.data.title,
+          videoSrc: children.data.media.reddit_video.scrubber_media_url
+        });
+        return (
+          <video
+            onClick={() => this[i].requestFullscreen()}
+            onCanPlay={() => this.setState({ isVideoLoading: false })}
+            className={`video `}
+            ref={el => (this[i] = el)}
+            muted
+            playsInline
+            autoPlay={this.state.autoPlay}
+            loop={this.state.loop}
+            preload="none"
+            poster={children.data.thumbnail || ""}
+          >
+            <source
+              type="video/mp4"
+              src={children.data.media.reddit_video.scrubber_media_url}
+            />
+            <p>
+              Your browser doesn't support HTML5 video. Here is a{" "}
+              <a href={children.data.media.reddit_video.scrubber_media_url}>
+                link to the video
+              </a>{" "}
+              instead.
+            </p>
+          </video>
+        );
+      }
 
-        if (
-          children.data.post_hint === "image" &&
-          children.data.preview.reddit_video_preview
-        ) {
-          zeroNullData = true;
-          postTitle.push({
-            title: children.data.title,
-            videoSrc:
-              children.data.preview.reddit_video_preview.scrubber_media_url
-          });
-          return (
-            <div className="videoDiv" key={i}>
-              <Transition
-                in={true}
-                appear={true}
-                unmountOnExit
-                mountOnEnter
-                timeout={500}
+      if (
+        children.data.post_hint === "image" &&
+        children.data.preview.reddit_video_preview
+      ) {
+        zeroNullData = true;
+        postTitle.push({
+          title: children.data.title,
+          videoSrc:
+            children.data.preview.reddit_video_preview.scrubber_media_url
+        });
+        return (
+          <video
+            onClick={() => this[i].requestFullscreen()}
+            ref={el => (this[i] = el)}
+            onCanPlay={() => this.setState({ isVideoLoading: false })}
+            className={`video `}
+            ref={el => (this[i] = el)}
+            muted
+            playsInline
+            autoPlay={this.state.autoPlay}
+            poster={children.data.thumbnail || ""}
+            loop={this.state.loop}
+            preload="none"
+          >
+            <source
+              type="video/mp4"
+              src={
+                children.data.preview.reddit_video_preview.scrubber_media_url
+              }
+            />
+            <p className="titleText">
+              Your browser doesn't support HTML5 video. Here is a{" "}
+              <a
+                href={
+                  children.data.preview.reddit_video_preview.scrubber_media_url
+                }
               >
-                {status => (
-                  <video
-                    onCanPlay={() => this.setState({ isVideoLoading: false })}
-                    className={`video transition--${status}`}
-                    ref={el => (this.videoPlayer = el)}
-                    muted
-                    playsInline
-                    autoPlay={this.state.autoPlay}
-                    poster={children.data.thumbnail || ""}
-                    loop={this.state.loop}
-                    preload="none"
-                  >
-                    <source
-                      type="video/mp4"
-                      src={
-                        children.data.preview.reddit_video_preview
-                          .scrubber_media_url
-                      }
-                    />
-                    <p className="titleText">
-                      Your browser doesn't support HTML5 video. Here is a{" "}
-                      <a
-                        href={
-                          children.data.preview.reddit_video_preview
-                            .scrubber_media_url
-                        }
-                      >
-                        link to the video
-                      </a>{" "}
-                      instead.
-                    </p>
-                  </video>
-                )}
-              </Transition>
-            </div>
-          );
-        }
+                link to the video
+              </a>{" "}
+              instead.
+            </p>
+          </video>
+        );
       }
       if (
         (children.data.post_hint === "image" &&
@@ -913,26 +866,13 @@ class Scroller extends Component {
             imgSrc: this.imageParser(children.data.preview.images[0].source.url)
           });
           return (
-            <div className="imgDiv" key={i}>
-              <Transition
-                in={true}
-                appear={true}
-                unmountOnExit
-                mountOnEnter
-                timeout={500}
-              >
-                {status => (
-                  <img
-                    className={`image transition--${status}`}
-                    src={this.imageParser(
-                      children.data.preview.images[0].source.url
-                    )}
-                    alt="{logo}"
-                    onLoad={() => this.setState({ isImageLoading: false })}
-                  />
-                )}
-              </Transition>
-            </div>
+            <img
+            onClick={() => !this.state.isDropDownShowing ? this.setState({isDropDownShowing: true}, ()=> this[i].requestFullscreen()) : this.setState({isDropDownShowing: true}, ()=> document.exitFullscreen())}              ref={el => (this[i] = el)}
+              className={`image `}
+              src={this.imageParser(children.data.preview.images[0].source.url)}
+              alt="{logo}"
+              onLoad={() => this.setState({ isImageLoading: false })}
+            />
           );
         }
 
@@ -948,26 +888,15 @@ class Scroller extends Component {
             )
           });
           return (
-            <div className="imgDiv" key={i}>
-              <Transition
-                in={true}
-                appear={true}
-                unmountOnExit
-                mountOnEnter
-                timeout={500}
-              >
-                {status => (
-                  <img
-                    className={`image transition--${status}`}
-                    src={this.imageParser(
-                      children.data.preview.images[0].resolutions[3].url
-                    )}
-                    alt="{logo}"
-                    onLoad={() => this.setState({ isImageLoading: false })}
-                  />
-                )}
-              </Transition>
-            </div>
+            <img
+            onClick={() => !this.state.isDropDownShowing ? this.setState({isDropDownShowing: true}, ()=> this[i].requestFullscreen()) : this.setState({isDropDownShowing: false}, ()=> document.exitFullscreen())}              ref={el => (this[i] = el)}
+              className={`image `}
+              src={this.imageParser(
+                children.data.preview.images[0].resolutions[3].url
+              )}
+              alt="{logo}"
+              onLoad={() => this.setState({ isImageLoading: false })}
+            />
           );
         }
 
@@ -983,32 +912,22 @@ class Scroller extends Component {
             )
           });
           return (
-            <div className="imgDiv" key={i}>
-              <Transition
-                in={true}
-                appear={true}
-                unmountOnExit
-                mountOnEnter
-                timeout={500}
-              >
-                {status => (
-                  <img
-                    className={`image transition--${status}`}
-                    src={this.imageParser(
-                      children.data.preview.images[0].resolutions[4].url
-                    )}
-                    alt="{logo}"
-                    onLoad={() => this.setState({ isImageLoading: false })}
-                  />
-                )}
-              </Transition>
-            </div>
+            <img
+              onClick={() => !this.state.isDropDownShowing ? this.setState({isDropDownShowing: true}, ()=> this[i].requestFullscreen()) : this.setState({isDropDownShowing: true}, ()=> document.exitFullscreen())}
+              ref={el => (this[i] = el)}
+              className={`image `}
+              src={this.imageParser(
+                children.data.preview.images[0].resolutions[4].url
+              )}
+              alt="{logo}"
+              onLoad={() => this.setState({ isImageLoading: false })}
+            />
           );
         }
       } else {
         return null;
       }
-      
+
       return null;
     });
     if (zeroNullData === true) {
@@ -1041,8 +960,9 @@ class Scroller extends Component {
             >
               {status => (
                 <video
+                  onClick={() => this.videoPlayer.requestFullscreen()}
                   onCanPlay={() => this.setState({ isVideoLoading: false })}
-                  className={`video transition--${status}`}
+                  className={`video `}
                   ref={el => (this.videoPlayer = el)}
                   muted
                   playsInline
@@ -1103,8 +1023,9 @@ class Scroller extends Component {
             >
               {status => (
                 <video
+                  onClick={() => this.videoPlayer.requestFullscreen()}
                   onCanPlay={() => this.setState({ isVideoLoading: false })}
-                  className={`video transition--${status}`}
+                  className={`video `}
                   ref={el => (this.videoPlayer = el)}
                   muted
                   preload="none"
@@ -1163,8 +1084,9 @@ class Scroller extends Component {
             >
               {status => (
                 <video
+                  onClick={() => this.videoPlayer.requestFullscreen()}
                   onCanPlay={() => this.setState({ isVideoLoading: false })}
-                  className={`video transition--${status}`}
+                  className={`video `}
                   ref={el => (this.videoPlayer = el)}
                   muted
                   playsInline
@@ -1214,8 +1136,9 @@ class Scroller extends Component {
             >
               {status => (
                 <video
+                  onClick={() => this.videoPlayer.requestFullscreen()}
                   onCanPlay={() => this.setState({ isVideoLoading: false })}
-                  className={`video transition--${status}`}
+                  className={`video `}
                   ref={el => (this.videoPlayer = el)}
                   muted
                   playsInline
@@ -1279,7 +1202,9 @@ class Scroller extends Component {
               >
                 {status => (
                   <img
-                    className={`image transition--${status}`}
+                    onClick={() => this[i].requestFullscreen()}
+                    ref={el => (this[i] = el)}
+                    className={`image `}
                     src={this.imageParser(
                       children.data.preview.images[0].source.url
                     )}
@@ -1307,7 +1232,9 @@ class Scroller extends Component {
               >
                 {status => (
                   <img
-                    className={`image transition--${status}`}
+                    onClick={() => this[i].requestFullscreen()}
+                    ref={el => (this[i] = el)}
+                    className={`image `}
                     src={this.imageParser(
                       children.data.preview.images[0].resolutions[3].url
                     )}
@@ -1335,7 +1262,9 @@ class Scroller extends Component {
               >
                 {status => (
                   <img
-                    className={`image transition--${status}`}
+                    onClick={() => this[i].requestFullscreen()}
+                    ref={el => (this[i] = el)}
+                    className={`image `}
                     src={this.imageParser(
                       children.data.preview.images[0].resolutions[4].url
                     )}

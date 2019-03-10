@@ -65,32 +65,34 @@ class Scroller extends Component {
       isImageLoading: false,
       lazyLoaded: "",
       postTitle: [],
-      startPage: false,
+      startPage: false
     };
   }
 
   componentDidMount() {
-    this.props.match.params.subreddit && this.props.match.params.subreddit !== 'startpage'
+    this.props.match.params.subreddit &&
+    this.props.match.params.subreddit !== "startpage"
       ? this.getSubreddit(this.props.match.params.subreddit)
-      : this.setState({startPage: true});
-      /* this.getSubreddit(this.shuffleArray(this.dataHandler("asd"))) */
+      : this.setState({ startPage: true });
+    /* this.getSubreddit(this.shuffleArray(this.dataHandler("asd"))) */
   }
 
   lazyLoading = async () => {
     const timing = performance.timing;
     const loadTime = timing.loadEventEnd - timing.navigationStart;
     const { sliderData, activeSlide } = this.state;
-    let intervalMs = loadTime < 10000 ? loadTime : loadTime * 2;
+    let intervalMs = loadTime < 10000 ? 4500 : 8000;
 
-    if (loadTime > 1000) intervalMs = 1500;
-    if (loadTime > 10000) intervalMs = 10000;
+    if (loadTime > 10000) intervalMs = 12000;
     var lazyLoadingInterval = setInterval(() => {
       if (sliderData.length && !this.state.isVideoLoading) {
         lazyLoadedSlide = lazyLoadedSlide + 1;
-        if (activeSlide + lazyLoadedSlide < sliderData.length)
+        if (activeSlide + lazyLoadedSlide < sliderData.length){
           this.setState({
-            lazyLoaded: sliderData[activeSlide + lazyLoadedSlide]
+            lazyLoaded: this.state.postTitle.length && this.state.postTitle[activeSlide + lazyLoadedSlide] && this.state.postTitle[activeSlide + lazyLoadedSlide]
           });
+          this.lazyLoadingObject()
+          }
         else {
           console.log("interval done");
           clearInterval(lazyLoadingInterval);
@@ -98,6 +100,20 @@ class Scroller extends Component {
       }
     }, intervalMs);
   };
+
+  lazyLoadingObject = () => {
+    let videoObj = document.createElement("video")
+    let imageObj = new Image()
+    if(this.state.lazyLoaded){
+      if(this.state.lazyLoaded.videoSrc){
+        videoObj.src = this.state.lazyLoaded.videoSrc
+        document.body.appendChild(videoObj);
+      }
+      else if(this.state.lazyLoaded.imgSrc){
+        imageObj.src =  this.state.lazyLoaded.imgSrc
+      }
+    }
+  }
 
   dataHandler(props) {
     let lowerCaseCategory = props.toLowerCase();
@@ -179,7 +195,7 @@ class Scroller extends Component {
         !this.state.isLoading &&
           this.getSubreddit(goBack[goBack.length - 1 - goBackIndex]);
     } else {
-      console.log('WE HERE BRO')
+      console.log("WE HERE BRO");
       !this.state.isLoading &&
         this.getSubreddit(
           this.shuffleArray(this.dataHandler(this.state.category))
@@ -287,14 +303,14 @@ class Scroller extends Component {
   };
 
   changeCat = async (e, cat) => {
-    this.setState({startPage: false})
+    this.setState({ startPage: false });
     await e.preventDefault();
     await this.categorySet(cat);
     await this.getSubreddit(this.shuffleArray(this.dataHandler(cat)));
     message.info(
       `Category is ${cat}, press or swipe right to shuffle subreddit`
     );
-    this.setState({isDropDownShowing: false})
+    this.setState({ isDropDownShowing: false });
   };
   openNotification = () => {
     notification.open({
@@ -377,8 +393,9 @@ class Scroller extends Component {
   showDropDown = () => {
     this.setState({ isDropDownShowing: !this.state.isDropDownShowing });
   };
-
+  
   render() {
+    
     return (
       <Swipeable
         className="wrapper"
@@ -399,7 +416,7 @@ class Scroller extends Component {
               <Button
                 className="item1"
                 onClick={e => this.changeCat(e, "NSFW")}
-                >
+              >
                 NSFW
               </Button>
 
@@ -534,14 +551,13 @@ class Scroller extends Component {
               )}
 
               {this.state.sliderData[this.state.activeSlide]}
-              <div className="lazy">{this.state.lazyLoaded}</div>
             </React.Fragment>
           )}
 
           <div className="downDiv">
             <button onClick={this.next} className="iconDownClicker">
               <p style={{ zIndex: 1231231312313123, color: "white" }}>
-                {this.state.postTitle[this.state.activeSlide]}
+                {this.state.postTitle.length && this.state.postTitle[this.state.activeSlide] &&this.state.postTitle[this.state.activeSlide].title}
               </p>
               <h2 className="subredditName">
                 <Icon type="tag-o" />
@@ -661,7 +677,11 @@ class Scroller extends Component {
           children.data.preview.reddit_video_preview
         ) {
           zeroNullData = true;
-          postTitle.push(children.data.title);
+          postTitle.push({
+            title: children.data.title,
+            videoSrc:
+              children.data.preview.reddit_video_preview.scrubber_media_url
+          });
 
           return (
             <div className="videoDiv" key={i}>
@@ -716,7 +736,11 @@ class Scroller extends Component {
           children.data.preview.reddit_video_preview
         ) {
           zeroNullData = true;
-          postTitle.push(children.data.title);
+          postTitle.push({
+            title: children.data.title,
+            videoSrc:
+              children.data.preview.reddit_video_preview.scrubber_media_url
+          });
           return (
             <div className="videoDiv" key={i}>
               <Transition
@@ -768,7 +792,10 @@ class Scroller extends Component {
           children.data.media.reddit_video
         ) {
           zeroNullData = true;
-          postTitle.push(children.data.title);
+          postTitle.push({
+            title: children.data.title,
+            videoSrc: children.data.media.reddit_video.scrubber_media_url
+          });
           return (
             <div className="videoDiv" key={i}>
               <Transition
@@ -817,7 +844,11 @@ class Scroller extends Component {
           children.data.preview.reddit_video_preview
         ) {
           zeroNullData = true;
-          postTitle.push(children.data.title);
+          postTitle.push({
+            title: children.data.title,
+            videoSrc:
+              children.data.preview.reddit_video_preview.scrubber_media_url
+          });
           return (
             <div className="videoDiv" key={i}>
               <Transition
@@ -877,7 +908,10 @@ class Scroller extends Component {
           children.data.preview.images[0].source.width;
         if (children.data.preview.images[0].source.height < 300) {
           zeroNullData = true;
-          postTitle.push(children.data.title);
+          postTitle.push({
+            title: children.data.title,
+            imgSrc: this.imageParser(children.data.preview.images[0].source.url)
+          });
           return (
             <div className="imgDiv" key={i}>
               <Transition
@@ -907,7 +941,12 @@ class Scroller extends Component {
           sizeRatio > 1500
         ) {
           zeroNullData = true;
-          postTitle.push(children.data.title);
+          postTitle.push({
+            title: children.data.title,
+            imgSrc: this.imageParser(
+              children.data.preview.images[0].resolutions[3].url
+            )
+          });
           return (
             <div className="imgDiv" key={i}>
               <Transition
@@ -937,7 +976,12 @@ class Scroller extends Component {
           sizeRatio < 1500
         ) {
           zeroNullData = true;
-          postTitle.push(children.data.title);
+          postTitle.push({
+            title: children.data.title,
+            imgSrc: this.imageParser(
+              children.data.preview.images[0].resolutions[4].url
+            )
+          });
           return (
             <div className="imgDiv" key={i}>
               <Transition
@@ -964,10 +1008,11 @@ class Scroller extends Component {
       } else {
         return null;
       }
-      this.setState({ postTitle: postTitle });
+      
       return null;
     });
     if (zeroNullData === true) {
+      this.setState({ postTitle: postTitle.filter(e => e !== null) });
       this.setState({ sliderData: datavar.filter(e => e !== null) });
     } else {
       // this.state.subredditOrHeart &&

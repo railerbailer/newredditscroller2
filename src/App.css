@@ -60,6 +60,7 @@ h2 {
 .loading {
   font-size: 16px;
   display: block;
+
 }
 
 
@@ -381,14 +382,12 @@ text-align: right;
 .transition--entering,
 .transition--entered {
   opacity: 1;
-  /* transition: opacity 1100ms; */
-  margin-top: 0;
+  transition: opacity 900ms;
 }
 .transition--exiting,
 .transition--exited {
-  opacity: 0.3;
-  /* transition: opacity 1100ms; */
-  margin-top: 20%;
+  opacity: 0;
+  transition: opacity 900ms;
 }
 
 .searchButton--entering,
@@ -418,7 +417,7 @@ text-align: right;
 
 .iconSetting {
   font-size: 35px;
-  z-index: 3;
+  z-index: 1231233;
   padding-top: 2px;
   max-width: 100px;
   white-space: wrap;

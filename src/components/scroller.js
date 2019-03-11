@@ -3,6 +3,7 @@ import Swipeable from "react-swipeable";
 import "antd/dist/antd.css";
 import { debounce } from "lodash";
 import { Transition } from "react-transition-group";
+import LazyLoad from "react-lazyload";
 
 import {
   Icon,
@@ -400,8 +401,8 @@ class Scroller extends Component {
       <Swipeable
         className="wrapper"
         onKeyDown={this.handleKeyDown}
-        onSwipedDown={this.swipedDown}
-        onSwipedUp={this.swipedUp}
+        /* onSwipedDown={this.swipedDown}
+        onSwipedUp={this.swipedUp} */
         onSwipedLeft={this.swipedLeft}
         onSwipedRight={this.swipedRight}
       >
@@ -497,12 +498,12 @@ class Scroller extends Component {
             overlay={this.menu()}
             onClick={this.showDropDown}
           >
-            <Button ghost className="iconSetting">
+            <div ghost className="iconSetting">
               <Icon
                 type={this.state.isDropDownShowing ? "close" : "setting"}
                 className="chooseCat"
               />
-            </Button>
+            </div>
           </Dropdown>
         </div>
         <div className={this.state.fullscreen ? "contentZen" : "content"}>
@@ -520,13 +521,6 @@ class Scroller extends Component {
           <button className="iconLeft" onClick={this.goBackToLast}>
             <Icon type="arrow-left" />
           </button>
-          {!this.videoPlayer &&
-            this.state.isImageLoading &&
-            !this.state.isLoading && (
-              <button autoFocus className="subRedditTitle">
-                <Spin wrapperClassName="subRedditTitle" size="large" />
-              </button>
-            )}
 
           {this.state.isLoading ? (
             <button autoFocus className="subRedditTitle">
@@ -553,7 +547,9 @@ class Scroller extends Component {
               )}
 
               <div className="gridMedia">
-                {this.state.sliderData.map(element => element)}
+                {this.state.sliderData.map(element => (
+                  <LazyLoad unmountIfInvisible>{element}</LazyLoad>
+                ))}
               </div>
             </React.Fragment>
           )}
@@ -867,7 +863,16 @@ class Scroller extends Component {
           });
           return (
             <img
-            onClick={() => !this.state.isDropDownShowing ? this.setState({isDropDownShowing: true}, ()=> this[i].requestFullscreen()) : this.setState({isDropDownShowing: true}, ()=> document.exitFullscreen())}              ref={el => (this[i] = el)}
+              onClick={() =>
+                !this.state.isDropDownShowing
+                  ? this.setState({ isDropDownShowing: true }, () =>
+                      this[i].requestFullscreen()
+                    )
+                  : this.setState({ isDropDownShowing: true }, () =>
+                      document.exitFullscreen()
+                    )
+              }
+              ref={el => (this[i] = el)}
               className={`image `}
               src={this.imageParser(children.data.preview.images[0].source.url)}
               alt="{logo}"
@@ -889,7 +894,16 @@ class Scroller extends Component {
           });
           return (
             <img
-            onClick={() => !this.state.isDropDownShowing ? this.setState({isDropDownShowing: true}, ()=> this[i].requestFullscreen()) : this.setState({isDropDownShowing: false}, ()=> document.exitFullscreen())}              ref={el => (this[i] = el)}
+              onClick={() =>
+                !this.state.isDropDownShowing
+                  ? this.setState({ isDropDownShowing: true }, () =>
+                      this[i].requestFullscreen()
+                    )
+                  : this.setState({ isDropDownShowing: false }, () =>
+                      document.exitFullscreen()
+                    )
+              }
+              ref={el => (this[i] = el)}
               className={`image `}
               src={this.imageParser(
                 children.data.preview.images[0].resolutions[3].url
@@ -913,7 +927,15 @@ class Scroller extends Component {
           });
           return (
             <img
-              onClick={() => !this.state.isDropDownShowing ? this.setState({isDropDownShowing: true}, ()=> this[i].requestFullscreen()) : this.setState({isDropDownShowing: true}, ()=> document.exitFullscreen())}
+              onClick={() =>
+                !this.state.isDropDownShowing
+                  ? this.setState({ isDropDownShowing: true }, () =>
+                      this[i].requestFullscreen()
+                    )
+                  : this.setState({ isDropDownShowing: true }, () =>
+                      document.exitFullscreen()
+                    )
+              }
               ref={el => (this[i] = el)}
               className={`image `}
               src={this.imageParser(

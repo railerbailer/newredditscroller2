@@ -51,7 +51,7 @@ h2 {
   display: grid;
   grid-template-columns: repeat(auto-fill, 2fr);
   grid-auto-rows: minmax(100px, auto);
-  grid-row-gap: 5px;
+  grid-row-gap: 5dpx;
 }
 .image{
 
@@ -434,6 +434,10 @@ text-align: right;
    }
 }
 
+.ant-dropdown{
+  position: fixed;
+}
+
 .iconSetting {
   font-size: 35px;
   z-index: 1231233;
@@ -441,11 +445,13 @@ text-align: right;
   max-width: 100px;
   white-space: wrap;
   border: 0;
-  padding-bottom:3vh;
 }
+
+
 
 .iconSetting .anticon{
   display: inline;
+  fill: white;
 }
 
 
@@ -457,17 +463,21 @@ text-align: right;
   font-family: "Varela Round", sans-serif;
   color: white;
   font-size: 26px;
+  margin: 1px;
 }
 
 .topbarZen .scrollLogo {
- opacity: 0;
+ opacity: 0.5;
+ font-size: 16px;
 }
 
 .content{
-  height: 95vh;
+  height: 100%;
+  margin-top: 53px;
 }
 .contentZen{
-  height: 100vh;
+  height: 100%;
+  margin-top: 53px;
 }
 
 
@@ -484,8 +494,8 @@ text-align: right;
     width: 100%;
     display: flex;
     flex-direction: row;
-    z-index: 222222;
-    position: absolute;
+    z-index: 222212312312312312322;
+    position: fixed;
     top: 0;
     justify-content: space-between;
     border: 0;
@@ -603,4 +613,9 @@ h3 {
   position: relative;
   margin: auto;
   text-align: center;
+}
+
+.chooseCat{
+  fill: white;
+  color: white;
 }

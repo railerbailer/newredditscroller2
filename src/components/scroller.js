@@ -4,6 +4,7 @@ import "antd/dist/antd.css";
 import { debounce } from "lodash";
 import { Transition } from "react-transition-group";
 import LazyLoad from "react-lazyload";
+import Iframe from "react-iframe";
 
 import {
   Icon,
@@ -19,13 +20,13 @@ import {
 
 import {
   subredditArray,
-  NSFW,
+  straight,
   artArray,
   foodArray,
   animalsArray
 } from "../subreddits";
 import "../App.css";
-
+let sources = [];
 let goBack = [];
 let goBackIndex = 0;
 let heart = [];
@@ -36,6 +37,7 @@ class Scroller extends Component {
     React.CreateRef = this.renderFocus = React.createRef();
 
     this.state = {
+      subredditData: [],
       isDropDownShowing: false,
       isLoading: false,
       isOnlyGifsShowing: false,
@@ -66,7 +68,8 @@ class Scroller extends Component {
       isImageLoading: false,
       lazyLoaded: "",
       postTitle: [],
-      startPage: false
+      startPage: false,
+      realData: []
     };
   }
 
@@ -75,52 +78,12 @@ class Scroller extends Component {
     this.props.match.params.subreddit !== "startpage"
       ? this.getSubreddit(this.props.match.params.subreddit)
       : this.setState({ startPage: true });
-    /* this.getSubreddit(this.shuffleArray(this.dataHandler("asd"))) */
   }
-
-  lazyLoading = async () => {
-    const timing = performance.timing;
-    const loadTime = timing.loadEventEnd - timing.navigationStart;
-    const { sliderData, activeSlide } = this.state;
-    let intervalMs = loadTime < 10000 ? 4500 : 8000;
-
-    if (loadTime > 10000) intervalMs = 12000;
-    var lazyLoadingInterval = setInterval(() => {
-      if (sliderData.length && !this.state.isVideoLoading) {
-        lazyLoadedSlide = lazyLoadedSlide + 1;
-        if (activeSlide + lazyLoadedSlide < sliderData.length) {
-          this.setState({
-            lazyLoaded:
-              this.state.postTitle.length &&
-              this.state.postTitle[activeSlide + lazyLoadedSlide] &&
-              this.state.postTitle[activeSlide + lazyLoadedSlide]
-          });
-          this.lazyLoadingObject();
-        } else {
-          console.log("interval done");
-          clearInterval(lazyLoadingInterval);
-        }
-      }
-    }, intervalMs);
-  };
-
-  lazyLoadingObject = () => {
-    let videoObj = document.createElement("video");
-    let imageObj = new Image();
-    if (this.state.lazyLoaded) {
-      if (this.state.lazyLoaded.videoSrc) {
-        videoObj.src = this.state.lazyLoaded.videoSrc;
-        document.body.appendChild(videoObj);
-      } else if (this.state.lazyLoaded.imgSrc) {
-        imageObj.src = this.state.lazyLoaded.imgSrc;
-      }
-    }
-  };
 
   dataHandler(props) {
     let lowerCaseCategory = props.toLowerCase();
     if (lowerCaseCategory === "nsfw") {
-      return NSFW;
+      return straight;
     }
     if (lowerCaseCategory === "sfw") {
       return subredditArray;
@@ -144,15 +107,6 @@ class Scroller extends Component {
   }
   checkImg(url) {
     return url.match(/\.(jpeg|jpg|png)$/) !== null;
-  }
-
-  imageParser(url) {
-    let editedUrl = "";
-    editedUrl = url
-      .replace(/&gt;/gi, ">")
-      .replace(/&lt;/gi, "<")
-      .replace(/&amp;/gi, "&");
-    return editedUrl;
   }
 
   next = debounce(async () => {
@@ -182,9 +136,6 @@ class Scroller extends Component {
   };
 
   switchCat = async () => {
-    lazyLoadedSlide = 0;
-    /* this.lazyLoading(); */
-
     this.state.isDropDownShowing && this.showDropDown();
     this.setState({ isVideoLoading: true, isImageLoading: true });
     await this.setState({ activeSlide: 0 });
@@ -396,7 +347,201 @@ class Scroller extends Component {
     this.setState({ isDropDownShowing: !this.state.isDropDownShowing });
   };
 
+  loadEmbed = (url, domain, embedExists) => {
+    if (embedExists) {
+      return (
+        <div
+          style={{ backgroundColor: "red" }}
+          dangerouslySetInnerHTML={{ __html: this.htmlParser(embedExists) }}
+        />
+      );
+    }
+    if (domain === "erome.com") {
+      return (
+        <Iframe
+          url={url}
+          width="450px"
+          height="450px"
+          id="myId"
+          className="myClassname"
+          display="initial"
+          position="relative"
+          allowFullScreen
+        />
+      );
+    }
+    if (domain === "imgur.com") {
+      let pornhubEmbedId = url.split("=");
+      console.log(pornhubEmbedId);
+      return (
+        <Iframe
+          url={`https://www.pornhub.com/embed/${pornhubEmbedId[1]}`}
+          width="450px"
+          height="450px"
+          id="myId"
+          className="myClassname"
+          display="initial"
+          position="relative"
+          allowFullScreen
+        />
+      );
+    }
+
+    if (domain === "imgur.com" || "domain" === "i.imgur.com") {
+      let imgurEmbedId = url.split("/a/");
+      imgurEmbedId = imgurEmbedId[1];
+      let newScriptTag = document.createElement("script");
+      newScriptTag.imgurEmbedId = "globalImgurEmbedScriptTag";
+      newScriptTag.src = "//s.imgur.com/min/embed.js";
+      newScriptTag.type = "text/javascript";
+
+      document.querySelector("body").appendChild(newScriptTag);
+      return (
+        <blockquote
+          className="imgur-embed-pub imgur"
+          lang="en"
+          data-id={`a/${imgurEmbedId}`}
+        >
+          <a href={`//imgur.com/${imgurEmbedId}`}>Results of day drinking</a>
+        </blockquote>
+      );
+    }
+  };
+
+  htmlParser(string) {
+    let editedString = "";
+    editedString =
+      string &&
+      string
+        .replace(/&gt;/gi, ">")
+        .replace(/&lt;/gi, "<")
+        .replace(/&amp;/gi, "&");
+    return editedString ? editedString : "";
+  }
+
+  dataMapper = fetchedData => {
+    sources = [];
+    fetchedData.map((item, i) => {
+      let mediaData = {};
+      const { data } = item;
+      const { preview, post_hint, media, media_embed } = data;
+      const isGif = data.url.search(".gif");
+
+      if (
+        preview &&
+        preview.reddit_video_preview &&
+        preview.reddit_video_preview.scrubber_media_url
+      ) {
+        mediaData.video = {};
+        mediaData.video.url = preview.reddit_video_preview.scrubber_media_url;
+        mediaData.video.height = preview.reddit_video_preview.height;
+        mediaData.video.width = preview.reddit_video_preview.width;
+      } else if (isGif >= 0) {
+        mediaData.gif = { url: [data.url.replace(".gifv", ".gif")] };
+      }
+      //embed
+      else if (post_hint === "image") {
+        mediaData.image = { source: data.url };
+        let previewObj =
+          preview &&
+          preview.images[0] &&
+          preview.images[0].resolutions.map(resolution => {
+            let res = resolution.height + resolution.width;
+            let wideOrTall =
+              resolution.height < resolution.width ? "wide" : "tall";
+
+            let highOrLow = res > 1000 ? "high" : "low";
+
+            if (res > 500)
+              return {
+                [highOrLow]: this.htmlParser(resolution.url),
+                className: wideOrTall
+              };
+          });
+        mediaData.image = {
+          source: data.url,
+          sizes: previewObj.filter(undefines => undefines)
+        };
+      } else if (media_embed && media_embed.content) {
+        mediaData.embed = {};
+        mediaData.embed.iframe = this.htmlParser(
+          media_embed.content || (media && media.oembed.html)
+        );
+        /* mediaData.domain = data.domain; */
+      } else if (
+        post_hint === "link" &&
+        (data.domain === "pornhub.com" ||
+          data.domain === "gfycat.com" ||
+          data.domain === "imgur.com" ||
+          data.domain === "i.imgur.com")
+      ) {
+        mediaData.embed = {};
+        mediaData.embed.url = data.url;
+        /*  mediaData.domain = data.domain; */
+      }
+      console.log(mediaData);
+      sources.push(mediaData);
+    });
+    this.htmlAdder();
+  };
+
+  htmlAdder = () => {
+    console.log("start===================================HTML");
+
+    sources = sources
+      .filter(item => Object.entries(item).length !== 0)
+      .map((data, i) => {
+        const { gif, image, video, embed } = data;
+        /* let class = {...image[0].className}; */
+       
+        if (image) {
+          /* console.log('image',image[0].sizes[0]) */
+          return <img className='image tall' key={i} src={image.source} />;
+        }
+        if (video) {
+          return (
+            <video
+              key={i}
+              onClick={() => this[i].requestFullscreen()}
+              onCanPlay={() => this.setState({ isVideoLoading: false })}
+              className={`video wide`}
+              ref={el => (this[i] = el)}
+              muted
+              playsInline
+              onMouseOver={()=>console.log('hello')}
+              onMouseLeave={()=>console.log('bye')} 
+              preload="auto"
+              loop={true}
+            >
+              <source src={video.url} />
+            </video>
+          );
+        }
+        if (gif) {
+          console.log("gifURL", gif.url);
+          return <img className="image" key={i} src={gif.url} />;
+        }
+
+         if (embed) {
+          if(embed.iframe) return this.loadEmbed('', '', embed.iframe)
+          else
+          return this.loadEmbed(data.url);
+        }
+        console.log(data);
+      });
+      sources = sources.filter(item => item)
+  };
+
   render() {
+    console.log("source...", sources.filter(element => element));
+
+    /*   this.dataMapper();
+    console.log(
+      "SOURCES",
+      sources.filter(item => Object.entries(item).length !== 0)
+    ); */
+
+    // preview.enabled=false
     return (
       <Swipeable
         className="wrapper"
@@ -498,7 +643,7 @@ class Scroller extends Component {
             overlay={this.menu()}
             onClick={this.showDropDown}
           >
-            <div ghost className="iconSetting">
+            <div className="iconSetting">
               <Icon
                 type={this.state.isDropDownShowing ? "close" : "setting"}
                 className="chooseCat"
@@ -547,8 +692,18 @@ class Scroller extends Component {
               )}
 
               <div className="gridMedia">
-                {this.state.sliderData.map(element => (
-                  <LazyLoad unmountIfInvisible>{element}</LazyLoad>
+                {sources.map((element, i) => (
+                  <LazyLoad><div  onClick={() =>
+                    !this.state.isDropDownShowing
+                      ? this.setState({ isDropDownShowing: true }, () =>
+                          this[i].requestFullscreen()
+                        )
+                      : this.setState({ isDropDownShowing: true }, () =>
+                      this[i].exitFullscreen()
+                        )
+                  }
+                  onCanPlay={() => this.setState({ isVideoLoading: false })}
+                  ref={el => (this[i] = el)}  className="gridElement">{element}</div></LazyLoad>
                 ))}
               </div>
             </React.Fragment>
@@ -596,6 +751,7 @@ class Scroller extends Component {
       : this.props.history.push(`/${this.state.subreddit}`);
 
     //Om det blev fel kan det vara annat än url som inte finns...
+
     await fetch(
       `https://www.reddit.com/r/${this.state.subreddit}.json?limit=100`
     )
@@ -603,10 +759,10 @@ class Scroller extends Component {
       .then(jsonData => {
         this.setState({
           after: jsonData.data.after,
-          before: jsonData.data.after,
-          subredditData: jsonData.data.children
+          before: jsonData.data.after
         });
-        this.dataToHtml(jsonData.data.children);
+        this.dataMapper(jsonData.data.children);
+        /* this.dataToHtml(jsonData.data.children); */
       })
       .catch(() => {
         this.getSubreddit(
@@ -688,8 +844,9 @@ class Scroller extends Component {
             <video
               onClick={() => this[i].requestFullscreen()}
               onCanPlay={() => this.setState({ isVideoLoading: false })}
-              className={`video `}
               ref={el => (this[i] = el)}
+              className={`video `}
+              
               muted
               playsInline
               autoPlay={this.state.autoPlay}
@@ -859,7 +1016,7 @@ class Scroller extends Component {
           zeroNullData = true;
           postTitle.push({
             title: children.data.title,
-            imgSrc: this.imageParser(children.data.preview.images[0].source.url)
+            imgSrc: this.htmlParser(children.data.preview.images[0].source.url)
           });
           return (
             <img
@@ -874,7 +1031,7 @@ class Scroller extends Component {
               }
               ref={el => (this[i] = el)}
               className={`image `}
-              src={this.imageParser(children.data.preview.images[0].source.url)}
+              src={this.htmlParser(children.data.preview.images[0].source.url)}
               alt="{logo}"
               onLoad={() => this.setState({ isImageLoading: false })}
             />
@@ -888,7 +1045,7 @@ class Scroller extends Component {
           zeroNullData = true;
           postTitle.push({
             title: children.data.title,
-            imgSrc: this.imageParser(
+            imgSrc: this.htmlParser(
               children.data.preview.images[0].resolutions[3].url
             )
           });
@@ -905,7 +1062,7 @@ class Scroller extends Component {
               }
               ref={el => (this[i] = el)}
               className={`image `}
-              src={this.imageParser(
+              src={this.htmlParser(
                 children.data.preview.images[0].resolutions[3].url
               )}
               alt="{logo}"
@@ -921,7 +1078,7 @@ class Scroller extends Component {
           zeroNullData = true;
           postTitle.push({
             title: children.data.title,
-            imgSrc: this.imageParser(
+            imgSrc: this.htmlParser(
               children.data.preview.images[0].resolutions[4].url
             )
           });
@@ -938,7 +1095,7 @@ class Scroller extends Component {
               }
               ref={el => (this[i] = el)}
               className={`image `}
-              src={this.imageParser(
+              src={this.htmlParser(
                 children.data.preview.images[0].resolutions[4].url
               )}
               alt="{logo}"
@@ -989,7 +1146,7 @@ class Scroller extends Component {
                   muted
                   playsInline
                   autoPlay={this.state.autoPlay}
-                  poster={this.imageParser(
+                  poster={this.htmlParser(
                     children.data.preview.images[0].resolutions[1].url &&
                       children.data.preview.images[0].resolutions[1].url
                   )}
@@ -998,7 +1155,7 @@ class Scroller extends Component {
                 >
                   <source
                     type="video/mp4"
-                    src={this.imageParser(
+                    src={this.htmlParser(
                       children.data.preview.images[0].variants.mp4.source.url
                     )}
                   />
@@ -1061,7 +1218,7 @@ class Scroller extends Component {
                 >
                   <source
                     type="video/mp4"
-                    src={this.imageParser(
+                    src={this.htmlParser(
                       children.data.preview.images[0].variants.mp4.source.url
                     )}
                   />
@@ -1118,7 +1275,7 @@ class Scroller extends Component {
                 >
                   <source
                     type="video/mp4"
-                    src={this.imageParser(
+                    src={this.htmlParser(
                       children.data.preview.images[0].variants.mp4.source.url
                     )}
                   />
@@ -1165,7 +1322,7 @@ class Scroller extends Component {
                   muted
                   playsInline
                   autoPlay={this.state.autoPlay}
-                  poster={this.imageParser(
+                  poster={this.htmlParser(
                     children.data.preview.images[0].resolutions[1].url &&
                       children.data.preview.images[0].resolutions[1].url
                   )}
@@ -1174,7 +1331,7 @@ class Scroller extends Component {
                 >
                   <source
                     type="video/mp4"
-                    src={this.imageParser(
+                    src={this.htmlParser(
                       children.data.preview.images[0].variants.mp4.source.url
                     )}
                   />
@@ -1227,7 +1384,7 @@ class Scroller extends Component {
                     onClick={() => this[i].requestFullscreen()}
                     ref={el => (this[i] = el)}
                     className={`image `}
-                    src={this.imageParser(
+                    src={this.htmlParser(
                       children.data.preview.images[0].source.url
                     )}
                     alt="{logo}"
@@ -1257,7 +1414,7 @@ class Scroller extends Component {
                     onClick={() => this[i].requestFullscreen()}
                     ref={el => (this[i] = el)}
                     className={`image `}
-                    src={this.imageParser(
+                    src={this.htmlParser(
                       children.data.preview.images[0].resolutions[3].url
                     )}
                     alt="{logo}"
@@ -1287,7 +1444,7 @@ class Scroller extends Component {
                     onClick={() => this[i].requestFullscreen()}
                     ref={el => (this[i] = el)}
                     className={`image `}
-                    src={this.imageParser(
+                    src={this.htmlParser(
                       children.data.preview.images[0].resolutions[4].url
                     )}
                     alt="{logo}"

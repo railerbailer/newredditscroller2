@@ -9,7 +9,6 @@ class App extends Component {
     return (
       <BrowserRouter>
         <React.Fragment>
-          <Redirect to="/startpage"/>
           <Route path="/:subreddit" exact component={Scroller} />
         </React.Fragment>
       </BrowserRouter>

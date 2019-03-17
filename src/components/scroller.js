@@ -27,16 +27,17 @@ import {
 } from "../subreddits";
 import "../App.css";
 let sources = [];
+let htmlAndSource = [];
 let goBack = [];
 let goBackIndex = 0;
 let heart = [];
-let lazyLoadedSlide = 0;
 class Scroller extends Component {
   constructor(props) {
     super(props);
     React.CreateRef = this.renderFocus = React.createRef();
 
     this.state = {
+      scrollHeight: 0,
       subredditData: [],
       isDropDownShowing: false,
       isLoading: false,
@@ -54,7 +55,6 @@ class Scroller extends Component {
       activeSlide: 0,
       activeSlide2: 0,
       looper: false,
-      visibleUp: true,
       visibility: true,
       visibleBackLeft: false,
       alreadyChecked: false,
@@ -69,7 +69,9 @@ class Scroller extends Component {
       lazyLoaded: "",
       postTitle: [],
       startPage: false,
-      realData: []
+      realData: [],
+      fullscreenRequested: false,
+      currentFullscreenElement: {}
     };
   }
 
@@ -370,14 +372,12 @@ class Scroller extends Component {
         />
       );
     }
-    if (domain === "imgur.com") {
+    if (domain === "pornhub.com") {
       let pornhubEmbedId = url.split("=");
       console.log(pornhubEmbedId);
       return (
         <Iframe
           url={`https://www.pornhub.com/embed/${pornhubEmbedId[1]}`}
-          width="450px"
-          height="450px"
           id="myId"
           className="myClassname"
           display="initial"
@@ -424,44 +424,66 @@ class Scroller extends Component {
     fetchedData.map((item, i) => {
       let mediaData = {};
       const { data } = item;
-      const { preview, post_hint, media, media_embed } = data;
-      const isGif = data.url.search(".gif");
+      const {
+        preview,
+        post_hint,
+        media,
+        media_embed,
+        thumbnail_height = 1,
+        thumbnail_width = 2
+      } = data;
+      const isGif = data.url.includes(".gif");
 
       if (
         preview &&
         preview.reddit_video_preview &&
         preview.reddit_video_preview.scrubber_media_url
       ) {
+        this.imageRatioCalculator(
+          preview.reddit_video_preview.height,
+          preview.reddit_video_preview.width
+        );
         mediaData.video = {};
         mediaData.video.url = preview.reddit_video_preview.scrubber_media_url;
         mediaData.video.height = preview.reddit_video_preview.height;
         mediaData.video.width = preview.reddit_video_preview.width;
-      } else if (isGif >= 0) {
-        mediaData.gif = { url: [data.url.replace(".gifv", ".gif")] };
-      }
-      //embed
-      else if (post_hint === "image") {
-        mediaData.image = { source: data.url };
-        let previewObj =
-          preview &&
+        mediaData.video.className = this.imageRatioCalculator(
+          preview.reddit_video_preview.height,
+          preview.reddit_video_preview.width
+        );
+        mediaData.video.poster = data.thumbnail;
+      } else if (isGif) {
+        mediaData.gif = {};
+        mediaData.gif.url = data.url.replace(".gifv", ".gif");
+        mediaData.gif.className = this.imageRatioCalculator(
+          thumbnail_height,
+          thumbnail_width
+        );
+      } else if (post_hint === "image") {
+        mediaData.image = {};
+        let low;
+        let high;
+        preview &&
           preview.images[0] &&
           preview.images[0].resolutions.map(resolution => {
             let res = resolution.height + resolution.width;
-            let wideOrTall =
-              resolution.height < resolution.width ? "wide" : "tall";
+            if (res > 500 && res < 1000) {
+              low = this.htmlParser(resolution.url);
+            }
+            if (res > 1000 && res < 2000) {
+              high = this.htmlParser(resolution.url);
+            }
 
-            let highOrLow = res > 1000 ? "high" : "low";
-
-            if (res > 500)
-              return {
-                [highOrLow]: this.htmlParser(resolution.url),
-                className: wideOrTall
-              };
+            mediaData.image = {
+              source: data.url,
+              low: low,
+              high: high,
+              className: this.imageRatioCalculator(
+                resolution.height,
+                resolution.width
+              )
+            };
           });
-        mediaData.image = {
-          source: data.url,
-          sizes: previewObj.filter(undefines => undefines)
-        };
       } else if (media_embed && media_embed.content) {
         mediaData.embed = {};
         mediaData.embed.iframe = this.htmlParser(
@@ -479,69 +501,179 @@ class Scroller extends Component {
         mediaData.embed.url = data.url;
         /*  mediaData.domain = data.domain; */
       }
-      console.log(mediaData);
-      sources.push(mediaData);
+
+      if (Object.entries(mediaData).length !== 0) {
+        mediaData.title = data.title;
+        sources.push(mediaData);
+        /* console.log(mediaData); */
+      }
     });
     this.htmlAdder();
   };
-
+  switchCatButtons = () => {
+    return (
+      <React.Fragment>
+        <button onClick={this.switchCat} className="iconRight">
+          <Icon type="arrow-right" />
+        </button>
+        <button className="iconLeft" onClick={this.goBackToLast}>
+          <Icon type="arrow-left" />
+        </button>
+      </React.Fragment>
+    );
+  };
   htmlAdder = () => {
-    console.log("start===================================HTML");
-
-    sources = sources
+    htmlAndSource = sources
       .filter(item => Object.entries(item).length !== 0)
       .map((data, i) => {
-        const { gif, image, video, embed } = data;
+        const { gif, image, video, embed, title } = data;
         /* let class = {...image[0].className}; */
-       
+
         if (image) {
-          /* console.log('image',image[0].sizes[0]) */
-          return <img className='image tall' key={i} src={image.source} />;
+          return (
+            <div
+              ref={el => (this[i] = el)}
+              onClick={() => this.pleaseEnterFullscreen(this[i])}
+              className={`gridElement ${image.className}`}
+            >
+              {this.switchCatButtons()}
+              <img
+                className={`image`}
+                onClick={() => this.pleaseExitFullscreen()}
+                key={i}
+                src={image.low || image.high || image.source}
+              />
+              <div className="title-text">{title}</div>
+            </div>
+          );
         }
         if (video) {
           return (
-            <video
-              key={i}
-              onClick={() => this[i].requestFullscreen()}
-              onCanPlay={() => this.setState({ isVideoLoading: false })}
-              className={`video wide`}
+            <div
               ref={el => (this[i] = el)}
-              muted
-              playsInline
-              onMouseOver={()=>console.log('hello')}
-              onMouseLeave={()=>console.log('bye')} 
-              preload="auto"
-              loop={true}
+              onClick={() => this.pleaseEnterFullscreen(this[i])}
+              className={`gridElement ${video.className}`}
             >
-              <source src={video.url} />
-            </video>
+              {this.switchCatButtons()}
+              <video
+                key={i}
+                autoPlay={false}
+                controls
+                allowfullscreen
+                onCanPlay={() => this.setState({ isVideoLoading: false })}
+                className={`video`}
+                ref={el => (this[i] = el)}
+                
+                onClick={() => this.pleaseExitFullscreen()}
+                playsInline
+                /* poster={video.poster} */
+                onMouseOver={() => console.log("hello")}
+                onMouseLeave={() => console.log("bye")}
+                preload="metadata"
+                loop={true}
+              >
+                <source src={video.url} type="video/mp4" />
+                Sorry, your browser doesn't support embedded videos.
+              </video>
+              <div className="title-text">{title}</div>
+            </div>
           );
         }
         if (gif) {
-          console.log("gifURL", gif.url);
-          return <img className="image" key={i} src={gif.url} />;
+          console.log(gif.className);
+          return (
+            <div
+              ref={el => (this[i] = el)}
+              onClick={() => this.pleaseEnterFullscreen(this[i])}
+              className={`gridElement ${gif.className}`}
+            >
+              {this.switchCatButtons()}
+              <img
+                className={`gif`}
+                key={i}
+                src={gif.url}
+                onClick={() => this.pleaseExitFullscreen()}
+              />
+              <div className="title-text">{title}</div>
+            </div>
+          );
         }
 
-         if (embed) {
-          if(embed.iframe) return this.loadEmbed('', '', embed.iframe)
+        if (embed) {
+          if (embed.iframe)
+            return (
+              <React.Fragment>
+                {this.loadEmbed("", "", embed.iframe)}
+                <div className="title-text">{title}</div>
+              </React.Fragment>
+            );
           else
-          return this.loadEmbed(data.url);
+            return (
+              <React.Fragment>
+                {this.loadEmbed(data.url)}
+                <div className="title-text">{title}</div>
+              </React.Fragment>
+            );
         }
         console.log(data);
       });
-      sources = sources.filter(item => item)
+    htmlAndSource = htmlAndSource.filter(item => item);
+  };
+
+  pleaseExitFullscreen = () => {
+    this.state.fullscreenRequested &&
+      this.setState({ fullscreenRequested: false }, () => {
+        if (document.fullscreenElement) {
+          document.exitFullscreen() ||
+            document.mozExitFullScreen() ||
+            document.webkitExitFullscreen() ||
+            document.msExitFullscreen();
+          window.scrollTo(0, this.state.scrollHeight);
+        }
+      });
+  };
+
+  pleaseEnterFullscreen = async element => {
+    let scrollHeight = await window.pageYOffset;
+    !this.state.fullscreenRequested &&
+      this.setState(
+        { fullscreenRequested: true, scrollHeight: scrollHeight },
+        () => {
+          element.requestFullscreen() ||
+            element.mozRequestFullScreen() ||
+            element.webkitRequestFullscreen() ||
+            element.msRequestFullscreen();
+        }
+      );
+  };
+
+  imageRatioCalculator = (height, width) => {
+    let ratio = height / width;
+    if (ratio < 0.5) return "superWide";
+
+    if (ratio >= 0.5 && ratio < 0.8) return "veryWide";
+
+    /*  if (ratio >= 0.7 && ratio < 0.9) return "wide"; */
+
+    if (ratio >= 0.8 && ratio < 1.2) return "rectangular";
+
+    /* if (ratio >= 1.1 && ratio < 1.3) return "tall"; */
+
+    if (ratio >= 1.2 && ratio < 1.5) return "veryTall";
+
+    if (ratio >= 1.5) return "superTall";
   };
 
   render() {
-    console.log("source...", sources.filter(element => element));
-
-    /*   this.dataMapper();
-    console.log(
-      "SOURCES",
-      sources.filter(item => Object.entries(item).length !== 0)
+ /*    console.log(
+      "start===================================HTML",
+      (window.innerHeight + window.pageYOffset) >= document.getElementById('root').offsetHeight
     ); */
+    if((window.innerHeight + window.pageYOffset) >= document.getElementById('root').offsetHeight){
+      console.log('loadMoreSubreddits')
+    }
 
-    // preview.enabled=false
+
     return (
       <Swipeable
         className="wrapper"
@@ -652,77 +784,21 @@ class Scroller extends Component {
           </Dropdown>
         </div>
         <div className={this.state.fullscreen ? "contentZen" : "content"}>
-          {!this.state.isSearchActivated && (
-            <button
-              className="inputFocus"
-              ref={button =>
-                button && !this.state.isSearchActivated && button.focus()
-              }
-            />
-          )}
-          <button onClick={this.switchCat} className="iconRight">
-            <Icon type="arrow-right" />
-          </button>
-          <button className="iconLeft" onClick={this.goBackToLast}>
-            <Icon type="arrow-left" />
-          </button>
-
-          {this.state.isLoading ? (
-            <button autoFocus className="subRedditTitle">
-              <Spin wrapperClassName="subRedditTitle" size="large" />
-              <p className="loading">
-                Loading <Icon type="tag-o" />
-                {this.state.subreddit}
-              </p>
-            </button>
-          ) : (
-            <React.Fragment>
-              {this.videoPlayer && this.state.isVideoLoading && (
-                <Icon
-                  style={{
-                    zIndex: 44,
-                    color: "white",
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    fontSize: "50px"
-                  }}
-                  type="loading"
-                />
-              )}
-
-              <div className="gridMedia">
-                {sources.map((element, i) => (
-                  <LazyLoad><div  onClick={() =>
-                    !this.state.isDropDownShowing
-                      ? this.setState({ isDropDownShowing: true }, () =>
-                          this[i].requestFullscreen()
-                        )
-                      : this.setState({ isDropDownShowing: true }, () =>
-                      this[i].exitFullscreen()
-                        )
-                  }
-                  onCanPlay={() => this.setState({ isVideoLoading: false })}
-                  ref={el => (this[i] = el)}  className="gridElement">{element}</div></LazyLoad>
-                ))}
-              </div>
-            </React.Fragment>
-          )}
-
-          <div className="downDiv">
-            <button onClick={this.next} className="iconDownClicker">
-              <p style={{ zIndex: 1231231312313123, color: "white" }}>
-                {this.state.postTitle.length &&
-                  this.state.postTitle[this.state.activeSlide] &&
-                  this.state.postTitle[this.state.activeSlide].title}
-              </p>
-              <h2 className="subredditName">
-                <Icon type="tag-o" />
-                {this.state.subreddit}
-              </h2>
-            </button>
+          {this.switchCatButtons()}
+          <div className="gridMedia">
+            {htmlAndSource.map((element, i) => (
+              <LazyLoad height={300} key={i}>
+                {element}
+              </LazyLoad>
+            ))}
           </div>
-
+          )}
+          <div className="downDiv">
+            <h2 className="subredditName">
+              <Icon type="tag-o" />
+              {this.state.subreddit}
+            </h2>
+          </div>
           <Icon
             className="fullscreen-icon"
             onClick={() =>
@@ -843,10 +919,9 @@ class Scroller extends Component {
           return (
             <video
               onClick={() => this[i].requestFullscreen()}
-              onCanPlay={() => this.setState({ isVideoLoading: false })}
               ref={el => (this[i] = el)}
+              onCanPlay={() => this.setState({ isVideoLoading: false })}
               className={`video `}
-              
               muted
               playsInline
               autoPlay={this.state.autoPlay}

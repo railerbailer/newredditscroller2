@@ -1,6 +1,6 @@
 {
   "name": "sliddit",
-  "homepage": "http://www.sliddit.com",
+  "homepage": "http://railerbailer.github.io/newredditscroller2",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

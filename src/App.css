@@ -23,7 +23,7 @@ h2 {
 .contentZen .titleText {
   top: 0vh;
 }
-.titleText {
+/* .titleText {
   z-index: 1;
   opacity: 0.8;
   text-shadow: 1px 1px 1px black;
@@ -33,42 +33,16 @@ h2 {
   left: 0;
   right: 0;
   text-align: center;
-}
-
-.imgDiv,
-.videoDiv {
-  /* width: 100%;
-  
-  max-height: 93.5vh;
-  color: white;
-  border-bottom: 2px solid white; */
-}
-.contentZen .imgDiv,
-.contentZen .videoDiv {
-}
+} */
 
 .title-text {
   color: white;
- 
+  display: none;
   font-weight: 600;
   position: absolute;
   right: 1px;
   max-width: 200px;
 }
-
-.gridMedia {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  grid-auto-rows: 150px;
-  grid-gap: 5px;
-  grid-auto-flow: row dense;
-}
-
-.gridElement:fullscreen{
-  display: flex;
-  align-content: center;
-}
-
 .gridElement .iconRight, .gridElement .iconLeft {
   display:none;
 }
@@ -80,41 +54,60 @@ h2 {
   object-fit: contain;
 }
   
+.gridMedia {
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+
+  grid-gap: 5px;
+  grid-auto-flow: dense;
+ 
+}
+
+.gridElement:fullscreen{
+  display: flex;
+  align-content: center;
+}
 
 
-.superWide {
-  grid-column: auto / span 3;
-  grid-row: auto / span 1;
+
+
+/* .superWide {
+  
+ 
+  
 }
 .veryWide {
-  grid-column: auto / span 4;
-  grid-row: auto / span 2;
+  
 }
 .wide {
-  grid-column: auto / span 3;
-  grid-row: auto / span 2;
+
 }
 .rectangular {
-  grid-column: auto / span 1;
-  grid-row: auto / span 1;
+  
+  
 }
 .tall {
-  grid-column: auto / span 2;
-  grid-row: auto / span 3;
-}
+ 
+} */
 .veryTall {
-  grid-column: auto / span 2;
-  grid-row: auto / span 4;
+  grid-row: span 2;
+  
 }
 .superTall {
-  grid-column: auto / span 1;
-  grid-row: auto / span 3;
+  grid-row: span 2;
 }
 
 .gridElement {
+ 
+  background-color: transparent;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 }
 .video {
+  min-height: 400px;
 }
 .image,
 .gif,
@@ -123,7 +116,7 @@ iframe {
   height: 100%;
   width: 100%;
   
-  margin: auto;
+  
   object-fit: cover;
   
   /* border-radius: 1%;
@@ -332,6 +325,7 @@ p {
 }
 
 .iconRight {
+
   position: absolute;
   right: 1%;
   opacity: 0.4;
@@ -342,9 +336,9 @@ p {
   cursor: pointer;
   background-color: transparent;
   opacity: 0.6;
-  height: 100%;
+  height: 90%;
   position: fixed;
-
+  margin-top: 10%;
   top: 0;
   bottom: 0;
   z-index: 2;
@@ -502,7 +496,7 @@ p {
 
 .iconSetting {
   font-size: 35px;
-  z-index: 1231233;
+  z-index: 1231123123123123123123233;
   padding-top: 2px;
   max-width: 100px;
   white-space: wrap;
@@ -531,11 +525,11 @@ p {
 
 .content {
   height: 100%;
-  margin-top: 53px;
+  margin-top: 47px;
 }
 .contentZen {
   height: 100%;
-  margin-top: 53px;
+
 }
 
 .contentZen i,

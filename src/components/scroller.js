@@ -350,11 +350,13 @@ class Scroller extends Component {
   };
 
   loadEmbed = (url, domain, embedExists) => {
+    
     if (embedExists) {
       return (
         <div
           style={{ backgroundColor: "red" }}
-          dangerouslySetInnerHTML={{ __html: this.htmlParser(embedExists) }}
+          className="gridElement"
+          dangerouslySetInnerHTML={{ __html: this.htmlParser(embedExists.replace('allowfullscreen', 'allowFullScreen')) }}
         />
       );
     }
@@ -362,24 +364,20 @@ class Scroller extends Component {
       return (
         <Iframe
           url={url}
-          width="450px"
-          height="450px"
-          id="myId"
-          className="myClassname"
+          className="gridElement"
           display="initial"
           position="relative"
           allowFullScreen
         />
       );
     }
-    if (domain === "pornhub.com") {
+    if (false && domain.includes('pornhub') && url.includes('pornhub')) {
       let pornhubEmbedId = url.split("=");
-      console.log(pornhubEmbedId);
+      console.log('pornhub');
       return (
         <Iframe
           url={`https://www.pornhub.com/embed/${pornhubEmbedId[1]}`}
-          id="myId"
-          className="myClassname"
+          className="gridElement"
           display="initial"
           position="relative"
           allowFullScreen
@@ -387,7 +385,7 @@ class Scroller extends Component {
       );
     }
 
-    if (domain === "imgur.com" || "domain" === "i.imgur.com") {
+    if (domain.includes('imgur')) {
       let imgurEmbedId = url.split("/a/");
       imgurEmbedId = imgurEmbedId[1];
       let newScriptTag = document.createElement("script");
@@ -419,8 +417,10 @@ class Scroller extends Component {
     return editedString ? editedString : "";
   }
 
-  dataMapper = fetchedData => {
-    sources = [];
+  dataMapper = (fetchedData, removeOldContent) => {
+    if (!removeOldContent) {
+      sources = [];
+    }
     fetchedData.map((item, i) => {
       let mediaData = {};
       const { data } = item;
@@ -433,7 +433,8 @@ class Scroller extends Component {
         thumbnail_width = 2
       } = data;
       const isGif = data.url.includes(".gif");
-
+      mediaData.domain = data.domain || '';
+      /* console.log(mediaData) */
       if (
         preview &&
         preview.reddit_video_preview &&
@@ -499,8 +500,10 @@ class Scroller extends Component {
       ) {
         mediaData.embed = {};
         mediaData.embed.url = data.url;
+        console.log('embed.url.includes(pornhub)',mediaData.embed.url)
         /*  mediaData.domain = data.domain; */
       }
+      
 
       if (Object.entries(mediaData).length !== 0) {
         mediaData.title = data.title;
@@ -526,7 +529,7 @@ class Scroller extends Component {
     htmlAndSource = sources
       .filter(item => Object.entries(item).length !== 0)
       .map((data, i) => {
-        const { gif, image, video, embed, title } = data;
+        const { gif, image, video, embed, title, domain } = data;
         /* let class = {...image[0].className}; */
 
         if (image) {
@@ -559,11 +562,10 @@ class Scroller extends Component {
                 key={i}
                 autoPlay={false}
                 controls
-                allowfullscreen
+                allowFullScreen
                 onCanPlay={() => this.setState({ isVideoLoading: false })}
                 className={`video`}
                 ref={el => (this[i] = el)}
-                
                 onClick={() => this.pleaseExitFullscreen()}
                 playsInline
                 /* poster={video.poster} */
@@ -600,22 +602,23 @@ class Scroller extends Component {
         }
 
         if (embed) {
+          console.log()
           if (embed.iframe)
             return (
               <React.Fragment>
-                {this.loadEmbed("", "", embed.iframe)}
+                {this.loadEmbed('', '', embed.iframe)}
                 <div className="title-text">{title}</div>
               </React.Fragment>
             );
-          else
+          else if (embed.url)
             return (
               <React.Fragment>
-                {this.loadEmbed(data.url)}
+                {this.loadEmbed(embed.url, domain, false)}
                 <div className="title-text">{title}</div>
               </React.Fragment>
             );
         }
-        console.log(data);
+        console.log(data,'data');
       });
     htmlAndSource = htmlAndSource.filter(item => item);
   };
@@ -665,14 +668,20 @@ class Scroller extends Component {
   };
 
   render() {
- /*    console.log(
-      "start===================================HTML",
-      (window.innerHeight + window.pageYOffset) >= document.getElementById('root').offsetHeight
+  /*   console.log(
+      window.innerHeight,
+      window.pageYOffset,
+      document.getElementById("root").offsetHeight
     ); */
-    if((window.innerHeight + window.pageYOffset) >= document.getElementById('root').offsetHeight){
-      console.log('loadMoreSubreddits')
-    }
 
+/*        if (
+      window.pageYOffset > 500 &&
+      (window.innerHeight + window.pageYOffset >=
+        document.getElementById("root").offsetHeight)
+    ) {
+      console.log('hey');
+     this.moreSubreddits();
+    } */
 
     return (
       <Swipeable
@@ -785,15 +794,27 @@ class Scroller extends Component {
         </div>
         <div className={this.state.fullscreen ? "contentZen" : "content"}>
           {this.switchCatButtons()}
+          {this.state.isLoading?
+          <Spin></Spin>
+          :
           <div className="gridMedia">
             {htmlAndSource.map((element, i) => (
               <LazyLoad height={300} key={i}>
                 {element}
               </LazyLoad>
             ))}
-          </div>
+          </div>}
           )}
           <div className="downDiv">
+            <button
+              style={{
+                backgroundColor: "gray",
+                opacity: 0.1,
+                zIndex: 123182391283129,
+                height: "200px"
+              }}
+              onClick={() => this.moreSubreddits()}
+            />
             <h2 className="subredditName">
               <Icon type="tag-o" />
               {this.state.subreddit}
@@ -812,21 +833,13 @@ class Scroller extends Component {
   }
 
   getSubreddit = async subreddit => {
-    let heartPlaceholder = heart;
-    let subredditOrHeart =
-      (await this.state.isHeartModeOn) && heart.length > 1
-        ? heartPlaceholder.join("+")
-        : subreddit;
     await this.setState({
-      subreddit: subredditOrHeart,
-      sliderData: [],
+      subreddit: subreddit,
       isLoading: true
     });
     this.state.category === "intial" && !this.props.match.params.subreddit
       ? null
       : this.props.history.push(`/${this.state.subreddit}`);
-
-    //Om det blev fel kan det vara annat än url som inte finns...
 
     await fetch(
       `https://www.reddit.com/r/${this.state.subreddit}.json?limit=100`
@@ -840,6 +853,7 @@ class Scroller extends Component {
         this.dataMapper(jsonData.data.children);
         /* this.dataToHtml(jsonData.data.children); */
       })
+
       .catch(() => {
         this.getSubreddit(
           this.shuffleArray(this.dataHandler(this.state.category))
@@ -848,6 +862,27 @@ class Scroller extends Component {
     this.setState({ isLoading: false });
   };
 
+  moreSubreddits = async () => {
+    this.setState({ isLoading: true });
+    await fetch(
+      `https://www.reddit.com/r/${this.state.subreddit}.json?after=${
+        this.state.after
+      }&limit=100`
+    )
+      .then(response => response.json())
+      .then(jsonData => {
+        this.setState({
+          after: jsonData.data.after,
+          before: jsonData.data.after
+        });
+        this.dataMapper(jsonData.data.children, true);
+      })
+      .catch(error => {
+        console.log("error", error);
+        alert(error);
+      });
+    this.setState({ isLoading: false });
+  };
   goBackSubreddits = async () => {
     await fetch(
       `https://www.reddit.com/r/${this.state.subreddit}.json?before=${
@@ -870,678 +905,6 @@ class Scroller extends Component {
         );
       });
     this.setState({ isLoading: false });
-  };
-
-  moreSubreddits = async beforeOrAfter => {
-    this.setState({ isLoading: true });
-    await fetch(
-      `https://www.reddit.com/r/${this.state.subreddit}.json?${beforeOrAfter}=${
-        this.state[beforeOrAfter]
-      }&limit=100`
-    )
-      .then(response => response.json())
-      .then(jsonData => {
-        let childs = jsonData.data.children;
-        this.dataToHtml(childs);
-        this.setState({
-          after: jsonData.data.after,
-          activeSlide: 0,
-          before: jsonData.data.after
-        });
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
-    beforeOrAfter === "before" &&
-      this.setState({ activeSlide: this.state.sliderData.length - 1 });
-    this.setState({ isLoading: false });
-  };
-
-  dataToHtml = data => {
-    let postTitle = [];
-    let zeroNullData = false;
-    let datavar = data.map((children, i) => {
-      if (
-        !this.state.isOnlyPicsShowing ||
-        (this.state.isOnlyPicsShowing && this.state.isOnlyGifsShowing)
-      ) {
-        if (
-          children.data.post_hint === "link" &&
-          children.data.preview.reddit_video_preview
-        ) {
-          zeroNullData = true;
-          postTitle.push({
-            title: children.data.title,
-            videoSrc:
-              children.data.preview.reddit_video_preview.scrubber_media_url
-          });
-
-          return (
-            <video
-              onClick={() => this[i].requestFullscreen()}
-              ref={el => (this[i] = el)}
-              onCanPlay={() => this.setState({ isVideoLoading: false })}
-              className={`video `}
-              muted
-              playsInline
-              autoPlay={this.state.autoPlay}
-              poster={children.data.thumbnail || ""}
-              preload="none"
-              loop={this.state.loop}
-            >
-              <source
-                type="video/mp4"
-                src={
-                  children.data.preview.reddit_video_preview.scrubber_media_url
-                }
-              />
-
-              <p>
-                Your browser doesn't support HTML5 video. Here is a{" "}
-                <a
-                  href={
-                    children.data.preview.reddit_video_preview
-                      .scrubber_media_url
-                  }
-                >
-                  link to the video
-                </a>{" "}
-                instead.
-              </p>
-            </video>
-          );
-        }
-      }
-
-      if (
-        children.data.post_hint === "rich:video" &&
-        children.data.preview.reddit_video_preview
-      ) {
-        zeroNullData = true;
-        postTitle.push({
-          title: children.data.title,
-          videoSrc:
-            children.data.preview.reddit_video_preview.scrubber_media_url
-        });
-        return (
-          <video
-            onClick={() => this[i].requestFullscreen()}
-            onCanPlay={() => this.setState({ isVideoLoading: false })}
-            className={`video `}
-            ref={el => (this[i] = el)}
-            muted
-            preload="none"
-            playsInline
-            autoPlay={this.state.autoPlay}
-            poster={children.data.thumbnail || ""}
-            loop={this.state.loop}
-          >
-            <source
-              type="video/mp4"
-              src={
-                children.data.preview.reddit_video_preview.scrubber_media_url
-              }
-            />
-            <p>
-              Your browser doesn't support HTML5 video. Here is a{" "}
-              <a
-                href={
-                  children.data.preview.reddit_video_preview.scrubber_media_url
-                }
-              >
-                link to the video
-              </a>{" "}
-              instead.
-            </p>
-          </video>
-        );
-      }
-      if (
-        children.data.post_hint === "hosted:video" &&
-        children.data.media.reddit_video
-      ) {
-        zeroNullData = true;
-        postTitle.push({
-          title: children.data.title,
-          videoSrc: children.data.media.reddit_video.scrubber_media_url
-        });
-        return (
-          <video
-            onClick={() => this[i].requestFullscreen()}
-            onCanPlay={() => this.setState({ isVideoLoading: false })}
-            className={`video `}
-            ref={el => (this[i] = el)}
-            muted
-            playsInline
-            autoPlay={this.state.autoPlay}
-            loop={this.state.loop}
-            preload="none"
-            poster={children.data.thumbnail || ""}
-          >
-            <source
-              type="video/mp4"
-              src={children.data.media.reddit_video.scrubber_media_url}
-            />
-            <p>
-              Your browser doesn't support HTML5 video. Here is a{" "}
-              <a href={children.data.media.reddit_video.scrubber_media_url}>
-                link to the video
-              </a>{" "}
-              instead.
-            </p>
-          </video>
-        );
-      }
-
-      if (
-        children.data.post_hint === "image" &&
-        children.data.preview.reddit_video_preview
-      ) {
-        zeroNullData = true;
-        postTitle.push({
-          title: children.data.title,
-          videoSrc:
-            children.data.preview.reddit_video_preview.scrubber_media_url
-        });
-        return (
-          <video
-            onClick={() => this[i].requestFullscreen()}
-            ref={el => (this[i] = el)}
-            onCanPlay={() => this.setState({ isVideoLoading: false })}
-            className={`video `}
-            ref={el => (this[i] = el)}
-            muted
-            playsInline
-            autoPlay={this.state.autoPlay}
-            poster={children.data.thumbnail || ""}
-            loop={this.state.loop}
-            preload="none"
-          >
-            <source
-              type="video/mp4"
-              src={
-                children.data.preview.reddit_video_preview.scrubber_media_url
-              }
-            />
-            <p className="titleText">
-              Your browser doesn't support HTML5 video. Here is a{" "}
-              <a
-                href={
-                  children.data.preview.reddit_video_preview.scrubber_media_url
-                }
-              >
-                link to the video
-              </a>{" "}
-              instead.
-            </p>
-          </video>
-        );
-      }
-      if (
-        (children.data.post_hint === "image" &&
-          !this.state.isOnlyGifsShowing) ||
-        (children.data.post_hint === "image" &&
-          this.state.isOnlyPicsShowing &&
-          this.state.isOnlyGifsShowing)
-      ) {
-        let sizeRatio =
-          children.data.preview.images[0].source.height +
-          children.data.preview.images[0].source.width;
-        if (children.data.preview.images[0].source.height < 300) {
-          zeroNullData = true;
-          postTitle.push({
-            title: children.data.title,
-            imgSrc: this.htmlParser(children.data.preview.images[0].source.url)
-          });
-          return (
-            <img
-              onClick={() =>
-                !this.state.isDropDownShowing
-                  ? this.setState({ isDropDownShowing: true }, () =>
-                      this[i].requestFullscreen()
-                    )
-                  : this.setState({ isDropDownShowing: true }, () =>
-                      document.exitFullscreen()
-                    )
-              }
-              ref={el => (this[i] = el)}
-              className={`image `}
-              src={this.htmlParser(children.data.preview.images[0].source.url)}
-              alt="{logo}"
-              onLoad={() => this.setState({ isImageLoading: false })}
-            />
-          );
-        }
-
-        if (
-          children.data.preview.images[0].resolutions[3] &&
-          sizeRatio > 1500
-        ) {
-          zeroNullData = true;
-          postTitle.push({
-            title: children.data.title,
-            imgSrc: this.htmlParser(
-              children.data.preview.images[0].resolutions[3].url
-            )
-          });
-          return (
-            <img
-              onClick={() =>
-                !this.state.isDropDownShowing
-                  ? this.setState({ isDropDownShowing: true }, () =>
-                      this[i].requestFullscreen()
-                    )
-                  : this.setState({ isDropDownShowing: false }, () =>
-                      document.exitFullscreen()
-                    )
-              }
-              ref={el => (this[i] = el)}
-              className={`image `}
-              src={this.htmlParser(
-                children.data.preview.images[0].resolutions[3].url
-              )}
-              alt="{logo}"
-              onLoad={() => this.setState({ isImageLoading: false })}
-            />
-          );
-        }
-
-        if (
-          children.data.preview.images[0].resolutions[4] &&
-          sizeRatio < 1500
-        ) {
-          zeroNullData = true;
-          postTitle.push({
-            title: children.data.title,
-            imgSrc: this.htmlParser(
-              children.data.preview.images[0].resolutions[4].url
-            )
-          });
-          return (
-            <img
-              onClick={() =>
-                !this.state.isDropDownShowing
-                  ? this.setState({ isDropDownShowing: true }, () =>
-                      this[i].requestFullscreen()
-                    )
-                  : this.setState({ isDropDownShowing: true }, () =>
-                      document.exitFullscreen()
-                    )
-              }
-              ref={el => (this[i] = el)}
-              className={`image `}
-              src={this.htmlParser(
-                children.data.preview.images[0].resolutions[4].url
-              )}
-              alt="{logo}"
-              onLoad={() => this.setState({ isImageLoading: false })}
-            />
-          );
-        }
-      } else {
-        return null;
-      }
-
-      return null;
-    });
-    if (zeroNullData === true) {
-      this.setState({ postTitle: postTitle.filter(e => e !== null) });
-      this.setState({ sliderData: datavar.filter(e => e !== null) });
-    } else {
-      // this.state.subredditOrHeart &&
-      this.getSubreddit(
-        this.shuffleArray(this.dataHandler(this.state.category))
-      );
-    }
-  };
-
-  HighDataToHtml = data => {
-    let zeroNullData = false;
-    let datavar = data.map((children, i) => {
-      if (
-        children.data.post_hint === "link" &&
-        children.data.preview.reddit_video_preview
-      ) {
-        zeroNullData = true;
-        return (
-          <div className="videoDiv" key={i}>
-            <Transition
-              in={true}
-              appear={true}
-              unmountOnExit
-              mountOnEnter
-              timeout={500}
-            >
-              {status => (
-                <video
-                  onClick={() => this.videoPlayer.requestFullscreen()}
-                  onCanPlay={() => this.setState({ isVideoLoading: false })}
-                  className={`video `}
-                  ref={el => (this.videoPlayer = el)}
-                  muted
-                  playsInline
-                  autoPlay={this.state.autoPlay}
-                  poster={this.htmlParser(
-                    children.data.preview.images[0].resolutions[1].url &&
-                      children.data.preview.images[0].resolutions[1].url
-                  )}
-                  preload="none"
-                  loop={this.state.loop}
-                >
-                  <source
-                    type="video/mp4"
-                    src={this.htmlParser(
-                      children.data.preview.images[0].variants.mp4.source.url
-                    )}
-                  />
-                  <source
-                    type="video/mp4"
-                    src={
-                      children.data.preview.reddit_video_preview
-                        .scrubber_media_url
-                    }
-                  />
-
-                  <p>
-                    Your browser doesn't support HTML5 video. Here is a{" "}
-                    <a
-                      href={
-                        children.data.preview.reddit_video_preview
-                          .scrubber_media_url
-                      }
-                    >
-                      link to the video
-                    </a>{" "}
-                    instead.
-                  </p>
-                </video>
-              )}
-            </Transition>
-          </div>
-        );
-      }
-
-      if (
-        children.data.post_hint === "rich:video" &&
-        children.data.preview.reddit_video_preview
-      ) {
-        zeroNullData = true;
-        return (
-          <div className="videoDiv" key={i}>
-            <Transition
-              in={true}
-              appear={true}
-              unmountOnExit
-              mountOnEnter
-              timeout={500}
-            >
-              {status => (
-                <video
-                  onClick={() => this.videoPlayer.requestFullscreen()}
-                  onCanPlay={() => this.setState({ isVideoLoading: false })}
-                  className={`video `}
-                  ref={el => (this.videoPlayer = el)}
-                  muted
-                  preload="none"
-                  playsInline
-                  autoPlay={this.state.autoPlay}
-                  poster={
-                    children.data.preview.images[0].resolutions[1].url &&
-                    children.data.preview.images[0].resolutions[1].url
-                  }
-                  loop={this.state.loop}
-                >
-                  <source
-                    type="video/mp4"
-                    src={this.htmlParser(
-                      children.data.preview.images[0].variants.mp4.source.url
-                    )}
-                  />
-                  <source
-                    type="video/mp4"
-                    src={
-                      children.data.preview.reddit_video_preview
-                        .scrubber_media_url
-                    }
-                  />
-                  <p>
-                    Your browser doesn't support HTML5 video. Here is a{" "}
-                    <a
-                      href={
-                        children.data.preview.reddit_video_preview
-                          .scrubber_media_url
-                      }
-                    >
-                      link to the video
-                    </a>{" "}
-                    instead.
-                  </p>
-                </video>
-              )}
-            </Transition>
-          </div>
-        );
-      }
-      if (
-        children.data.post_hint === "hosted:video" &&
-        children.data.media.reddit_video
-      ) {
-        zeroNullData = true;
-        return (
-          <div className="videoDiv" key={i}>
-            <Transition
-              in={true}
-              appear={true}
-              unmountOnExit
-              mountOnEnter
-              timeout={500}
-            >
-              {status => (
-                <video
-                  onClick={() => this.videoPlayer.requestFullscreen()}
-                  onCanPlay={() => this.setState({ isVideoLoading: false })}
-                  className={`video `}
-                  ref={el => (this.videoPlayer = el)}
-                  muted
-                  playsInline
-                  autoPlay={this.state.autoPlay}
-                  loop={this.state.loop}
-                  preload="none"
-                >
-                  <source
-                    type="video/mp4"
-                    src={this.htmlParser(
-                      children.data.preview.images[0].variants.mp4.source.url
-                    )}
-                  />
-                  <source
-                    type="video/mp4"
-                    src={children.data.media.reddit_video.scrubber_media_url}
-                  />
-                  <p>
-                    Your browser doesn't support HTML5 video. Here is a{" "}
-                    <a
-                      href={children.data.media.reddit_video.scrubber_media_url}
-                    >
-                      link to the video
-                    </a>{" "}
-                    instead.
-                  </p>
-                </video>
-              )}
-            </Transition>
-          </div>
-        );
-      }
-
-      if (
-        children.data.post_hint === "image" &&
-        children.data.preview.reddit_video_preview
-      ) {
-        zeroNullData = true;
-        return (
-          <div className="videoDiv" key={i}>
-            <Transition
-              in={true}
-              appear={true}
-              unmountOnExit
-              mountOnEnter
-              timeout={500}
-            >
-              {status => (
-                <video
-                  onClick={() => this.videoPlayer.requestFullscreen()}
-                  onCanPlay={() => this.setState({ isVideoLoading: false })}
-                  className={`video `}
-                  ref={el => (this.videoPlayer = el)}
-                  muted
-                  playsInline
-                  autoPlay={this.state.autoPlay}
-                  poster={this.htmlParser(
-                    children.data.preview.images[0].resolutions[1].url &&
-                      children.data.preview.images[0].resolutions[1].url
-                  )}
-                  loop={this.state.loop}
-                  preload="none"
-                >
-                  <source
-                    type="video/mp4"
-                    src={this.htmlParser(
-                      children.data.preview.images[0].variants.mp4.source.url
-                    )}
-                  />
-                  <source
-                    type="video/mp4"
-                    src={
-                      children.data.preview.reddit_video_preview
-                        .scrubber_media_url
-                    }
-                  />
-                  <p className="titleText">
-                    Your browser doesn't support HTML5 video. Here is a{" "}
-                    <a
-                      href={
-                        children.data.preview.reddit_video_preview
-                          .scrubber_media_url
-                      }
-                    >
-                      link to the video
-                    </a>{" "}
-                    instead.
-                  </p>
-                </video>
-              )}
-            </Transition>
-          </div>
-        );
-      }
-
-      if (
-        children.data.post_hint === "image" &&
-        !this.state.isOnlyGifsShowing
-      ) {
-        let sizeRatio =
-          children.data.preview.images[0].source.height +
-          children.data.preview.images[0].source.width;
-        if (children.data.preview.images[0].source.height < 300) {
-          zeroNullData = true;
-          return (
-            <div className="imgDiv" key={i}>
-              <Transition
-                in={true}
-                appear={true}
-                unmountOnExit
-                mountOnEnter
-                timeout={500}
-              >
-                {status => (
-                  <img
-                    onClick={() => this[i].requestFullscreen()}
-                    ref={el => (this[i] = el)}
-                    className={`image `}
-                    src={this.htmlParser(
-                      children.data.preview.images[0].source.url
-                    )}
-                    alt="{logo}"
-                  />
-                )}
-              </Transition>
-            </div>
-          );
-        }
-
-        if (
-          children.data.preview.images[0].resolutions[3] &&
-          sizeRatio > 1500
-        ) {
-          zeroNullData = true;
-          return (
-            <div className="imgDiv" key={i}>
-              <Transition
-                in={true}
-                appear={true}
-                unmountOnExit
-                mountOnEnter
-                timeout={500}
-              >
-                {status => (
-                  <img
-                    onClick={() => this[i].requestFullscreen()}
-                    ref={el => (this[i] = el)}
-                    className={`image `}
-                    src={this.htmlParser(
-                      children.data.preview.images[0].resolutions[3].url
-                    )}
-                    alt="{logo}"
-                  />
-                )}
-              </Transition>
-            </div>
-          );
-        }
-
-        if (
-          children.data.preview.images[0].resolutions[4] &&
-          sizeRatio < 1500
-        ) {
-          zeroNullData = true;
-          return (
-            <div className="imgDiv" key={i}>
-              <Transition
-                in={true}
-                appear={true}
-                unmountOnExit
-                mountOnEnter
-                timeout={500}
-              >
-                {status => (
-                  <img
-                    onClick={() => this[i].requestFullscreen()}
-                    ref={el => (this[i] = el)}
-                    className={`image `}
-                    src={this.htmlParser(
-                      children.data.preview.images[0].resolutions[4].url
-                    )}
-                    alt="{logo}"
-                  />
-                )}
-              </Transition>
-            </div>
-          );
-        }
-      } else {
-        return null;
-      }
-      return null;
-    });
-    if (zeroNullData === true) {
-      this.setState({ sliderData: datavar.filter(e => e !== null) });
-    } else {
-      // this.state.subredditOrHeart &&
-      this.getSubreddit(
-        this.shuffleArray(this.dataHandler(this.state.category))
-      );
-    }
   };
 }
 

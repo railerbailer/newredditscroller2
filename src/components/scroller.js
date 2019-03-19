@@ -4,6 +4,7 @@ import "antd/dist/antd.css";
 import { debounce } from "lodash";
 import { Transition } from "react-transition-group";
 import LazyLoad from "react-lazyload";
+import ReactDOM from "react-dom";
 import Iframe from "react-iframe";
 
 import {
@@ -31,12 +32,15 @@ let htmlAndSource = [];
 let goBack = [];
 let goBackIndex = 0;
 let heart = [];
+let elementIndex = 0;
 class Scroller extends Component {
   constructor(props) {
     super(props);
     React.CreateRef = this.renderFocus = React.createRef();
 
     this.state = {
+      fullscreenActive: false,
+      elementIndex: null,
       scrollHeight: 0,
       subredditData: [],
       isDropDownShowing: false,
@@ -62,7 +66,7 @@ class Scroller extends Component {
       underage: true,
       isLoadingVideo: true,
       after: "",
-      before: "",
+      lastAfter: "",
       fullscreen: false,
       category: "intial",
       isImageLoading: false,
@@ -138,6 +142,7 @@ class Scroller extends Component {
   };
 
   switchCat = async () => {
+    elementIndex = 0;
     this.state.isDropDownShowing && this.showDropDown();
     this.setState({ isVideoLoading: true, isImageLoading: true });
     await this.setState({ activeSlide: 0 });
@@ -350,13 +355,16 @@ class Scroller extends Component {
   };
 
   loadEmbed = (url, domain, embedExists) => {
-    
     if (embedExists) {
       return (
         <div
           style={{ backgroundColor: "red" }}
           className="gridElement"
-          dangerouslySetInnerHTML={{ __html: this.htmlParser(embedExists.replace('allowfullscreen', 'allowFullScreen')) }}
+          dangerouslySetInnerHTML={{
+            __html: this.htmlParser(
+              embedExists.replace("allowfullscreen", "allowFullScreen")
+            )
+          }}
         />
       );
     }
@@ -371,9 +379,9 @@ class Scroller extends Component {
         />
       );
     }
-    if (false && domain.includes('pornhub') && url.includes('pornhub')) {
+    if (false && domain.includes("pornhub") && url.includes("pornhub")) {
       let pornhubEmbedId = url.split("=");
-      console.log('pornhub');
+      console.log("pornhub");
       return (
         <Iframe
           url={`https://www.pornhub.com/embed/${pornhubEmbedId[1]}`}
@@ -385,7 +393,7 @@ class Scroller extends Component {
       );
     }
 
-    if (domain.includes('imgur')) {
+    if (domain.includes("imgur")) {
       let imgurEmbedId = url.split("/a/");
       imgurEmbedId = imgurEmbedId[1];
       let newScriptTag = document.createElement("script");
@@ -433,7 +441,7 @@ class Scroller extends Component {
         thumbnail_width = 2
       } = data;
       const isGif = data.url.includes(".gif");
-      mediaData.domain = data.domain || '';
+      mediaData.domain = data.domain || "";
       /* console.log(mediaData) */
       if (
         preview &&
@@ -500,10 +508,9 @@ class Scroller extends Component {
       ) {
         mediaData.embed = {};
         mediaData.embed.url = data.url;
-        console.log('embed.url.includes(pornhub)',mediaData.embed.url)
+
         /*  mediaData.domain = data.domain; */
       }
-      
 
       if (Object.entries(mediaData).length !== 0) {
         mediaData.title = data.title;
@@ -533,28 +540,33 @@ class Scroller extends Component {
         /* let class = {...image[0].className}; */
 
         if (image) {
-          return (
+          const jsx = (
             <div
               ref={el => (this[i] = el)}
-              onClick={() => this.pleaseEnterFullscreen(this[i])}
+              onClick={() => {
+                this.getElementIndex(jsx, i);
+              }}
               className={`gridElement ${image.className}`}
             >
               {this.switchCatButtons()}
               <img
                 className={`image`}
-                onClick={() => this.pleaseExitFullscreen()}
+                /* onClick={() => this.pleaseExitFullscreen()} */
                 key={i}
                 src={image.low || image.high || image.source}
               />
               <div className="title-text">{title}</div>
             </div>
           );
+          return jsx;
         }
         if (video) {
-          return (
+          const jsx = (
             <div
               ref={el => (this[i] = el)}
-              onClick={() => this.pleaseEnterFullscreen(this[i])}
+              onClick={() => {
+                this.getElementIndex(jsx, i);
+              }}
               className={`gridElement ${video.className}`}
             >
               {this.switchCatButtons()}
@@ -566,7 +578,6 @@ class Scroller extends Component {
                 onCanPlay={() => this.setState({ isVideoLoading: false })}
                 className={`video`}
                 ref={el => (this[i] = el)}
-                onClick={() => this.pleaseExitFullscreen()}
                 playsInline
                 /* poster={video.poster} */
                 onMouseOver={() => console.log("hello")}
@@ -580,33 +591,31 @@ class Scroller extends Component {
               <div className="title-text">{title}</div>
             </div>
           );
+          return jsx;
         }
         if (gif) {
-          console.log(gif.className);
-          return (
+          const jsx = (
             <div
               ref={el => (this[i] = el)}
-              onClick={() => this.pleaseEnterFullscreen(this[i])}
+              onClick={() => {
+                this.getElementIndex(jsx, i);
+              }}
               className={`gridElement ${gif.className}`}
             >
               {this.switchCatButtons()}
-              <img
-                className={`gif`}
-                key={i}
-                src={gif.url}
-                onClick={() => this.pleaseExitFullscreen()}
-              />
+              <img className={`gif`} key={i} src={gif.url} />
               <div className="title-text">{title}</div>
             </div>
           );
+          return jsx;
         }
 
-        if (embed) {
-          console.log()
+        if (false && embed) {
+          console.log();
           if (embed.iframe)
             return (
               <React.Fragment>
-                {this.loadEmbed('', '', embed.iframe)}
+                {this.loadEmbed("", "", embed.iframe)}
                 <div className="title-text">{title}</div>
               </React.Fragment>
             );
@@ -618,36 +627,8 @@ class Scroller extends Component {
               </React.Fragment>
             );
         }
-        console.log(data,'data');
       });
     htmlAndSource = htmlAndSource.filter(item => item);
-  };
-
-  pleaseExitFullscreen = () => {
-    this.state.fullscreenRequested &&
-      this.setState({ fullscreenRequested: false }, () => {
-        if (document.fullscreenElement) {
-          document.exitFullscreen() ||
-            document.mozExitFullScreen() ||
-            document.webkitExitFullscreen() ||
-            document.msExitFullscreen();
-          window.scrollTo(0, this.state.scrollHeight);
-        }
-      });
-  };
-
-  pleaseEnterFullscreen = async element => {
-    let scrollHeight = await window.pageYOffset;
-    !this.state.fullscreenRequested &&
-      this.setState(
-        { fullscreenRequested: true, scrollHeight: scrollHeight },
-        () => {
-          element.requestFullscreen() ||
-            element.mozRequestFullScreen() ||
-            element.webkitRequestFullscreen() ||
-            element.msRequestFullscreen();
-        }
-      );
   };
 
   imageRatioCalculator = (height, width) => {
@@ -666,23 +647,43 @@ class Scroller extends Component {
 
     if (ratio >= 1.5) return "superTall";
   };
+  getElementIndex = (element, index) => {
+    elementIndex = index;
+    this.setState({
+      element: element,
+      fullscreenActive: !this.state.fullscreenActive
+    });
+  };
+  getPreviousElement = async () => {
+    if (!elementIndex) return;
+    elementIndex = elementIndex - 1;
+    if (this.state.element === htmlAndSource[elementIndex - 1])
+      this.setState({ elementIndex: elementIndex - 1 });
+    this.setState({
+      element: htmlAndSource[elementIndex]
+    });
+    console.log(elementIndex);
+  };
+  getNextElement = () => {
+    console.log(elementIndex, htmlAndSource.length);
+   
+    if (elementIndex + 2 > htmlAndSource.length) {
+      this.moreSubreddits();
+      return;
+    }
+    else{
 
+    elementIndex = elementIndex + 1;
+    if (this.state.element === htmlAndSource[elementIndex]) {
+      elementIndex = elementIndex + 1;
+    }
+    this.setState({
+      element: htmlAndSource[elementIndex]
+    });}
+    console.log(elementIndex, htmlAndSource.length);
+  };
   render() {
-  /*   console.log(
-      window.innerHeight,
-      window.pageYOffset,
-      document.getElementById("root").offsetHeight
-    ); */
-
-/*        if (
-      window.pageYOffset > 500 &&
-      (window.innerHeight + window.pageYOffset >=
-        document.getElementById("root").offsetHeight)
-    ) {
-      console.log('hey');
-     this.moreSubreddits();
-    } */
-
+    console.log(htmlAndSource[-1]);
     return (
       <Swipeable
         className="wrapper"
@@ -692,6 +693,19 @@ class Scroller extends Component {
         onSwipedLeft={this.swipedLeft}
         onSwipedRight={this.swipedRight}
       >
+        {this.state.fullscreenActive && (
+          <div className="fullscreenScroll">
+            {this.state.element}
+            <button
+              className="fullscreenButtonPrevious"
+              onClick={() => this.getPreviousElement()}
+            />
+            <button
+              className="fullscreenButtonNext"
+              onClick={() => this.getNextElement()}
+            />
+          </div>
+        )}
         {this.state.category === "intial" && this.state.startPage ? (
           <div className="categoryModal">
             <div className="description">
@@ -733,7 +747,7 @@ class Scroller extends Component {
         ) : null}
         {/* <Icon onClick={this.previous} className="iconUp" type="up" /> */}
 
-        <div className={this.state.fullscreen ? "topbarZen" : "topBar"}>
+        <div className={this.state.fullscreen ? "topbarZen" : "topbarZen"}>
           <div className="searchWrapper">
             <Transition
               in={this.state.isSearchActivated}
@@ -792,41 +806,44 @@ class Scroller extends Component {
             </div>
           </Dropdown>
         </div>
-        <div className={this.state.fullscreen ? "contentZen" : "content"}>
+        <div className={this.state.fullscreen ? "contentZen" : "contentZen"}>
           {this.switchCatButtons()}
-          {this.state.isLoading?
-          <Spin></Spin>
-          :
-          <div className="gridMedia">
-            {htmlAndSource.map((element, i) => (
-              <LazyLoad height={300} key={i}>
-                {element}
-              </LazyLoad>
-            ))}
-          </div>}
+          {this.state.isLoading ? (
+            <Spin />
+          ) : (
+            <div className="gridMedia">
+              {htmlAndSource.map((element, i) => (
+                <LazyLoad height={300} key={i}>
+                  {element}
+                </LazyLoad>
+              ))}
+            </div>
           )}
-          <div className="downDiv">
-            <button
+          )}
+          <button
               style={{
                 backgroundColor: "gray",
-                opacity: 0.1,
+                opacity: 0.5,
                 zIndex: 123182391283129,
-                height: "200px"
+                height: "200px",
+                width: '100%'
               }}
-              onClick={() => this.moreSubreddits()}
+              onClick={() => {this.moreSubreddits(); () => window.scrollTo(192839128391283)}}
             />
+          <div className="downDiv">
+            
             <h2 className="subredditName">
               <Icon type="tag-o" />
               {this.state.subreddit}
             </h2>
           </div>
-          <Icon
+          {/* <Icon
             className="fullscreen-icon"
             onClick={() =>
               this.setState({ fullscreen: !this.state.fullscreen })
             }
             type={this.state.fullscreen ? "shrink" : "arrows-alt"}
-          />
+          /> */}
         </div>
       </Swipeable>
     );
@@ -848,7 +865,7 @@ class Scroller extends Component {
       .then(jsonData => {
         this.setState({
           after: jsonData.data.after,
-          before: jsonData.data.after
+          lastAfter: jsonData.data.after
         });
         this.dataMapper(jsonData.data.children);
         /* this.dataToHtml(jsonData.data.children); */
@@ -872,37 +889,13 @@ class Scroller extends Component {
       .then(response => response.json())
       .then(jsonData => {
         this.setState({
-          after: jsonData.data.after,
-          before: jsonData.data.after
+          after: jsonData.data.after
         });
         this.dataMapper(jsonData.data.children, true);
       })
       .catch(error => {
         console.log("error", error);
         alert(error);
-      });
-    this.setState({ isLoading: false });
-  };
-  goBackSubreddits = async () => {
-    await fetch(
-      `https://www.reddit.com/r/${this.state.subreddit}.json?before=${
-        this.state.before
-      }&limit=100`
-    )
-      .then(response => response.json())
-      .then(jsonData => {
-        let childs = jsonData.data.children;
-        this.dataToHtml(childs);
-        this.setState({
-          after: jsonData.data.after,
-          activeSlide: this.state.sliderData.length - 1,
-          before: jsonData.data.before
-        });
-      })
-      .catch(() => {
-        this.getSubreddit(
-          this.shuffleArray(this.dataHandler(this.state.category))
-        );
       });
     this.setState({ isLoading: false });
   };

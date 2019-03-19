@@ -50,8 +50,49 @@ h2 {
   display:block;
 }
 
-.gridElement:fullscreen .video, .gridElement:fullscreen .image, .gridElement:fullscreen .gif, .gridElement:fullscreen .iframe {
+.fullscreenScroll{
+  z-index: 1;
+
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+  background-color: transparent;
+  
+  width: 100%;
+  margin: auto;
+}
+.fullscreenButtonPrevious{
+  z-index: 1238123988123912839128;
+  position: absolute;
+  top: -1px;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  height: 50px;
+  width: 100%;
+  background-color: blue;
+
+}
+.fullscreenButtonNext{
+
+  position: absolute;
+  z-index: 1238123988123912839128;
+  bottom: -1px;
+  margin-left: auto;
+  margin-right: auto;
+  height: 50px;
+  width: 100%;
+  background-color: red;
+}
+.fullscreenScroll .video, .fullscreenScroll .image, .fullscreenScroll .gif, .fullscreenScroll .iframe {
   object-fit: contain;
+ 
+  height: auto;
+  max-height: 100vh;
+  
+  margin: auto;
 }
   
 .gridMedia {
@@ -100,10 +141,12 @@ h2 {
 }
 
 .gridElement {
+  display: flex;
  
+  height: 100%;
   background-color: transparent;
   width: 100%;
-  height: 100%;
+  
   overflow: hidden;
 }
 .video {
@@ -331,6 +374,13 @@ p {
   opacity: 0.4;
 }
 
+.fullscreen-nextButton{
+  position: absolute;
+  top: 0;
+}
+
+
+
 .iconLeft,
 .iconRight {
   cursor: pointer;
@@ -424,7 +474,7 @@ p {
 }
 
 .fullscreen-icon {
-  z-index: 123123;
+  z-index: 4;
   color: white;
   position: fixed;
   top: auto;
@@ -496,7 +546,7 @@ p {
 
 .iconSetting {
   font-size: 35px;
-  z-index: 1231123123123123123123233;
+  z-index: 2;
   padding-top: 2px;
   max-width: 100px;
   white-space: wrap;
@@ -545,7 +595,7 @@ p {
   width: 100%;
   display: flex;
   flex-direction: row;
-  z-index: 222212312312312312322;
+  z-index: 4;
   position: fixed;
   top: 0;
   justify-content: space-between;

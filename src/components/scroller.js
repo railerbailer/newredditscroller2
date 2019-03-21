@@ -39,6 +39,7 @@ class Scroller extends Component {
     React.CreateRef = this.renderFocus = React.createRef();
 
     this.state = {
+      isLoadingMore: false,
       fullscreenActive: false,
       elementIndex: null,
       scrollHeight: 0,
@@ -80,10 +81,15 @@ class Scroller extends Component {
   }
 
   componentDidMount() {
+    console.log('asdasd',straight.includes(this.props.match.params.subreddit));
+    if(straight.includes(this.props.match.params.subreddit)){
+      this.setState({category: 'nsfw'})
+    }
     this.props.match.params.subreddit &&
     this.props.match.params.subreddit !== "startpage"
       ? this.getSubreddit(this.props.match.params.subreddit)
       : this.setState({ startPage: true });
+      
   }
 
   dataHandler(props) {
@@ -155,7 +161,6 @@ class Scroller extends Component {
         !this.state.isLoading &&
           this.getSubreddit(goBack[goBack.length - 1 - goBackIndex]);
     } else {
-      console.log("WE HERE BRO");
       !this.state.isLoading &&
         this.getSubreddit(
           this.shuffleArray(this.dataHandler(this.state.category))
@@ -194,15 +199,15 @@ class Scroller extends Component {
       !isSearchActivated && this.goBackToLast();
     }
     if (e.key === "ArrowDown") {
-      !isSearchActivated && this.next();
+      !isSearchActivated && this.getNextElement();
     }
 
     if (e.key === "s") {
       !isSearchActivated && this.changeYourHeart(this.state.subreddit);
-      !isSearchActivated && this.next();
+      !isSearchActivated && this.getNextElement();
     }
     if (e.key === "w") {
-      !isSearchActivated && this.previous();
+      !isSearchActivated && this.getPreviousElement();
     }
     if (e.key === " ") {
       if (this.videoPlayer) {
@@ -213,7 +218,7 @@ class Scroller extends Component {
     }
 
     if (e.key === "ArrowUp") {
-      !isSearchActivated && this.previous();
+      !isSearchActivated && this.getPreviousElement();
     }
     if (e.key === "ArrowRight") {
       !isSearchActivated && this.switchCat();
@@ -236,12 +241,12 @@ class Scroller extends Component {
   };
   swipedUp = (e, deltaY, isFlick) => {
     if (isFlick) {
-      this.next();
+      this.getNextElement();
     }
   };
   swipedDown = (e, deltaY, isFlick) => {
     if (isFlick) {
-      this.previous();
+      this.getPreviousElement();
     }
   };
 
@@ -426,8 +431,11 @@ class Scroller extends Component {
   }
 
   dataMapper = (fetchedData, removeOldContent) => {
+    
     if (!removeOldContent) {
       sources = [];
+      htmlAndSource = null
+      
     }
     fetchedData.map((item, i) => {
       let mediaData = {};
@@ -438,7 +446,8 @@ class Scroller extends Component {
         media,
         media_embed,
         thumbnail_height = 1,
-        thumbnail_width = 2
+        thumbnail_width = 2,
+        thumbnail
       } = data;
       const isGif = data.url.includes(".gif");
       mediaData.domain = data.domain || "";
@@ -514,6 +523,7 @@ class Scroller extends Component {
 
       if (Object.entries(mediaData).length !== 0) {
         mediaData.title = data.title;
+        mediaData.thumbnail = thumbnail
         sources.push(mediaData);
         /* console.log(mediaData); */
       }
@@ -533,10 +543,11 @@ class Scroller extends Component {
     );
   };
   htmlAdder = () => {
+
     htmlAndSource = sources
       .filter(item => Object.entries(item).length !== 0)
       .map((data, i) => {
-        const { gif, image, video, embed, title, domain } = data;
+        const { gif, image, video, embed, title, domain, thumbnail } = data;
         /* let class = {...image[0].className}; */
 
         if (image) {
@@ -544,7 +555,7 @@ class Scroller extends Component {
             <div
               ref={el => (this[i] = el)}
               onClick={() => {
-                this.getElementIndex(jsx, i);
+                this.getElementIndex(jsx, i, this[i]);
               }}
               className={`gridElement ${image.className}`}
             >
@@ -565,24 +576,23 @@ class Scroller extends Component {
             <div
               ref={el => (this[i] = el)}
               onClick={() => {
-                this.getElementIndex(jsx, i);
+                this.getElementIndex(jsx, i, this[i]);
               }}
               className={`gridElement ${video.className}`}
             >
               {this.switchCatButtons()}
               <video
                 key={i}
-                autoPlay={false}
-                controls
+                autoPlay={true}
                 allowFullScreen
                 onCanPlay={() => this.setState({ isVideoLoading: false })}
                 className={`video`}
                 ref={el => (this[i] = el)}
+                poster={image ? image.low: data.thumbnail  }
                 playsInline
                 /* poster={video.poster} */
                 onMouseOver={() => console.log("hello")}
                 onMouseLeave={() => console.log("bye")}
-                preload="metadata"
                 loop={true}
               >
                 <source src={video.url} type="video/mp4" />
@@ -598,7 +608,7 @@ class Scroller extends Component {
             <div
               ref={el => (this[i] = el)}
               onClick={() => {
-                this.getElementIndex(jsx, i);
+                this.getElementIndex(jsx, i, this[i]);
               }}
               className={`gridElement ${gif.className}`}
             >
@@ -631,6 +641,8 @@ class Scroller extends Component {
     htmlAndSource = htmlAndSource.filter(item => item);
   };
 
+
+
   imageRatioCalculator = (height, width) => {
     let ratio = height / width;
     if (ratio < 0.5) return "superWide";
@@ -662,28 +674,24 @@ class Scroller extends Component {
     this.setState({
       element: htmlAndSource[elementIndex]
     });
-    console.log(elementIndex);
   };
   getNextElement = () => {
-    console.log(elementIndex, htmlAndSource.length);
-   
     if (elementIndex + 2 > htmlAndSource.length) {
       this.moreSubreddits();
       return;
-    }
-    else{
-
-    elementIndex = elementIndex + 1;
-    if (this.state.element === htmlAndSource[elementIndex]) {
+    } else {
       elementIndex = elementIndex + 1;
+      if (this.state.element === htmlAndSource[elementIndex]) {
+        elementIndex = elementIndex + 1;
+      }
+      this.setState({
+        element: htmlAndSource[elementIndex]
+      });
     }
-    this.setState({
-      element: htmlAndSource[elementIndex]
-    });}
-    console.log(elementIndex, htmlAndSource.length);
   };
   render() {
-    console.log(htmlAndSource[-1]);
+    
+    console.log(this.state.fullscreenActive)
     return (
       <Swipeable
         className="wrapper"
@@ -694,8 +702,19 @@ class Scroller extends Component {
         onSwipedRight={this.swipedRight}
       >
         {this.state.fullscreenActive && (
-          <div className="fullscreenScroll">
-            {this.state.element}
+          <Swipeable
+            className="fullscreenScroll"
+            onSwipedDown={this.swipedDown}
+            onSwipedUp={this.swipedUp}
+            onSwipedLeft={this.swipedLeft}
+            onSwipedRight={this.swipedRight}
+          >
+            {this.state.element ? (
+              this.state.element
+            ) : (
+              <Spin className="spinner" />
+            )}
+
             <button
               className="fullscreenButtonPrevious"
               onClick={() => this.getPreviousElement()}
@@ -704,7 +723,7 @@ class Scroller extends Component {
               className="fullscreenButtonNext"
               onClick={() => this.getNextElement()}
             />
-          </div>
+          </Swipeable>
         )}
         {this.state.category === "intial" && this.state.startPage ? (
           <div className="categoryModal">
@@ -806,32 +825,44 @@ class Scroller extends Component {
             </div>
           </Dropdown>
         </div>
-        <div className={this.state.fullscreen ? "contentZen" : "contentZen"}>
+        <div className={this.state.fullscreenActive ? "contentZen" : "contentZen"}>
           {this.switchCatButtons()}
           {this.state.isLoading ? (
-            <Spin />
+            <div className="spinner">
+              <Spin />
+              <div className="centered-text">
+                Loading <strong>{this.state.subreddit}</strong> category
+              </div>
+            </div>
           ) : (
             <div className="gridMedia">
               {htmlAndSource.map((element, i) => (
-                <LazyLoad height={300} key={i}>
+                <LazyLoad unmountIfInvisible={true} height={500} offset={100} key={i}>
                   {element}
                 </LazyLoad>
               ))}
             </div>
           )}
-          )}
-          <button
-              style={{
-                backgroundColor: "gray",
-                opacity: 0.5,
-                zIndex: 123182391283129,
-                height: "200px",
-                width: '100%'
-              }}
-              onClick={() => {this.moreSubreddits(); () => window.scrollTo(192839128391283)}}
-            />
+
+          <div className="loadMoreWrapper">
+            {this.state.isLoadingMore ? (
+              <Spin style={{ margin: "auto", display: "block" }} />
+            ) : (
+              !this.state.isLoading && (
+                <Button
+                  onClick={() => {
+                    this.moreSubreddits();
+                  }}
+                  type="primary"
+                  icon="download"
+                  className="loadMoreButton"
+                >
+                  Load more
+                </Button>
+              )
+            )}
+          </div>
           <div className="downDiv">
-            
             <h2 className="subredditName">
               <Icon type="tag-o" />
               {this.state.subreddit}
@@ -859,7 +890,7 @@ class Scroller extends Component {
       : this.props.history.push(`/${this.state.subreddit}`);
 
     await fetch(
-      `https://www.reddit.com/r/${this.state.subreddit}.json?limit=100`
+      `https://www.reddit.com/r/${this.state.subreddit}.json?limit=15`
     )
       .then(response => response.json())
       .then(jsonData => {
@@ -880,11 +911,11 @@ class Scroller extends Component {
   };
 
   moreSubreddits = async () => {
-    this.setState({ isLoading: true });
+    this.setState({ isLoadingMore: true });
     await fetch(
       `https://www.reddit.com/r/${this.state.subreddit}.json?after=${
         this.state.after
-      }&limit=100`
+      }&limit=15`
     )
       .then(response => response.json())
       .then(jsonData => {
@@ -897,7 +928,7 @@ class Scroller extends Component {
         console.log("error", error);
         alert(error);
       });
-    this.setState({ isLoading: false });
+    this.setState({ isLoadingMore: false });
   };
 }
 

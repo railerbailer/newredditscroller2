@@ -43,14 +43,16 @@ h2 {
   right: 1px;
   max-width: 200px;
 }
-.gridElement .iconRight, .gridElement .iconLeft {
-  display:none;
+.gridElement .iconRight,
+.gridElement .iconLeft {
+  display: none;
 }
-.gridElement:fullscreen .iconRight, .gridElement:fullscreen .iconLeft {
-  display:block;
+.gridElement:fullscreen .iconRight,
+.gridElement:fullscreen .iconLeft {
+  display: block;
 }
 
-.fullscreenScroll{
+.fullscreenScroll {
   z-index: 1;
 
   top: 0;
@@ -58,12 +60,12 @@ h2 {
   right: 0;
   bottom: 0;
   position: fixed;
-  background-color: transparent;
-  
+  background-color: rgb(0, 0, 0, 0.8);
+
   width: 100%;
   margin: auto;
 }
-.fullscreenButtonPrevious{
+.fullscreenButtonPrevious {
   z-index: 1238123988123912839128;
   position: absolute;
   top: -1px;
@@ -73,10 +75,8 @@ h2 {
   height: 50px;
   width: 100%;
   background-color: blue;
-
 }
-.fullscreenButtonNext{
-
+.fullscreenButtonNext {
   position: absolute;
   z-index: 1238123988123912839128;
   bottom: -1px;
@@ -86,15 +86,25 @@ h2 {
   width: 100%;
   background-color: red;
 }
-.fullscreenScroll .video, .fullscreenScroll .image, .fullscreenScroll .gif, .fullscreenScroll .iframe {
+.fullscreenScroll .video,
+.fullscreenScroll .image,
+.fullscreenScroll .gif,
+.fullscreenScroll .iframe {
   object-fit: contain;
- 
+  z-index: 55;
   height: auto;
   max-height: 100vh;
-  
+
   margin: auto;
 }
-  
+.loadingSpinner{
+  margin: 'auto';
+  height: 100%;
+  width: 100%;
+  z-index: 12390139123;
+  color: white;
+}
+
 .gridMedia {
   max-width: 1200px;
   margin: auto;
@@ -103,16 +113,12 @@ h2 {
 
   grid-gap: 5px;
   grid-auto-flow: dense;
- 
 }
 
-.gridElement:fullscreen{
+.gridElement:fullscreen {
   display: flex;
   align-content: center;
 }
-
-
-
 
 /* .superWide {
   
@@ -134,7 +140,6 @@ h2 {
 } */
 .veryTall {
   grid-row: span 2;
-  
 }
 .superTall {
   grid-row: span 2;
@@ -142,11 +147,11 @@ h2 {
 
 .gridElement {
   display: flex;
- 
+
   height: 100%;
   background-color: transparent;
   width: 100%;
-  
+
   overflow: hidden;
 }
 .video {
@@ -158,10 +163,9 @@ h2 {
 iframe {
   height: 100%;
   width: 100%;
-  
-  
+
   object-fit: cover;
-  
+
   /* border-radius: 1%;
   border: 0px solid transparent;
   max-height: 100vh;
@@ -315,6 +319,32 @@ p {
   background-position: left;
 }
 
+.centered-text{
+  margin-left: -65px;
+}
+
+.loadMoreWrapper {
+  height: 520px;
+  display: block;
+  margin: auto;
+  width: 100%;
+}
+
+.loadMoreButton {
+  width: 300px;
+  display: block;
+  margin: auto;
+}
+
+.spinner {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: auto;
+  color: white;
+}
+
 .item1 {
   grid-area: header;
   min-height: 20vh;
@@ -368,18 +398,15 @@ p {
 }
 
 .iconRight {
-
   position: absolute;
   right: 1%;
   opacity: 0.4;
 }
 
-.fullscreen-nextButton{
+.fullscreen-nextButton {
   position: absolute;
   top: 0;
 }
-
-
 
 .iconLeft,
 .iconRight {
@@ -443,7 +470,9 @@ p {
   max-height: 100vh;
   overflow: hidden; */
 }
-
+.hideElements{
+  display: none;
+}
 .lazy {
   display: none;
 }
@@ -579,7 +608,12 @@ p {
 }
 .contentZen {
   height: 100%;
-
+  min-height: 85vh;
+}
+.contentFullscreen{
+  height: 100%;
+  min-height: 85vh;
+  overflow: hidden;
 }
 
 .contentZen i,

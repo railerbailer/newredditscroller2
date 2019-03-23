@@ -4,7 +4,8 @@ import "antd/dist/antd.css";
 import { debounce } from "lodash";
 import { Transition } from "react-transition-group";
 import LazyLoad from "react-lazyload";
-import ReactDOM from "react-dom";
+import Image from "./image.js";
+import Video from "./video.js";
 import Iframe from "react-iframe";
 
 import {
@@ -39,6 +40,8 @@ class Scroller extends Component {
     React.CreateRef = this.renderFocus = React.createRef();
 
     this.state = {
+      mobile: false,
+      load: "not ok",
       isLoadingMore: false,
       fullscreenActive: false,
       elementIndex: null,
@@ -76,21 +79,56 @@ class Scroller extends Component {
       startPage: false,
       realData: [],
       fullscreenRequested: false,
-      currentFullscreenElement: {}
+      currentFullscreenElement: {},
+      height: window.innerHeight,
+      message: "not at bottom"
     };
   }
 
+  componentWillUpdate() {
+    if (this.state.message === "bottom reached") {
+      this.setState({ message: "hello" }, () => this.moreSubreddits());
+      console.log("we here");
+    }
+  }
+
   componentDidMount() {
-    console.log('asdasd',straight.includes(this.props.match.params.subreddit));
-    if(straight.includes(this.props.match.params.subreddit)){
-      this.setState({category: 'nsfw'})
+    window.addEventListener("scroll", this.handleScroll);
+    if (window.screen.availWidth < 800) this.setState({ mobile: true });
+    if (straight.includes(this.props.match.params.subreddit)) {
+      this.setState({ category: "nsfw" });
     }
     this.props.match.params.subreddit &&
     this.props.match.params.subreddit !== "startpage"
       ? this.getSubreddit(this.props.match.params.subreddit)
       : this.setState({ startPage: true });
-      
   }
+
+  /* componentWillUnmount() {
+    window.removeEventListener("scroll", this.handleScroll);
+  } */
+
+  handleScroll = () => {
+    const windowHeight =
+      "innerHeight" in window
+        ? window.innerHeight
+        : document.documentElement.offsetHeight;
+    const body = document.body;
+    const html = document.documentElement;
+    const docHeight = Math.max(
+      body.scrollHeight,
+      body.offsetHeight,
+      html.clientHeight,
+      html.scrollHeight,
+      html.offsetHeight
+    );
+    const windowBottom = windowHeight + 100 + window.pageYOffset;
+    if (windowBottom >= docHeight) {
+      this.setState({
+        message: "bottom reached"
+      });
+    }
+  };
 
   dataHandler(props) {
     let lowerCaseCategory = props.toLowerCase();
@@ -431,11 +469,9 @@ class Scroller extends Component {
   }
 
   dataMapper = (fetchedData, removeOldContent) => {
-    
     if (!removeOldContent) {
       sources = [];
-      htmlAndSource = null
-      
+      htmlAndSource = [];
     }
     fetchedData.map((item, i) => {
       let mediaData = {};
@@ -469,6 +505,16 @@ class Scroller extends Component {
           preview.reddit_video_preview.height,
           preview.reddit_video_preview.width
         );
+
+        let low = "";
+        preview &&
+          preview.images[0].resolutions.map(resolution => {
+            let res = resolution.height + resolution.width;
+            if (res > 500 && res < 1000) {
+              low = this.htmlParser(resolution.url);
+            }
+          });
+        mediaData.video.image = low;
         mediaData.video.poster = data.thumbnail;
       } else if (isGif) {
         mediaData.gif = {};
@@ -523,7 +569,7 @@ class Scroller extends Component {
 
       if (Object.entries(mediaData).length !== 0) {
         mediaData.title = data.title;
-        mediaData.thumbnail = thumbnail
+        mediaData.thumbnail = thumbnail;
         sources.push(mediaData);
         /* console.log(mediaData); */
       }
@@ -534,76 +580,94 @@ class Scroller extends Component {
     return (
       <React.Fragment>
         <button onClick={this.switchCat} className="iconRight">
-          <Icon type="arrow-right" />
+          <Icon type="step-forward" />
         </button>
         <button className="iconLeft" onClick={this.goBackToLast}>
-          <Icon type="arrow-left" />
+          <Icon type="step-backward" />
         </button>
       </React.Fragment>
     );
   };
-  htmlAdder = () => {
 
+  3;
+
+  checkImage = async path =>
+    await new Promise(resolve => {
+      let img = new Image();
+
+      img.onload = () => resolve({ path, status: "ok" });
+      img.onerror = () => resolve({ path, status: "error" });
+      img.src = path;
+    });
+
+  htmlAdder = () => {
     htmlAndSource = sources
       .filter(item => Object.entries(item).length !== 0)
       .map((data, i) => {
         const { gif, image, video, embed, title, domain, thumbnail } = data;
-        /* let class = {...image[0].className}; */
+        const {
+          isOnlyPicsShowing,
+          isOnlyGifsShowing,
+          mobile,
+          fullscreenActive
+        } = this.state;
 
-        if (image) {
-          const jsx = (
+        if (
+          image &&
+          (!isOnlyGifsShowing || (isOnlyGifsShowing && isOnlyPicsShowing))
+        ) {
+          let jsx = (
             <div
+              key={i}
               ref={el => (this[i] = el)}
               onClick={() => {
                 this.getElementIndex(jsx, i, this[i]);
               }}
               className={`gridElement ${image.className}`}
             >
-              {this.switchCatButtons()}
-              <img
-                className={`image`}
-                /* onClick={() => this.pleaseExitFullscreen()} */
-                key={i}
-                src={image.low || image.high || image.source}
+              <Image
+                className="image"
+                key={`image${i}`}
+                src={(mobile && (image.low || image.high)) || image.source}
+                onClick={() => {
+                  this.getElementIndex(jsx, i, this[i]);
+                }}
               />
               <div className="title-text">{title}</div>
             </div>
           );
+
           return jsx;
         }
-        if (video) {
-          const jsx = (
+        if (
+          video &&
+          (!isOnlyPicsShowing || (isOnlyGifsShowing && isOnlyPicsShowing))
+        ) {
+          let jsx = (
             <div
               ref={el => (this[i] = el)}
               onClick={() => {
-                this.getElementIndex(jsx, i, this[i]);
+                this.getElementIndex(jsx, i, this[`video${i}`]);
               }}
               className={`gridElement ${video.className}`}
             >
-              {this.switchCatButtons()}
-              <video
-                key={i}
-                autoPlay={true}
-                allowFullScreen
-                onCanPlay={() => this.setState({ isVideoLoading: false })}
-                className={`video`}
-                ref={el => (this[i] = el)}
-                poster={image ? image.low: data.thumbnail  }
-                playsInline
-                /* poster={video.poster} */
-                onMouseOver={() => console.log("hello")}
-                onMouseLeave={() => console.log("bye")}
-                loop={true}
-              >
-                <source src={video.url} type="video/mp4" />
-                Sorry, your browser doesn't support embedded videos.
-              </video>
+              <Video
+                key={`video${i}`}
+                mobile={mobile}
+                src={video.url}
+                fullscreenActive={fullscreenActive}
+                poster={video.image ? video.image : data.thumbnail}
+              />
+
               <div className="title-text">{title}</div>
             </div>
           );
           return jsx;
         }
-        if (gif) {
+        if (
+          gif &&
+          (!isOnlyPicsShowing || (isOnlyGifsShowing && isOnlyPicsShowing))
+        ) {
           const jsx = (
             <div
               ref={el => (this[i] = el)}
@@ -612,7 +676,6 @@ class Scroller extends Component {
               }}
               className={`gridElement ${gif.className}`}
             >
-              {this.switchCatButtons()}
               <img className={`gif`} key={i} src={gif.url} />
               <div className="title-text">{title}</div>
             </div>
@@ -637,11 +700,11 @@ class Scroller extends Component {
               </React.Fragment>
             );
         }
-      });
-    htmlAndSource = htmlAndSource.filter(item => item);
+      })
+      .filter(item => item);
+
+    console.log(htmlAndSource);
   };
-
-
 
   imageRatioCalculator = (height, width) => {
     let ratio = height / width;
@@ -660,6 +723,12 @@ class Scroller extends Component {
     if (ratio >= 1.5) return "superTall";
   };
   getElementIndex = (element, index) => {
+    !this.state.fullscreenActive? message.info(
+      `Entering fullscreen mode. Press up or down to switch picture. Or press right or left to change subcategory. Press picture to exit`
+    ):
+    message.info(
+      `Exiting fullscreen mode. Press right or left to change subcategory`
+    )
     elementIndex = index;
     this.setState({
       element: element,
@@ -689,9 +758,8 @@ class Scroller extends Component {
       });
     }
   };
+
   render() {
-    
-    console.log(this.state.fullscreenActive)
     return (
       <Swipeable
         className="wrapper"
@@ -709,17 +777,20 @@ class Scroller extends Component {
             onSwipedLeft={this.swipedLeft}
             onSwipedRight={this.swipedRight}
           >
-            {this.state.element ? (
+            {!this.state.isLoading ? (
               this.state.element
             ) : (
               <Spin className="spinner" />
             )}
 
-            <button
+            <Button
               className="fullscreenButtonPrevious"
+              icon="caret-up"
               onClick={() => this.getPreviousElement()}
             />
-            <button
+            <Button
+              autoFocus
+              icon="caret-down"
               className="fullscreenButtonNext"
               onClick={() => this.getNextElement()}
             />
@@ -825,7 +896,9 @@ class Scroller extends Component {
             </div>
           </Dropdown>
         </div>
-        <div className={this.state.fullscreenActive ? "contentZen" : "contentZen"}>
+        <div
+          className={this.state.fullscreenActive ? "contentZen" : "contentZen"}
+        >
           {this.switchCatButtons()}
           {this.state.isLoading ? (
             <div className="spinner">
@@ -835,46 +908,57 @@ class Scroller extends Component {
               </div>
             </div>
           ) : (
-            <div className="gridMedia">
-              {htmlAndSource.map((element, i) => (
-                <LazyLoad unmountIfInvisible={true} height={500} offset={100} key={i}>
-                  {element}
-                </LazyLoad>
-              ))}
-            </div>
-          )}
+            <React.Fragment>
+              <div className="gridMedia">
+                {htmlAndSource.map((el, i) => (
+                  <LazyLoad
+                    placeholder={
+                      <Spin
+                        style={{
+                          paddingTop: "30px",
+                          height: "400px",
+                          margin: "200px auto",
+                          paddingBottom: "200%"
+                        }}
+                      />
+                    }
+                    debounce={500}
+                    throttle={250}
+                    unmountIfInvisible={this.state.mobile}
+                    height={400}
+                    offset={this.state.mobile ? 400 : 2200}
+                    key={i}
+                  >
+                    {el}
+                  </LazyLoad>
+                ))}
+              </div>
 
-          <div className="loadMoreWrapper">
-            {this.state.isLoadingMore ? (
-              <Spin style={{ margin: "auto", display: "block" }} />
-            ) : (
-              !this.state.isLoading && (
-                <Button
-                  onClick={() => {
-                    this.moreSubreddits();
-                  }}
-                  type="primary"
-                  icon="download"
-                  className="loadMoreButton"
-                >
-                  Load more
-                </Button>
-              )
-            )}
-          </div>
-          <div className="downDiv">
-            <h2 className="subredditName">
-              <Icon type="tag-o" />
-              {this.state.subreddit}
-            </h2>
-          </div>
-          {/* <Icon
-            className="fullscreen-icon"
-            onClick={() =>
-              this.setState({ fullscreen: !this.state.fullscreen })
-            }
-            type={this.state.fullscreen ? "shrink" : "arrows-alt"}
-          /> */}
+              <div className="loadMoreWrapper">
+                {this.state.isLoadingMore ? (
+                  <Spin style={{ margin: "auto", display: "block" }} />
+                ) : (
+                  !this.state.isLoading && (
+                    <Button
+                      onClick={() => {
+                        this.moreSubreddits();
+                      }}
+                      type="primary"
+                      icon="download"
+                    >
+                      Load more
+                    </Button>
+                  )
+                )}
+              </div>
+              <div className="downDiv">
+                <h2 className="subredditName">
+                  <Icon type="tag-o" />
+                  {this.state.subreddit}
+                </h2>
+              </div>
+            </React.Fragment>
+          )}
         </div>
       </Swipeable>
     );
@@ -890,7 +974,7 @@ class Scroller extends Component {
       : this.props.history.push(`/${this.state.subreddit}`);
 
     await fetch(
-      `https://www.reddit.com/r/${this.state.subreddit}.json?limit=15`
+      `https://www.reddit.com/r/${this.state.subreddit}.json?limit=100`
     )
       .then(response => response.json())
       .then(jsonData => {
@@ -908,6 +992,7 @@ class Scroller extends Component {
         );
       });
     this.setState({ isLoading: false });
+    this.getNextElement();
   };
 
   moreSubreddits = async () => {
@@ -915,7 +1000,7 @@ class Scroller extends Component {
     await fetch(
       `https://www.reddit.com/r/${this.state.subreddit}.json?after=${
         this.state.after
-      }&limit=15`
+      }&limit=100`
     )
       .then(response => response.json())
       .then(jsonData => {
@@ -926,7 +1011,6 @@ class Scroller extends Component {
       })
       .catch(error => {
         console.log("error", error);
-        alert(error);
       });
     this.setState({ isLoadingMore: false });
   };

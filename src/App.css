@@ -1,5 +1,5 @@
 body {
-  background-color: black;
+  background-color: rgb(0, 0, 0, 0.8);
   font-family: "Roboto", sans-serif;
   margin: 0;
   padding: 0;
@@ -43,14 +43,7 @@ h2 {
   right: 1px;
   max-width: 200px;
 }
-.gridElement .iconRight,
-.gridElement .iconLeft {
-  display: none;
-}
-.gridElement:fullscreen .iconRight,
-.gridElement:fullscreen .iconLeft {
-  display: block;
-}
+
 
 .fullscreenScroll {
   z-index: 1;
@@ -60,38 +53,45 @@ h2 {
   right: 0;
   bottom: 0;
   position: fixed;
-  background-color: rgb(0, 0, 0, 0.8);
+  background-color: rgb(0, 0, 0, 0.95);
 
   width: 100%;
   margin: auto;
 }
 .fullscreenButtonPrevious {
-  z-index: 1238123988123912839128;
-  position: absolute;
+ 
   top: -1px;
+
+}
+.fullscreenButtonNext:focus{
+  background-color: transparent;
+  color: white;
+}
+
+.fullscreenButtonPrevious, .fullscreenButtonNext {
+  border: 0;
+  z-index: 5;
+  position: absolute;
+  color: white;
   bottom: 0;
   right: 0;
   left: 0;
-  height: 50px;
+  height: 100px;
   width: 100%;
-  background-color: blue;
+  background-color: transparent;
+  opacity: 0.8;
+  
 }
-.fullscreenButtonNext {
-  position: absolute;
-  z-index: 1238123988123912839128;
-  bottom: -1px;
-  margin-left: auto;
-  margin-right: auto;
-  height: 50px;
-  width: 100%;
-  background-color: red;
+.fullscreenButtonPrevious:hover, .fullscreenButtonNext:hover {
+  background-color: rgb(0, 0, 0, 0.4);
+  color: white;
 }
 .fullscreenScroll .video,
 .fullscreenScroll .image,
 .fullscreenScroll .gif,
 .fullscreenScroll .iframe {
   object-fit: contain;
-  z-index: 55;
+  z-index: 4;
   height: auto;
   max-height: 100vh;
 
@@ -106,27 +106,29 @@ h2 {
 }
 
 .gridMedia {
+  overflow: hidden;
   max-width: 1200px;
   margin: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
 
-  grid-gap: 5px;
+  grid-gap: 10px;
   grid-auto-flow: dense;
 }
 
 .gridElement:fullscreen {
   display: flex;
   align-content: center;
+  border-radius: 5px;
 }
 
-/* .superWide {
+.superWide {
   
  
   
 }
 .veryWide {
-  
+ 
 }
 .wide {
 
@@ -137,17 +139,18 @@ h2 {
 }
 .tall {
  
-} */
+} 
 .veryTall {
   grid-row: span 2;
 }
 .superTall {
   grid-row: span 2;
+  grid-column: span 1;
 }
 
 .gridElement {
   display: flex;
-
+  min-height: 400px;
   height: 100%;
   background-color: transparent;
   width: 100%;
@@ -179,10 +182,15 @@ iframe {
   max-width: 100%;
   max-height: 100%; */
 }
-
 .loading {
   font-size: 16px;
   display: block;
+}
+
+
+img{
+  color: white;
+  font-size: 1238123892px;
 }
 
 button {
@@ -319,13 +327,11 @@ p {
   background-position: left;
 }
 
-.centered-text{
-  margin-left: -65px;
-}
+
 
 .loadMoreWrapper {
   height: 520px;
-  display: block;
+  display: flex;
   margin: auto;
   width: 100%;
 }
@@ -338,12 +344,14 @@ p {
 
 .spinner {
   display: block;
-  position: absolute;
-  top: 50%;
-  left: 50%;
+  text-align: center;
   margin: auto;
+  top: 45%;
+  position: fixed;
+  width: 100%;
   color: white;
 }
+
 
 .item1 {
   grid-area: header;
@@ -397,40 +405,44 @@ p {
   color: #99ea86;
 }
 
-.iconRight {
-  position: absolute;
-  right: 1%;
-  opacity: 0.4;
-}
-
 .fullscreen-nextButton {
   position: absolute;
   top: 0;
 }
 
+.iconRight  {
+  position: absolute;
+  right: 0px;
+  text-align: right;
+}
+
+.iconLeft:hover,
+.iconRight:hover {
+  background-color: rgb(0, 0, 0, 0.8);
+}
+
 .iconLeft,
 .iconRight {
-  cursor: pointer;
   background-color: transparent;
-  opacity: 0.6;
-  height: 90%;
+  font-size: 16px;
+  opacity: 0.8;
+  height: 100%;
   position: fixed;
-  margin-top: 10%;
+  width: 6%;
   top: 0;
   bottom: 0;
-  z-index: 2;
-  font-size: 24px;
+  z-index: 4;
   color: white;
   transition: font-size 250ms;
 }
-
-.iconRight i {
-  position: absolute;
-  right: 1px;
-  text-align: right;
+.iconLeft{
+  text-align: left;
 }
+
+
 .iconRight i,
 .iconLeft i {
+  
   transition: font-size 250ms;
 }
 
@@ -464,15 +476,14 @@ p {
 }
 .wrapper {
   max-width: 100vw;
-  background-color: black;
+  height: 100%;
+ 
   /* width: 100%;
   height: 100%;
   max-height: 100vh;
   overflow: hidden; */
 }
-.hideElements{
-  display: none;
-}
+
 .lazy {
   display: none;
 }
@@ -498,7 +509,7 @@ p {
 }
 
 .searchWrapper {
-  width: 50px;
+  width: 0;
   z-index: 3;
 }
 
@@ -516,7 +527,7 @@ p {
 .autocomplete--entering,
 .autocomplete--entered {
   opacity: 1;
-  transition: opacity 2200ms;
+  transition: opacity 900ms;
   margin: 5px 0 0 5px;
   font-size: 16px;
   max-width: 200px;
@@ -526,13 +537,15 @@ p {
 .autocomplete--exiting,
 .autocomplete--exited {
   opacity: 0.3;
-  transition: opacity 2200ms;
+  transition: opacity 900ms;
   margin: 5px 0 0 5px;
   position: absolute;
   font-size: 16px;
 
   max-width: 200px;
 }
+
+
 .transition--entering,
 .transition--entered {
   opacity: 1;
@@ -549,7 +562,7 @@ p {
   border: 0 !important;
   position: relative;
   opacity: 1;
-  transition: opacity 2200ms;
+  transition: opacity 900ms;
   border: 1px dashed white;
   font-size: 28px;
 }
@@ -559,7 +572,7 @@ p {
   border: 0 !important;
   position: relative;
   opacity: 0.3;
-  transition: opacity 2200ms;
+  transition: opacity 100ms;
   border: 1px dashed white;
   font-size: 28px;
 }
@@ -576,7 +589,8 @@ p {
 .iconSetting {
   font-size: 35px;
   z-index: 2;
-  padding-top: 2px;
+  padding-top: 4px;
+  padding-right: 4px;
   max-width: 100px;
   white-space: wrap;
   border: 0;
@@ -598,7 +612,7 @@ p {
 }
 
 .topbarZen .scrollLogo {
-  opacity: 0.5;
+  
   font-size: 16px;
 }
 
@@ -616,20 +630,20 @@ p {
   overflow: hidden;
 }
 
-.contentZen i,
+
 .contentZen h2 {
   transition: font-size 250ms;
   font-size: 14px;
 }
 .topbarZen {
-  opacity: 0.5;
+  opacity: 0.8;
 
   background-color: transparent;
   max-width: 100vw;
   width: 100%;
   display: flex;
   flex-direction: row;
-  z-index: 4;
+  z-index: 5;
   position: fixed;
   top: 0;
   justify-content: space-between;

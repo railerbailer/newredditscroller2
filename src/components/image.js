@@ -11,7 +11,6 @@ class Image extends Component {
     const { loaded } = this.state;
     return (
       <img
-       
         className={`${className} ${loaded ? "loaded" : "undone"}`}
         onClick={onClick}
         onLoad={() => this.setState({ loaded: true })}

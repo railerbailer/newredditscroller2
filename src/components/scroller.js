@@ -3,9 +3,7 @@ import Swipeable from "react-swipeable";
 import "antd/dist/antd.css";
 import { debounce } from "lodash";
 import { Transition } from "react-transition-group";
-import LazyLoad from "react-lazyload";
-import Image from "./image.js";
-import Video from "./video.js";
+import AddMarkup from "./addMarkup.js";
 import Iframe from "react-iframe";
 
 import {
@@ -32,14 +30,10 @@ let sources = [];
 let htmlAndSource = [];
 let goBack = [];
 let goBackIndex = 0;
-let heart = [];
 let elementIndex = 0;
 class Scroller extends Component {
-  constructor(props) {
-    super(props);
-    React.CreateRef = this.renderFocus = React.createRef();
 
-    this.state = {
+    state = {
       mobile: false,
       load: "not ok",
       isLoadingMore: false,
@@ -53,37 +47,18 @@ class Scroller extends Component {
       isOnlyPicsShowing: false,
       isSearchActivated: false,
       dataSource: [],
-      isHeartModeOn: false,
-      heart: ["1", "2"],
-      urls: [],
-      loop: true,
-      autoPlay: true,
-      sliderData: [],
       subreddit: "",
-      activeSlide: 0,
-      activeSlide2: 0,
-      looper: false,
       visibility: true,
       visibleBackLeft: false,
-      alreadyChecked: false,
-      spinning: true,
-      underage: true,
-      isLoadingVideo: true,
       after: "",
       lastAfter: "",
-      fullscreen: false,
       category: "intial",
       isImageLoading: false,
-      lazyLoaded: "",
-      postTitle: [],
-      startPage: false,
-      realData: [],
-      fullscreenRequested: false,
-      currentFullscreenElement: {},
-      height: window.innerHeight,
-      message: "not at bottom"
+      message: "not at bottom",
+      element: null,
+      preloadElement: null
     };
-  }
+  
 
   componentWillUpdate() {
     if (this.state.message === "bottom reached") {
@@ -91,10 +66,12 @@ class Scroller extends Component {
       console.log("we here");
     }
   }
-
-  componentDidMount() {
-    window.addEventListener("scroll", this.handleScroll);
+  componentWillMount() {
     if (window.screen.availWidth < 800) this.setState({ mobile: true });
+  }
+  componentDidMount() {
+    console.log(this.state.mobile);
+    window.addEventListener("scroll", this.handleScroll);
     if (straight.includes(this.props.match.params.subreddit)) {
       this.setState({ category: "nsfw" });
     }
@@ -104,9 +81,9 @@ class Scroller extends Component {
       : this.setState({ startPage: true });
   }
 
-  /* componentWillUnmount() {
+  componentWillUnmount() {
     window.removeEventListener("scroll", this.handleScroll);
-  } */
+  }
 
   handleScroll = () => {
     const windowHeight =
@@ -122,7 +99,7 @@ class Scroller extends Component {
       html.scrollHeight,
       html.offsetHeight
     );
-    const windowBottom = windowHeight + 100 + window.pageYOffset;
+    const windowBottom = windowHeight + 150 + window.pageYOffset;
     if (windowBottom >= docHeight) {
       this.setState({
         message: "bottom reached"
@@ -158,32 +135,6 @@ class Scroller extends Component {
   checkImg(url) {
     return url.match(/\.(jpeg|jpg|png)$/) !== null;
   }
-
-  next = debounce(async () => {
-    this.state.sliderData.length - 1 === this.state.activeSlide &&
-      this.setState({ activeSlide: -1 });
-    this.setState({ activeSlide: this.state.activeSlide + 1 });
-    this.setState({
-      isVideoLoading: this.videoPlayer && true,
-      isImageLoading: !this.videoPlayer && true
-    });
-    this.state.isDropDownShowing && this.showDropDown();
-
-    !this.state.activeSlide &&
-      this.state.sliderData.length &&
-      this.moreSubreddits("after");
-  }, 100);
-
-  previous = async () => {
-    const infiniteScroll =
-      (await this.state.activeSlide) <= 0
-        ? this.state.sliderData.length && this.state.sliderData.length - 1
-        : this.state.activeSlide - 1;
-    this.setState({ activeSlide: infiniteScroll });
-    this.setState({ isVideoLoading: this.videoPlayer && true });
-    if (this.state.activeSlide === -1)
-      this.state.activeSlide === 0 && this.moreSubreddits("before");
-  };
 
   switchCat = async () => {
     elementIndex = 0;
@@ -241,7 +192,6 @@ class Scroller extends Component {
     }
 
     if (e.key === "s") {
-      !isSearchActivated && this.changeYourHeart(this.state.subreddit);
       !isSearchActivated && this.getNextElement();
     }
     if (e.key === "w") {
@@ -293,12 +243,6 @@ class Scroller extends Component {
     return array[random];
   };
 
-  loadingOrNo = () => {
-    this.state.sliderData.length === 0
-      ? this.setState({ spinning: true })
-      : this.setState({ spinning: false });
-  };
-
   categorySet = val => {
     this.setState({
       category: val
@@ -323,9 +267,7 @@ class Scroller extends Component {
         "Swipe, or use your keyboard arrows or a,s,w,d to shuffle or scroll posts."
     });
   };
-  changeYourHeart = input => {
-    input !== heart[heart.length - 1] && heart.push(input);
-  };
+
   handleSearch = value => {
     if (!value) {
       value = "Type your search";
@@ -366,11 +308,7 @@ class Scroller extends Component {
         <Menu.Item>
           <div onClick={e => this.changeCat(e, "Food")}>FOOD</div>
         </Menu.Item>
-        {/* <Menu.Item>
-          <div onClick={() => this.changeYourHeart(this.state.subreddit)}>
-            HEART
-          </div>
-        </Menu.Item> */}
+
         <Menu.Divider />
         <Menu.Item>
           Gifs only:
@@ -574,7 +512,7 @@ class Scroller extends Component {
         /* console.log(mediaData); */
       }
     });
-    this.htmlAdder();
+    /* this.htmlAdder(); */
   };
   switchCatButtons = () => {
     return (
@@ -587,123 +525,6 @@ class Scroller extends Component {
         </button>
       </React.Fragment>
     );
-  };
-
-  3;
-
-  checkImage = async path =>
-    await new Promise(resolve => {
-      let img = new Image();
-
-      img.onload = () => resolve({ path, status: "ok" });
-      img.onerror = () => resolve({ path, status: "error" });
-      img.src = path;
-    });
-
-  htmlAdder = () => {
-    htmlAndSource = sources
-      .filter(item => Object.entries(item).length !== 0)
-      .map((data, i) => {
-        const { gif, image, video, embed, title, domain, thumbnail } = data;
-        const {
-          isOnlyPicsShowing,
-          isOnlyGifsShowing,
-          mobile,
-          fullscreenActive
-        } = this.state;
-
-        if (
-          image &&
-          (!isOnlyGifsShowing || (isOnlyGifsShowing && isOnlyPicsShowing))
-        ) {
-          let jsx = (
-            <div
-              key={i}
-              ref={el => (this[i] = el)}
-              onClick={() => {
-                this.getElementIndex(jsx, i, this[i]);
-              }}
-              className={`gridElement ${image.className}`}
-            >
-              <Image
-                className="image"
-                key={`image${i}`}
-                src={(mobile && (image.low || image.high)) || image.source}
-                onClick={() => {
-                  this.getElementIndex(jsx, i, this[i]);
-                }}
-              />
-              <div className="title-text">{title}</div>
-            </div>
-          );
-
-          return jsx;
-        }
-        if (
-          video &&
-          (!isOnlyPicsShowing || (isOnlyGifsShowing && isOnlyPicsShowing))
-        ) {
-          let jsx = (
-            <div
-              ref={el => (this[i] = el)}
-              onClick={() => {
-                this.getElementIndex(jsx, i, this[`video${i}`]);
-              }}
-              className={`gridElement ${video.className}`}
-            >
-              <Video
-                key={`video${i}`}
-                mobile={mobile}
-                src={video.url}
-                fullscreenActive={fullscreenActive}
-                poster={video.image ? video.image : data.thumbnail}
-              />
-
-              <div className="title-text">{title}</div>
-            </div>
-          );
-          return jsx;
-        }
-        if (
-          gif &&
-          (!isOnlyPicsShowing || (isOnlyGifsShowing && isOnlyPicsShowing))
-        ) {
-          const jsx = (
-            <div
-              ref={el => (this[i] = el)}
-              onClick={() => {
-                this.getElementIndex(jsx, i, this[i]);
-              }}
-              className={`gridElement ${gif.className}`}
-            >
-              <img className={`gif`} key={i} src={gif.url} />
-              <div className="title-text">{title}</div>
-            </div>
-          );
-          return jsx;
-        }
-
-        if (false && embed) {
-          console.log();
-          if (embed.iframe)
-            return (
-              <React.Fragment>
-                {this.loadEmbed("", "", embed.iframe)}
-                <div className="title-text">{title}</div>
-              </React.Fragment>
-            );
-          else if (embed.url)
-            return (
-              <React.Fragment>
-                {this.loadEmbed(embed.url, domain, false)}
-                <div className="title-text">{title}</div>
-              </React.Fragment>
-            );
-        }
-      })
-      .filter(item => item);
-
-    console.log(htmlAndSource);
   };
 
   imageRatioCalculator = (height, width) => {
@@ -722,19 +543,25 @@ class Scroller extends Component {
 
     if (ratio >= 1.5) return "superTall";
   };
-  getElementIndex = (element, index) => {
-    !this.state.fullscreenActive? message.info(
-      `Entering fullscreen mode. Press up or down to switch picture. Or press right or left to change subcategory. Press picture to exit`
-    ):
-    message.info(
-      `Exiting fullscreen mode. Press right or left to change subcategory`
-    )
+  getElementIndex = (element, index, ref) => {
+    !this.state.fullscreenActive
+      ? message.info(
+          `Entering fullscreen mode. Press up or down to switch picture. Or press right or left to change subcategory. Press picture to exit`
+        )
+      : message.info(
+          `Exiting fullscreen mode. Press right or left to change subcategory`
+        );
+    console.log("ref", ref);
     elementIndex = index;
-    this.setState({
-      element: element,
-      fullscreenActive: !this.state.fullscreenActive
-    });
+    this.setState(
+      {
+        element: element,
+        fullscreenActive: !this.state.fullscreenActive
+      },
+      () => ref && ref.scrollIntoView()
+    );
   };
+
   getPreviousElement = async () => {
     if (!elementIndex) return;
     elementIndex = elementIndex - 1;
@@ -754,15 +581,23 @@ class Scroller extends Component {
         elementIndex = elementIndex + 1;
       }
       this.setState({
-        element: htmlAndSource[elementIndex]
+        element: htmlAndSource[elementIndex],
+        preloadElement: htmlAndSource[elementIndex + 1]
       });
     }
   };
+  setFullscreenArray = html => {
+    htmlAndSource = html;
+  };
 
   render() {
+    console.log(htmlAndSource);
+
+    // när man går ur fullscreen laddar den bara
+
     return (
       <Swipeable
-        className="wrapper"
+        className={`wrapper ${this.state.fullscreenActive ? "fullscreen" : ""}`}
         onKeyDown={this.handleKeyDown}
         /* onSwipedDown={this.swipedDown}
         onSwipedUp={this.swipedUp} */
@@ -778,9 +613,17 @@ class Scroller extends Component {
             onSwipedRight={this.swipedRight}
           >
             {!this.state.isLoading ? (
-              this.state.element
+              <React.Fragment>
+                {this.state.element}
+                {this.state.preloadElement}
+              </React.Fragment>
             ) : (
-              <Spin className="spinner" />
+              <div className="spinner">
+                <Spin />
+                <div className="centered-text">
+                  Loading <strong>{this.state.subreddit}</strong> category
+                </div>
+              </div>
             )}
 
             <Button
@@ -909,29 +752,24 @@ class Scroller extends Component {
             </div>
           ) : (
             <React.Fragment>
-              <div className="gridMedia">
-                {htmlAndSource.map((el, i) => (
-                  <LazyLoad
-                    placeholder={
-                      <Spin
-                        style={{
-                          paddingTop: "30px",
-                          height: "400px",
-                          margin: "200px auto",
-                          paddingBottom: "200%"
-                        }}
-                      />
-                    }
-                    debounce={500}
-                    throttle={250}
-                    unmountIfInvisible={this.state.mobile}
-                    height={400}
-                    offset={this.state.mobile ? 400 : 2200}
-                    key={i}
-                  >
-                    {el}
-                  </LazyLoad>
-                ))}
+              <div
+                className="gridMedia"
+                style={
+                  this.state.fullscreenActive
+                    ? { display: "none" }
+                    : { backgroundColor: "rgba(50,54,57,1)" }
+                }
+              >
+                <AddMarkup
+                  addMore={elementIndex + 2 > htmlAndSource.length}
+                  mobile={this.state.mobile}
+                  setFullscreenArray={this.setFullscreenArray}
+                  getElementIndex={this.getElementIndex}
+                  isOnlyGifsShowing={this.state.isOnlyGifsShowing}
+                  isOnlyPicsShowing={this.state.isOnlyPicsShowing}
+                  fullscreen={this.state.fullscreenActive}
+                  dataSource={sources}
+                />
               </div>
 
               <div className="loadMoreWrapper">
@@ -945,6 +783,7 @@ class Scroller extends Component {
                       }}
                       type="primary"
                       icon="download"
+                      className="loadMoreButton"
                     >
                       Load more
                     </Button>

@@ -8,16 +8,13 @@ let existsData = 0;
 let html;
 class AddMarkup extends Component {
   state = {
-    showFullScreenIcon: false
+    showFullScreenIcon: true,
+    html: []
   };
-
-  componentWillUpdate() {
-    if (this.props.addMore) this.props.setFullscreenArray(html);
-  }
 
   componentDidMount() {
     const {} = this.props;
-    console.log("addmarkupdidmount");
+    console.log("Mounting addMarkup", html);
     this.props.setFullscreenArray(html);
   }
 
@@ -35,7 +32,6 @@ class AddMarkup extends Component {
       .filter(item => Object.entries(item).length !== 0)
       .map((data, i) => {
         const { gif, image, video, title } = data;
-
         if (
           image &&
           (!isOnlyGifsShowing || (isOnlyGifsShowing && isOnlyPicsShowing))
@@ -50,25 +46,26 @@ class AddMarkup extends Component {
                   }}
                 />
               }
-              debounce={250}
               throttle={250}
               height={400}
-              offset={mobile ? 5 : 2000}
+              offset={mobile ? 800 : 2000}
               key={i}
             >
               <div
                 key={i}
                 ref={el => (this[`gridElement${i}`] = el)}
                 className={`gridElement ${image.className}`}
-                onMouseOver={() => this.setState({ showFullScreenIcon: true })}
-                onMouseLeave={() =>
-                  this.setState({ showFullScreenIcon: false })
+                onClick={() =>
+                  this.props.addMore && this.props.setFullscreenArray(html)
                 }
               >
                 <Image
                   className="image"
                   key={`image${i}`}
                   fullscreen={fullscreen}
+                  onClick={() => {
+                    getElementIndex(jsx, i, this[`gridElement${i}`]);
+                  }}
                   src={
                     (mobile && (image.low || image.high)) ||
                     image.source ||
@@ -76,14 +73,13 @@ class AddMarkup extends Component {
                   }
                 />
                 <div className="title-text">{title}</div>
-                {(this.state.showFullScreenIcon || !fullscreen) && (
-                  <Icon
-                    className="fullscreenIcon"
-                    type={fullscreen ? "shrink" : "arrows-alt"}
-                    onClick={() => {
-                      getElementIndex(jsx, i, this[`gridElement${i}`]);
-                    }}
-                  />
+                <Icon
+                  className="fullscreenIcon"
+                  type={fullscreen ? "shrink" : "arrows-alt"}
+                  onClick={() => {
+                    getElementIndex(jsx, i, this[`gridElement${i}`]);
+                  }}
+                />
                 )}
               </div>
             </LazyLoad>
@@ -105,16 +101,19 @@ class AddMarkup extends Component {
                   }}
                 />
               }
-              debounce={250}
+             
               throttle={250}
               height={400}
-              offset={mobile ? 5 : 2000}
+              offset={mobile ? 800 : 2000}
               key={i}
             >
               <div
                 key={i}
                 ref={el => (this[`gridElement${i}`] = el)}
                 className={`gridElement ${video.className}`}
+                onClick={() =>
+                  this.props.addMore && this.props.setFullscreenArray(html)
+                }
               >
                 <Video
                   key={`video${i}`}
@@ -125,7 +124,7 @@ class AddMarkup extends Component {
                 />
 
                 <div className="title-text">{title}</div>
-                {(this.state.showFullScreenIcon || !fullscreen) && (
+                {
                   <Icon
                     className="fullscreenIcon"
                     type={fullscreen ? "shrink" : "arrows-alt"}
@@ -133,7 +132,7 @@ class AddMarkup extends Component {
                       getElementIndex(jsx, i, this[`gridElement${i}`]);
                     }}
                   />
-                )}
+                }
               </div>
             </LazyLoad>
           );
@@ -153,35 +152,36 @@ class AddMarkup extends Component {
                   }}
                 />
               }
-              debounce={250}
+         
               throttle={250}
               height={400}
-              offset={mobile ? 5 : 2000}
+              offset={mobile ? 800 : 2000}
               key={i}
             >
               <div
                 key={i}
                 ref={el => (this[`gridElement${i}`] = el)}
                 className={`gridElement ${gif.className}`}
+                onClick={() =>
+                  this.props.addMore && this.props.setFullscreenArray(html)
+                }
               >
                 <img className={`gif`} key={i} src={gif.url} />
                 <div className="title-text">{title}</div>
-                {(this.state.showFullScreenIcon || !fullscreen) && (
-                  <Icon
-                    className="fullscreenIcon"
-                    type={fullscreen ? "shrink" : "arrows-alt"}
-                    onClick={() => {
-                      getElementIndex(jsx, i, this[`gridElement${i}`]);
-                    }}
-                  />
+                <Icon
+                  className="fullscreenIcon"
+                  type={fullscreen ? "shrink" : "arrows-alt"}
+                  onClick={() => {
+                    getElementIndex(jsx, i, this[`gridElement${i}`]);
+                  }}
+                />
                 )}
               </div>
             </LazyLoad>
           );
           return jsx;
         }
-      })
-      .filter(item => item);
+      });
 
     return html;
   }

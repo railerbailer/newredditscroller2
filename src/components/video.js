@@ -7,13 +7,11 @@ class Video extends Component {
   };
 
   togglePlaying = () => {
-    !this.props.fullscreen &&
-      setTimeout(() => {
-        if (this.videoPlayer) {
-          this.videoPlayer.pause();
-          this.setState({ isPlaying: false });
-        }
-      }, 30000);
+    if (this.videoPlayer) {
+      this.videoPlayer.pause();
+      this.setState({ isPlaying: false });
+    }
+
     this.setState({ isPlaying: !this.state.isPlaying }, () =>
       this.state.isPlaying ? this.videoPlayer.play() : this.videoPlayer.pause()
     );

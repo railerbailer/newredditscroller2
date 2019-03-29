@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import Swipeable from "react-swipeable";
 import "antd/dist/antd.css";
-import { debounce } from "lodash";
+import { throttle } from "lodash";
 import { Transition } from "react-transition-group";
 import AddMarkup from "./addMarkup.js";
-import Iframe from "react-iframe";
 
 import {
   Icon,
@@ -68,7 +67,7 @@ class Scroller extends Component {
     if (window.screen.availWidth < 800) this.setState({ mobile: true });
   }
   componentDidMount() {
-    window.addEventListener("scroll", this.handleScroll);
+    
     if (straight.includes(this.props.match.params.subreddit)) {
       this.setState({ category: "nsfw" });
     }
@@ -80,26 +79,9 @@ class Scroller extends Component {
     window.removeEventListener("scroll", this.handleScroll);
   }
  */
-  handleScroll = () => {
-    const windowHeight =
-      "innerHeight" in window
-        ? window.innerHeight
-        : document.documentElement.offsetHeight;
-    const body = document.body;
-    const html = document.documentElement;
-    const docHeight = Math.max(
-      body.scrollHeight,
-      body.offsetHeight,
-      html.clientHeight,
-      html.scrollHeight,
-      html.offsetHeight
-    );
-    const windowBottom = windowHeight + 150 + window.pageYOffset;
-    if (windowBottom >= docHeight) {
-      this.setState({
-        message: "bottom reached"
-      });
-    }
+
+  toggleFullscreen = () => {
+    this.setState({ fullscreenActive: !this.state.fullscreenActive });
   };
 
   dataHandler(props) {
@@ -131,7 +113,7 @@ class Scroller extends Component {
     return url.match(/\.(jpeg|jpg|png)$/) !== null;
   }
 
-  switchCat = debounce(async () => {
+  switchCat = throttle(async () => {
     elementIndex = 0;
     this.state.isDropDownShowing && this.showDropDown();
     this.setState({
@@ -344,66 +326,6 @@ class Scroller extends Component {
     this.setState({ isDropDownShowing: !this.state.isDropDownShowing });
   };
 
-  loadEmbed = (url, domain, embedExists) => {
-    if (embedExists) {
-      return (
-        <div
-          style={{ backgroundColor: "red" }}
-          className="gridElement"
-          dangerouslySetInnerHTML={{
-            __html: this.htmlParser(
-              embedExists.replace("allowfullscreen", "allowFullScreen")
-            )
-          }}
-        />
-      );
-    }
-    if (domain === "erome.com") {
-      return (
-        <Iframe
-          url={url}
-          className="gridElement"
-          display="initial"
-          position="relative"
-          allowFullScreen
-        />
-      );
-    }
-    if (false && domain.includes("pornhub") && url.includes("pornhub")) {
-      let pornhubEmbedId = url.split("=");
-      console.log("pornhub");
-      return (
-        <Iframe
-          url={`https://www.pornhub.com/embed/${pornhubEmbedId[1]}`}
-          className="gridElement"
-          display="initial"
-          position="relative"
-          allowFullScreen
-        />
-      );
-    }
-
-    if (domain.includes("imgur")) {
-      let imgurEmbedId = url.split("/a/");
-      imgurEmbedId = imgurEmbedId[1];
-      let newScriptTag = document.createElement("script");
-      newScriptTag.imgurEmbedId = "globalImgurEmbedScriptTag";
-      newScriptTag.src = "//s.imgur.com/min/embed.js";
-      newScriptTag.type = "text/javascript";
-
-      document.querySelector("body").appendChild(newScriptTag);
-      return (
-        <blockquote
-          className="imgur-embed-pub imgur"
-          lang="en"
-          data-id={`a/${imgurEmbedId}`}
-        >
-          <a href={`//imgur.com/${imgurEmbedId}`}>Results of day drinking</a>
-        </blockquote>
-      );
-    }
-  };
-
   htmlParser(string) {
     let editedString = "";
     editedString =
@@ -532,8 +454,6 @@ class Scroller extends Component {
         /* console.log(mediaData); */
       }
     });
-
-    /* this.htmlAdder(); */
   };
   switchCatButtons = () => {
     return (
@@ -564,47 +484,8 @@ class Scroller extends Component {
 
     if (ratio >= 1.5) return "superTall";
   };
-  getElementIndex = (element, index, ref) => {
-    /*  console.log("INIDEXINDEINDEX", index, ref, element); */
-    this.state.isFirstVisit &&
-      !this.state.fullscreenActive &&
-      this.setState({ isFirstVisit: false }, () =>
-        message.info(
-          `Entering fullscreen mode. Press up or down to switch picture. Or press right or left to change subcategory. Press picture to exit`
-        )
-      );
-
-    this.setState(
-      {
-        elementIndex: index,
-        fullscreenActive: !this.state.fullscreenActive
-      },
-      () => window.scrollTo(0, 430 * index)
-    );
-  };
-
-  getPreviousElement = debounce(() => {
-    if (!this.state.elementIndex) return;
-    this.setState({ elementIndex: this.state.elementIndex - 1 });
-  }, 100);
-
-  getNextElement = debounce(() => {
-    if (this.state.elementIndex + 1 >= this.state.htmlAndSource.length) return;
-
-    this.setState({
-      elementIndex: this.state.elementIndex + 1
-    });
-  }, 100);
-  setFullscreenArray = html => {
-    if (!html.length)
-      this.getSubreddit(
-        this.shuffleArray(this.dataHandler(this.state.category))
-      );
-    this.setState({ htmlAndSource: html });
-  };
 
   render() {
- 
     // när man går ur fullscreen laddar den bara
     // innan den laddas så kan en icon visas som visar att det laddar i fullscreen
     // gör att en laddning startas i funktionen för att fylla på datat i fullscreen
@@ -622,7 +503,7 @@ class Scroller extends Component {
         onSwipedLeft={this.swipedLeft}
         onSwipedRight={this.swipedRight}
       >
-        {this.state.fullscreenActive && (
+        {/*         {this.state.fullscreenActive && (
           <Swipeable
             className="fullscreenScroll"
             onSwipedDown={this.swipedDown}
@@ -650,14 +531,10 @@ class Scroller extends Component {
               type="caret-up"
               onClick={() => this.getPreviousElement()}
             />
-            <Icon
-              autoFocus
-              type="caret-down"
-              className="fullscreenButtonNext"
-              onClick={() => this.getNextElement()}
-            />
+           
           </Swipeable>
-        )}
+        )} */}
+
         {this.state.category === "No category chosen" ? (
           <div className="categoryModal">
             <div className="grid-container">
@@ -770,31 +647,22 @@ class Scroller extends Component {
             </div>
           ) : (
             <React.Fragment>
-              <div
-                className="gridMedia"
-                style={
-                  this.state.fullscreenActive
-                    ? { display: "none" }
-                    : { backgroundColor: "rgba(50,54,57,1)" }
-                }
-              >
-                <AddMarkup
-                  toggleIsLoading={this.toggleIsLoading}
-                  addMore={
-                    this.state.elementIndex + 2 >
-                    this.state.htmlAndSource.length
-                  }
-                  mobile={this.state.mobile}
-                  setFullscreenArray={this.setFullscreenArray}
-                  getElementIndex={this.getElementIndex}
-                  isOnlyGifsShowing={this.state.isOnlyGifsShowing}
-                  isOnlyPicsShowing={this.state.isOnlyPicsShowing}
-                  fullscreen={this.state.fullscreenActive}
-                  dataSource={sources}
-                />
-              </div>
+              <AddMarkup
+                toggleFullscreen={this.toggleFullscreen}
+                toggleIsLoading={this.toggleIsLoading}
+                activeElement={this.state.elementIndex}
+                mobile={this.state.mobile}
+                getElementIndex={this.getElementIndex}
+                isOnlyGifsShowing={this.state.isOnlyGifsShowing}
+                isOnlyPicsShowing={this.state.isOnlyPicsShowing}
+                fullscreen={this.state.fullscreenActive}
+                dataSource={sources}
+                loadMore={this.moreSubreddits}
+                isLoading={this.state.isLoading}
+                isLoadingMore={this.state.isLoadingMore}
+              />
 
-              <div className="loadMoreWrapper">
+             {/*  <div className="loadMoreWrapper">
                 {this.state.isLoadingMore ? (
                   <Spin style={{ margin: "auto", display: "block" }} />
                 ) : (
@@ -811,7 +679,7 @@ class Scroller extends Component {
                     </Button>
                   )
                 )}
-              </div>
+              </div> */}
               <div className="downDiv">
                 <h2 className="subredditName">
                   <Icon type="tag-o" />
@@ -859,6 +727,7 @@ class Scroller extends Component {
   };
 
   moreSubreddits = async () => {
+    console.log('moresubreddits======')
     this.setState({ isLoadingMore: true });
     await fetch(
       `https://www.reddit.com/r/${this.state.subreddit}.json?after=${
@@ -880,3 +749,63 @@ class Scroller extends Component {
 }
 
 export default Scroller;
+
+/* loadEmbed = (url, domain, embedExists) => {
+  if (embedExists) {
+    return (
+      <div
+        style={{ backgroundColor: "red" }}
+        className="gridElement"
+        dangerouslySetInnerHTML={{
+          __html: this.htmlParser(
+            embedExists.replace("allowfullscreen", "allowFullScreen")
+          )
+        }}
+      />
+    );
+  }
+  if (domain === "erome.com") {
+    return (
+      <Iframe
+        url={url}
+        className="gridElement"
+        display="initial"
+        position="relative"
+        allowFullScreen
+      />
+    );
+  }
+  if (false && domain.includes("pornhub") && url.includes("pornhub")) {
+    let pornhubEmbedId = url.split("=");
+    console.log("pornhub");
+    return (
+      <Iframe
+        url={`https://www.pornhub.com/embed/${pornhubEmbedId[1]}`}
+        className="gridElement"
+        display="initial"
+        position="relative"
+        allowFullScreen
+      />
+    );
+  }
+
+  if (domain.includes("imgur")) {
+    let imgurEmbedId = url.split("/a/");
+    imgurEmbedId = imgurEmbedId[1];
+    let newScriptTag = document.createElement("script");
+    newScriptTag.imgurEmbedId = "globalImgurEmbedScriptTag";
+    newScriptTag.src = "//s.imgur.com/min/embed.js";
+    newScriptTag.type = "text/javascript";
+
+    document.querySelector("body").appendChild(newScriptTag);
+    return (
+      <blockquote
+        className="imgur-embed-pub imgur"
+        lang="en"
+        data-id={`a/${imgurEmbedId}`}
+      >
+        <a href={`//imgur.com/${imgurEmbedId}`}>Results of day drinking</a>
+      </blockquote>
+    );
+  }
+}; */

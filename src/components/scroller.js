@@ -114,32 +114,32 @@ class Scroller extends Component {
     return url.match(/\.(jpeg|jpg|png)$/) !== null;
   }
 
-  switchCat = throttle(async () => {
+  switchCat = throttle(() => {
     this.state.isDropDownShowing && this.showDropDown();
 
     if (goBackIndex > 0) {
       goBackIndex = goBackIndex - 1;
       if (this.state.subreddit === goBack[goBack.length - 1 - goBackIndex]) {
         !this.state.isLoading &&
-          (await this.getSubreddit(goBack[goBack.length - goBackIndex]));
+          this.getSubreddit(goBack[goBack.length - goBackIndex]);
       } else
         !this.state.isLoading &&
-          (await this.getSubreddit(goBack[goBack.length - 1 - goBackIndex]));
+          this.getSubreddit(goBack[goBack.length - 1 - goBackIndex]);
     } else {
       !this.state.isLoading &&
-        (await this.getSubreddit(
+        this.getSubreddit(
           this.shuffleArray(this.dataHandler(this.state.category))
-        ));
+        );
       if (
         goBackIndex === 0 &&
         goBack[goBack.length - 1] !== this.state.subreddit
       ) {
-        await goBack.push(this.state.subreddit);
+        goBack.push(this.state.subreddit);
       }
     }
   }, 500);
 
-  goBackToLast = async () => {
+  goBackToLast = () => {
     this.setState({ isVideoLoading: true });
     if (goBack.length > 1 && goBack[0] !== this.state.subreddit) {
       if (this.state.subreddit === goBack[goBack.length - 1 - goBackIndex]) {
@@ -151,7 +151,7 @@ class Scroller extends Component {
       : console.log("doing nothin...");
 
     if (!goBack.includes(this.state.subreddit)) {
-      await goBack.push(this.state.subreddit);
+     goBack.push(this.state.subreddit);
     }
   };
 
@@ -198,11 +198,11 @@ class Scroller extends Component {
     });
   };
 
-  changeCat = async (e, cat) => {
+  changeCat =  (e, cat) => {
     this.setState({ startPage: false });
-    await e.preventDefault();
-    await this.categorySet(cat);
-    await this.getSubreddit(this.shuffleArray(this.dataHandler(cat)));
+     e.preventDefault();
+     this.categorySet(cat);
+     this.getSubreddit(this.shuffleArray(this.dataHandler(cat)));
     message.info(
       `Category is ${cat}, press or swipe right to shuffle subreddit`
     );
@@ -646,7 +646,8 @@ class Scroller extends Component {
       await this.setState({ subreddit: subreddit, isLoading: true });
     }
 
-    this.state.category === "No category chosen" && !this.props.match.params.subreddit
+    this.state.category === "No category chosen" &&
+    !this.props.match.params.subreddit
       ? null
       : this.props.history.push(`/${this.state.subreddit}`);
 
@@ -664,9 +665,9 @@ class Scroller extends Component {
       })
 
       .catch(async () => {
-        await this.getSubreddit(
+       try {await this.getSubreddit(
           this.shuffleArray(this.dataHandler(this.state.category))
-        );
+        )} catch(error) {console.log('error', error)}
       });
 
     this.setState({ isLoading: false });

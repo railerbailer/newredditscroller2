@@ -70,7 +70,13 @@ class AddMarkup extends Component {
   getNextElement = throttle(async () => {
     const haveMoreContent = this.state.activeElement + 1 >= html.length;
     if (haveMoreContent) {
-      !this.props.isLoadingMore && (await this.props.loadMore());
+      if (!this.props.isLoadingMore) {
+        try {
+          await this.props.loadMore();
+        } catch (error) {
+          console.log("error", error);
+        }
+      }
       this.renderHtml();
       this.setState({
         activeElement: haveMoreContent
@@ -158,7 +164,11 @@ class AddMarkup extends Component {
             {!this.props.isLoading && html.length && (
               <Button
                 onClick={async () => {
-                  await this.props.loadMore();
+                  try {
+                    await this.props.loadMore();
+                  } catch (error) {
+                    console.log("error", error);
+                  }
                   setTimeout(
                     () => this.setState({ loading: true }, this.renderHtml()),
                     500
@@ -306,7 +316,12 @@ class AddMarkup extends Component {
                 ref={el => (this[`gridElement${i}`] = el)}
                 className={`gridElement ${gif.className}`}
               >
-                <img alt="Gif could not be loaded"  className={`gif`} key={i} src={gif.url} />
+                <img
+                  alt="Gif could not be loaded"
+                  className={`gif`}
+                  key={i}
+                  src={gif.url}
+                />
                 <div className="title-text">{title}</div>
                 <div
                   className="fullscreenIcon"

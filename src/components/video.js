@@ -18,7 +18,7 @@ class Video extends Component {
   };
 
   render() {
-    const { src, poster, mobile } = this.props;
+    const { src, poster, mobile, fullscreen } = this.props;
 
     let havePoster = mobile && { poster: poster };
 
@@ -31,19 +31,19 @@ class Video extends Component {
           onTouchMove={() => {
             this.setState({ isPlaying: false }, () => this.videoPlayer.pause());
           }}
-          autoPlay={false}
+          autoPlay={mobile ? false : fullscreen?true:false}
           allowFullScreen={true}
           onCanPlay={() => this.setState({ loaded: true })}
           className={`video`}
           playsInline={true}
           onMouseOver={() =>
             !mobile &&
-            this.setState({ isPlaying: true }, () => this.videoPlayer.play())
+            this.setState({ isPlaying: true }, () => {this.videoPlayer.play(); setTimeout(()=>this.videoPlayer && this.videoPlayer.pause(), 60000);})
           }
-          onMouseLeave={() =>
+        /*   onMouseLeave={() =>
             !mobile &&
             this.setState({ isPlaying: false }, () => this.videoPlayer.pause())
-          }
+          } */
           loop={true}
           {...havePoster}
           preload={mobile ? "none" : "metadata"}
@@ -54,7 +54,7 @@ class Video extends Component {
         {!this.state.isPlaying ? (
           <Icon
             className="playButton"
-            type={"play-circle"}
+            type={"youtube"}
             onClick={() => this.togglePlaying()}
           />
         ) : (

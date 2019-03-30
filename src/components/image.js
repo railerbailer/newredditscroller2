@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Spin } from "antd";
 
 class Image extends Component {
   state = {
@@ -11,7 +10,7 @@ class Image extends Component {
     const { loaded } = this.state;
     return (
       <img
-        alt="yolo"
+        alt="Image could not be loaded"
         className={`${className} ${loaded ? "loaded" : "undone"}`}
         onClick={onClick}
         onLoad={() => this.setState({ loaded: true })}

@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { Spin, Icon, message, Button } from "antd";
+import { Spin, Icon, Button } from "antd";
 import LazyLoad from "react-lazyload";
 import Image from "./image.js";
 import Video from "./video.js";
-import { debounce, throttle } from "lodash";
+import { throttle } from "lodash";
+import Swipeable from "react-swipeable";
 
-let existsData = 0;
 let html;
 class AddMarkup extends Component {
   state = {
@@ -18,12 +18,13 @@ class AddMarkup extends Component {
     this.renderHtml();
   }
   componentDidMount() {
-/*         window.addEventListener("scroll", this.handleScroll);
- */     console.log("Mounting addMarkup", html);
+    /*     window.addEventListener("scroll", this.handleScroll);
+     */
+    /*   console.log("Mounting addMarkup", html, this.props.dataSource); */
     this.renderHtml();
   }
 
-/*     handleScroll = () => {
+  /*  handleScroll = async () => {
     const windowHeight =
       "innerHeight" in window
         ? window.innerHeight
@@ -39,12 +40,19 @@ class AddMarkup extends Component {
     );
     const windowBottom = windowHeight + 800 + window.pageYOffset;
     if (windowBottom >= docHeight) {
-      this.props.loadMore();
-      setTimeout(()=>this.setState({loading: true},this.renderHtml()), 3000);
+      console.log('we down here')
+      
+        await this.props.loadMore();
+        setTimeout(
+          () => this.setState({ loading: true }, this.renderHtml()),
+          500
+        );
+        window.removeEventListener("scroll", this.handleScroll);
+
     }
-  };
- */
-  getElementIndex = (element, index, ref) => {
+  }; */
+
+  getElementIndex = (index, ref) => {
     this.props.toggleFullscreen();
     this.setState(
       {
@@ -72,58 +80,102 @@ class AddMarkup extends Component {
       return;
     }
 
-    console.log(this.state.activeElement);
     this.setState({
       activeElement: this.state.activeElement + 1
     });
-  }, 100);
+  }, 200);
 
+  handleKeyDown = e => {
+    if (e.key === "ArrowDown") {
+      !this.props.isSearchActivated && this.getNextElement();
+    }
+
+    if (e.key === "s") {
+      !this.props.isSearchActivated && this.getNextElement();
+    }
+    if (e.key === "w") {
+      !this.props.isSearchActivated && this.getPreviousElement();
+    }
+
+    if (e.key === "ArrowUp") {
+      !this.props.isSearchActivated && this.getPreviousElement();
+    }
+  };
+
+  swipedUp = (e, deltaY, isFlick) => {
+    if (isFlick || deltaY > 75) {
+      this.getNextElement();
+    }
+  };
+
+  swipedDown = (e, deltaY, isFlick) => {
+    if (isFlick || deltaY > 75) {
+      this.getPreviousElement();
+    }
+  };
   render() {
-    const { fullscreen } = this.props;
+    const { fullscreen, mobile } = this.props;
 
-    return fullscreen && html.length > this.props.activeElement ? (
-      html.length ? (
-        <div className="fullscreenScroll">
-          {html[this.state.activeElement]}
-          {/* <div style={{ height: "0px" }}>
-            {html[this.state.activeElement + 1]}
-            {html[this.state.activeElement + 2]}
-            {html[this.state.activeElement + 3]}
-          </div> */}
-          <Icon
-            autoFocus
-            style={{ backgroundColor: "red" }}
-            type="caret-down"
-            className="fullscreenButtonNext"
-            onClick={() => this.getNextElement()}
-          />
-        </div>
-      ) : (
-        "what"
-      )
-    ) : (
-      <div className="gridMedia">
-        {html}
-        <div className="loadMoreWrapper">
-                {this.props.isLoadingMore ? (
-                  <Spin style={{ margin: "auto", display: "block" }} />
-                ) : (
-                  !this.props.isLoading && (
-                    <Button
-                      onClick={() => {
-                        this.props.loadMore();
-                        setTimeout(()=>this.setState({loading: true},this.renderHtml()), 3000);
-                      }}
-                      type="primary"
-                      icon="download"
-                      className="loadMoreButton"
-                    >
-                      Load more
-                    </Button>
-                  )
-                )}
+    return (
+      <Swipeable
+        onKeyPress={e => this.handleKeyDown(e)}
+        onSwipedDown={this.swipedDown}
+        onSwipedUp={this.swipedUp}
+      >
+        {fullscreen ? (
+          html.length && (
+            <div className="fullscreenScroll">
+              {html[this.state.activeElement]}
+              <div style={{ height: "0px" }}>
+                {html[this.state.activeElement + 1]}
+                {!mobile && html[this.state.activeElement + 2]}
+                {!mobile && html[this.state.activeElement + 3]}
               </div>
-      </div>
+
+              <Icon
+                autoFocus
+                type="up"
+                className="fullscreenButtonNext"
+                onClick={() => this.getNextElement()}
+              >
+                Show more
+              </Icon>
+              {!this.props.isSearchActivated && (
+                <button
+                  className="inputFocus"
+                  ref={button =>
+                    button && !this.state.isSearchActivated && button.focus()
+                  }
+                />
+              )}
+            </div>
+          )
+        ) : (
+          <div className="gridMedia">{html}</div>
+        )}
+        {!fullscreen && (
+          <div className="loadMoreWrapper">
+            {!this.props.isLoading && html.length && (
+              <Button
+                onClick={async () => {
+                  await this.props.loadMore();
+                  setTimeout(
+                    () => this.setState({ loading: true }, this.renderHtml()),
+                    500
+                  );
+                }}
+                type="primary"
+                icon={
+                  this.props.isLoadingMore ? "loading" : "loading-3-quarters"
+                }
+                className="loadMoreButton"
+              >
+                Load more
+              </Button>
+            )}
+          </div>
+        )}
+      </Swipeable>
     );
   }
 
@@ -133,20 +185,23 @@ class AddMarkup extends Component {
       isOnlyGifsShowing,
       mobile,
       fullscreen,
-      dataSource,
-      getElementIndex
+      dataSource
     } = this.props;
-
-    html = dataSource
+    let filteredData;
+    if (isOnlyPicsShowing)
+      filteredData = dataSource
+        .filter(item => !item.video)
+        .filter(item => !item.gif);
+    else if (isOnlyGifsShowing)
+      filteredData = dataSource.filter(item => !item.image);
+    else if (isOnlyPicsShowing && isOnlyGifsShowing) filteredData = dataSource;
+    else filteredData = dataSource;
+    html = filteredData
       .filter(item => Object.entries(item).length !== 0)
       .map((data, i) => {
         const { gif, image, video, title } = data;
-        if (
-          image &&
-          (!isOnlyGifsShowing || (isOnlyGifsShowing && isOnlyPicsShowing))
-        ) {
-          existsData = existsData + 1;
-          let jsx = (
+        if (image) {
+          return (
             <LazyLoad
               placeholder={
                 <Spin
@@ -155,6 +210,7 @@ class AddMarkup extends Component {
                   }}
                 />
               }
+              unmountIfInvisible={mobile}
               height={400}
               offset={mobile ? 800 : 2000}
               key={i}
@@ -169,36 +225,28 @@ class AddMarkup extends Component {
                   key={`image${i}`}
                   fullscreen={fullscreen}
                   onClick={() => {
-                    this.getElementIndex(jsx, i, this[`gridElement${i}`]);
+                    this.getElementIndex(i, this[`gridElement${i}`]);
                   }}
-                  src={
-                    (mobile && (image.low || image.high)) ||
-                    image.source ||
-                    image.source.replace("https", "http")
-                  }
+                  src={(mobile && (image.low || image.high)) || image.source}
                 />
                 <div className="title-text">{title}</div>
-                <Icon
+
+                <div
                   className="fullscreenIcon"
-                  type={fullscreen ? "shrink" : "arrows-alt"}
                   onClick={() => {
-                    this.getElementIndex(jsx, i, this[`gridElement${i}`]);
+                    this.getElementIndex(i, this[`gridElement${i}`]);
                   }}
-                />
-                )}
+                >
+                  <i className="material-icons">fullscreen</i>
+                </div>
               </div>
             </LazyLoad>
           );
-
-          return jsx;
         }
-        if (
-          video &&
-          (!isOnlyPicsShowing || (isOnlyGifsShowing && isOnlyPicsShowing))
-        ) {
-          existsData = existsData + 1;
-          let jsx = (
+        if (video) {
+          return (
             <LazyLoad
+              unmountIfInvisible={mobile}
               placeholder={
                 <Spin
                   style={{
@@ -225,27 +273,22 @@ class AddMarkup extends Component {
                 />
 
                 <div className="title-text">{title}</div>
-                {
-                  <Icon
-                    className="fullscreenIcon"
-                    type={fullscreen ? "shrink" : "arrows-alt"}
-                    onClick={() => {
-                      this.getElementIndex(jsx, i, this[`gridElement${i}`]);
-                    }}
-                  />
-                }
+                <div
+                  className="fullscreenIcon"
+                  onClick={() => {
+                    this.getElementIndex(i, this[`gridElement${i}`]);
+                  }}
+                >
+                  <i className="material-icons">fullscreen</i>
+                </div>
               </div>
             </LazyLoad>
           );
-          return jsx;
         }
-        if (
-          gif &&
-          (!isOnlyPicsShowing || (isOnlyGifsShowing && isOnlyPicsShowing))
-        ) {
-          existsData = existsData + 1;
-          const jsx = (
+        if (gif) {
+          return (
             <LazyLoad
+              unmountIfInvisible={mobile}
               placeholder={
                 <Spin
                   style={{
@@ -263,20 +306,19 @@ class AddMarkup extends Component {
                 ref={el => (this[`gridElement${i}`] = el)}
                 className={`gridElement ${gif.className}`}
               >
-                <img className={`gif`} key={i} src={gif.url} />
+                <img alt="Gif could not be loaded"  className={`gif`} key={i} src={gif.url} />
                 <div className="title-text">{title}</div>
-                <Icon
+                <div
                   className="fullscreenIcon"
-                  type={fullscreen ? "shrink" : "arrows-alt"}
                   onClick={() => {
-                    this.getElementIndex(jsx, i, this[`gridElement${i}`]);
+                    this.getElementIndex(i, this[`gridElement${i}`]);
                   }}
-                />
-                )}
+                >
+                  <i className="material-icons">fullscreen</i>
+                </div>
               </div>
             </LazyLoad>
           );
-          return jsx;
         }
       });
   };

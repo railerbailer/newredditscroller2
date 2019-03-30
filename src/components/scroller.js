@@ -28,14 +28,12 @@ import "../App.css";
 let sources = [];
 let goBack = [];
 let goBackIndex = 0;
-let elementIndex = 0;
 class Scroller extends Component {
   state = {
     mobile: false,
     load: "not ok",
     isLoadingMore: false,
     fullscreenActive: false,
-    elementIndex: 0,
     scrollHeight: 0,
     subredditData: [],
     isDropDownShowing: false,
@@ -67,12 +65,14 @@ class Scroller extends Component {
     if (window.screen.availWidth < 800) this.setState({ mobile: true });
   }
   componentDidMount() {
-    
     if (straight.includes(this.props.match.params.subreddit)) {
       this.setState({ category: "nsfw" });
     }
-    this.props.match.params.subreddit &&
-      this.getSubreddit(this.props.match.params.subreddit);
+    this.props.match.params.subreddit
+      ? this.getSubreddit(this.props.match.params.subreddit)
+      : this.getSubreddit(
+          this.shuffleArray(this.dataHandler(this.state.category))
+        );
   }
 
   /*   componentWillUnmount() {
@@ -81,7 +81,8 @@ class Scroller extends Component {
  */
 
   toggleFullscreen = () => {
-    this.setState({ fullscreenActive: !this.state.fullscreenActive });
+    !this.state.isSearchActivated &&
+      this.setState({ fullscreenActive: !this.state.fullscreenActive });
   };
 
   dataHandler(props) {
@@ -114,27 +115,21 @@ class Scroller extends Component {
   }
 
   switchCat = throttle(async () => {
-    elementIndex = 0;
     this.state.isDropDownShowing && this.showDropDown();
-    this.setState({
-      isVideoLoading: true,
-      isImageLoading: true,
-      elementIndex: 0
-    });
-    await this.setState({ activeSlide: 0 });
+
     if (goBackIndex > 0) {
       goBackIndex = goBackIndex - 1;
       if (this.state.subreddit === goBack[goBack.length - 1 - goBackIndex]) {
         !this.state.isLoading &&
-          this.getSubreddit(goBack[goBack.length - goBackIndex]);
+          (await this.getSubreddit(goBack[goBack.length - goBackIndex]));
       } else
         !this.state.isLoading &&
-          this.getSubreddit(goBack[goBack.length - 1 - goBackIndex]);
+          (await this.getSubreddit(goBack[goBack.length - 1 - goBackIndex]));
     } else {
       !this.state.isLoading &&
-        this.getSubreddit(
+        (await this.getSubreddit(
           this.shuffleArray(this.dataHandler(this.state.category))
-        );
+        ));
       if (
         goBackIndex === 0 &&
         goBack[goBack.length - 1] !== this.state.subreddit
@@ -142,7 +137,7 @@ class Scroller extends Component {
         await goBack.push(this.state.subreddit);
       }
     }
-  }, 100);
+  }, 500);
 
   goBackToLast = async () => {
     this.setState({ isVideoLoading: true });
@@ -171,27 +166,7 @@ class Scroller extends Component {
     if (e.key === "a") {
       !isSearchActivated && this.goBackToLast();
     }
-    if (e.key === "ArrowDown") {
-      !isSearchActivated && this.getNextElement();
-    }
 
-    if (e.key === "s") {
-      !isSearchActivated && this.getNextElement();
-    }
-    if (e.key === "w") {
-      !isSearchActivated && this.getPreviousElement();
-    }
-    if (e.key === " ") {
-      if (this.videoPlayer) {
-        if (this.videoPlayer.paused) {
-          !isSearchActivated && this.videoPlayer.play();
-        } else !isSearchActivated && this.videoPlayer.pause();
-      }
-    }
-
-    if (e.key === "ArrowUp") {
-      !isSearchActivated && this.getPreviousElement();
-    }
     if (e.key === "ArrowRight") {
       !isSearchActivated && this.switchCat();
     }
@@ -209,16 +184,6 @@ class Scroller extends Component {
   swipedRight = (e, absX, isFlick) => {
     if (isFlick || absX > 30) {
       this.goBackToLast();
-    }
-  };
-  swipedUp = (e, deltaY, isFlick) => {
-    if (isFlick) {
-      this.getNextElement();
-    }
-  };
-  swipedDown = (e, deltaY, isFlick) => {
-    if (isFlick) {
-      this.getPreviousElement();
     }
   };
 
@@ -307,19 +272,19 @@ class Scroller extends Component {
 
   toggleIsLoading = state => this.setState({ isLoading: state });
 
-  toggleGifsOnly = () => {
+  toggleGifsOnly = async () => {
     this.setState({
       isOnlyGifsShowing: !this.state.isOnlyGifsShowing,
       isDropDownShowing: false
     });
-    this.getSubreddit(this.state.subreddit, true);
+    await this.getSubreddit(this.state.subreddit);
   };
   togglePicsOnly = () => {
     this.setState({
       isOnlyPicsShowing: !this.state.isOnlyPicsShowing,
       isDropDownShowing: false
     });
-    this.getSubreddit(this.state.subreddit, true);
+    this.getSubreddit(this.state.subreddit);
   };
 
   showDropDown = () => {
@@ -337,10 +302,9 @@ class Scroller extends Component {
     return editedString ? editedString : "";
   }
 
-  dataMapper = (fetchedData, removeOldContent) => {
-    if (!removeOldContent) {
+  dataMapper = (fetchedData, notLoadMore) => {
+    if (!notLoadMore) {
       sources = [];
-      this.setState({ htmlAndSource: [] });
     }
     fetchedData.map((item, i) => {
       let mediaData = {};
@@ -348,8 +312,8 @@ class Scroller extends Component {
       const {
         preview,
         post_hint,
-        media,
-        media_embed,
+        /*  media,
+        media_embed, */
         thumbnail_height = 1,
         thumbnail_width = 2,
         thumbnail
@@ -454,15 +418,39 @@ class Scroller extends Component {
         /* console.log(mediaData); */
       }
     });
+    if (!sources.length) {
+      console.log("here");
+      this.getSubreddit(
+        this.shuffleArray(this.dataHandler(this.state.category))
+      );
+    }
+    return;
   };
   switchCatButtons = () => {
     return (
       <React.Fragment>
-        <button className="iconLeft" onClick={this.goBackToLast}>
-          <Icon type="step-backward" />
+        <button
+          style={{
+            marginTop: this.state.mobile ? "50%" : 0,
+            height: this.state.mobile ? "50%" : "100%"
+          }}
+          ref={button =>
+            button && !this.state.isSearchActivated && button.focus()
+          }
+          className="iconLeft"
+          onClick={this.goBackToLast}
+        >
+          <i className="material-icons">undo</i>
         </button>
-        <button onClick={this.switchCat} className="iconRight">
-          <Icon type="step-forward" />
+        <button
+          style={{
+            marginTop: this.state.mobile ? "50%" : 0,
+            height: this.state.mobile ? "50%" : "100%"
+          }}
+          onClick={this.switchCat}
+          className="iconRight"
+        >
+          <i className="material-icons">shuffle</i>
         </button>
       </React.Fragment>
     );
@@ -486,53 +474,24 @@ class Scroller extends Component {
   };
 
   render() {
-    // när man går ur fullscreen laddar den bara
-    // innan den laddas så kan en icon visas som visar att det laddar i fullscreen
-    // gör att en laddning startas i funktionen för att fylla på datat i fullscreen
-
     // undone bilder visas ändå (https://thumbs.gfycat.com/SneakyDelightfulErmine-size_restricted.gif fåär access denied)
 
     // code splitting
 
     return (
       <Swipeable
-        className={`wrapper ${this.state.fullscreenActive ? "fullscreen" : ""}`}
+        className={`wrapper`}
         onKeyDown={this.handleKeyDown}
-        /* onSwipedDown={this.swipedDown}
-        onSwipedUp={this.swipedUp} */
         onSwipedLeft={this.swipedLeft}
         onSwipedRight={this.swipedRight}
       >
-        {/*         {this.state.fullscreenActive && (
-          <Swipeable
-            className="fullscreenScroll"
-            onSwipedDown={this.swipedDown}
-            onSwipedUp={this.swipedUp}
-            onSwipedLeft={this.swipedLeft}
-            onSwipedRight={this.swipedRight}
-          >
-            {!this.state.isLoading ? (
-              <React.Fragment>
-                {this.state.htmlAndSource[this.state.elementIndex]}
-                {this.state.htmlAndSource[this.state.elementIndex + 1]}
-                {this.state.htmlAndSource[this.state.elementIndex + 2]}
-              </React.Fragment>
-            ) : (
-              <div className="spinner">
-                <Spin />
-                <div className="centered-text">
-                  Loading <strong>{this.state.subreddit}</strong> category
-                </div>
-              </div>
-            )}
-
-            <Icon
-              className="fullscreenButtonPrevious"
-              type="caret-up"
-              onClick={() => this.getPreviousElement()}
-            />
-           
-          </Swipeable>
+        {/*  {!this.state.isSearchActivated && (
+          <button
+            className="inputFocus"
+            ref={button =>
+              button && !this.state.isSearchActivated && button.focus()
+            }
+          />
         )} */}
 
         {this.state.category === "No category chosen" ? (
@@ -619,9 +578,9 @@ class Scroller extends Component {
               )}
             </Transition>
           </div>
-          <div className="middleWrapper">
+          {/* <div className="middleWrapper">
             <h1 className="scrollLogo">sliddit.</h1>
-          </div>
+          </div> */}
 
           <Dropdown
             visible={this.state.isDropDownShowing}
@@ -636,7 +595,10 @@ class Scroller extends Component {
             </div>
           </Dropdown>
         </div>
-        <div className={"contentZen"}>
+        <div
+          className={`contentZen ${this.state.fullscreenActive &&
+            "fullscreen"}`}
+        >
           {this.switchCatButtons()}
           {this.state.isLoading ? (
             <div className="spinner">
@@ -647,43 +609,27 @@ class Scroller extends Component {
             </div>
           ) : (
             <React.Fragment>
-              <AddMarkup
-                toggleFullscreen={this.toggleFullscreen}
-                toggleIsLoading={this.toggleIsLoading}
-                activeElement={this.state.elementIndex}
-                mobile={this.state.mobile}
-                getElementIndex={this.getElementIndex}
-                isOnlyGifsShowing={this.state.isOnlyGifsShowing}
-                isOnlyPicsShowing={this.state.isOnlyPicsShowing}
-                fullscreen={this.state.fullscreenActive}
-                dataSource={sources}
-                loadMore={this.moreSubreddits}
-                isLoading={this.state.isLoading}
-                isLoadingMore={this.state.isLoadingMore}
-              />
-
-             {/*  <div className="loadMoreWrapper">
-                {this.state.isLoadingMore ? (
-                  <Spin style={{ margin: "auto", display: "block" }} />
-                ) : (
-                  !this.state.isLoading && (
-                    <Button
-                      onClick={() => {
-                        this.moreSubreddits();
-                      }}
-                      type="primary"
-                      icon="download"
-                      className="loadMoreButton"
-                    >
-                      Load more
-                    </Button>
-                  )
-                )}
-              </div> */}
-              <div className="downDiv">
+              {sources.length && (
+                <AddMarkup
+                  isSearchActivated={this.state.isSearchActivated}
+                  toggleFullscreen={this.toggleFullscreen}
+                  toggleIsLoading={this.toggleIsLoading}
+                  mobile={this.state.mobile}
+                  isOnlyGifsShowing={this.state.isOnlyGifsShowing}
+                  isOnlyPicsShowing={this.state.isOnlyPicsShowing}
+                  fullscreen={this.state.fullscreenActive}
+                  dataSource={sources}
+                  loadMore={this.moreSubreddits}
+                  isLoading={this.state.isLoading}
+                  isLoadingMore={this.state.isLoadingMore}
+                />
+              )}
+              <div
+                style={{ opacity: this.state.isSearchActivated ? 0.1 : 1 }}
+                className="subredditNameDiv"
+              >
                 <h2 className="subredditName">
-                  <Icon type="tag-o" />
-                  {this.state.subreddit}
+                  {this.state.subreddit} <Icon type="tag-o" />
                 </h2>
               </div>
             </React.Fragment>
@@ -700,7 +646,7 @@ class Scroller extends Component {
       await this.setState({ subreddit: subreddit, isLoading: true });
     }
 
-    this.state.category === "intial" && !this.props.match.params.subreddit
+    this.state.category === "No category chosen" && !this.props.match.params.subreddit
       ? null
       : this.props.history.push(`/${this.state.subreddit}`);
 
@@ -717,8 +663,8 @@ class Scroller extends Component {
         /* this.dataToHtml(jsonData.data.children); */
       })
 
-      .catch(() => {
-        this.getSubreddit(
+      .catch(async () => {
+        await this.getSubreddit(
           this.shuffleArray(this.dataHandler(this.state.category))
         );
       });
@@ -727,7 +673,6 @@ class Scroller extends Component {
   };
 
   moreSubreddits = async () => {
-    console.log('moresubreddits======')
     this.setState({ isLoadingMore: true });
     await fetch(
       `https://www.reddit.com/r/${this.state.subreddit}.json?after=${

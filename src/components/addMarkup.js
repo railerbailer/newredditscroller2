@@ -109,7 +109,7 @@ class AddMarkup extends Component {
   };
 
   swipedDown = (e, deltaY, isFlick) => {
-    if (isFlick || deltaY > 75) {
+    if (isFlick || deltaY > 50) {
       this.getPreviousElement();
     }
   };
@@ -210,7 +210,7 @@ class AddMarkup extends Component {
                   }}
                 />
               }
-              unmountIfInvisible={mobile}
+              unmountIfInvisible={false}
               height={400}
               offset={mobile ? 800 : 2000}
               key={i}
@@ -246,7 +246,7 @@ class AddMarkup extends Component {
         if (video) {
           return (
             <LazyLoad
-              unmountIfInvisible={mobile}
+              unmountIfInvisible={false}
               placeholder={
                 <Spin
                   style={{
@@ -288,7 +288,7 @@ class AddMarkup extends Component {
         if (gif) {
           return (
             <LazyLoad
-              unmountIfInvisible={mobile}
+              unmountIfInvisible={false}
               placeholder={
                 <Spin
                   style={{

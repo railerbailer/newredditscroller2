@@ -185,15 +185,21 @@ i {
 .playButton .fullscreen {
   top: 50%;
 }
+.fullscreenScroll .gridElement {
+  background: black;
+}
 .gridElement {
   position: relative;
   display: flex;
   height: 100%;
   background-color: transparent;
   width: 100%;
-  border-bottom: 1px solid gray;
-  border-top: 1px solid gray;
-
+  /* border-bottom: 1px solid gray;
+  border-top: 1px solid gray; */
+  background: url('./pics/placeholder.png');
+  background-color: lightgray;
+  background-position: center;
+  background-size: contain;
   overflow: hidden;
 }
 .video {
@@ -203,6 +209,7 @@ i {
 .gif,
 .video,
 iframe {
+  
   text-align: center;
   color: white;
   height: 100%;

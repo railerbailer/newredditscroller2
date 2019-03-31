@@ -18,7 +18,7 @@ class Video extends Component {
   };
 
   render() {
-    const { src, poster, mobile, fullscreen } = this.props;
+    const { src, poster, mobile, fullscreen, onClick } = this.props;
 
     let havePoster = mobile && { poster: poster };
 
@@ -27,7 +27,9 @@ class Video extends Component {
         <video
           autoFocus
           ref={el => (this.videoPlayer = el)}
-          onClick={() => this.togglePlaying()}
+          onClick={() => {
+            this.state.isPlaying ? this.togglePlaying() : onClick();
+          }}
           onTouchMove={() => {
             this.setState({ isPlaying: false }, () => this.videoPlayer.pause());
           }}
@@ -38,9 +40,15 @@ class Video extends Component {
           playsInline={true}
           onMouseOver={() =>
             !mobile &&
-            this.setState({ isPlaying: true }, () => {this.videoPlayer.play(); setTimeout(()=>this.videoPlayer && this.videoPlayer.pause(), 60000);})
+            this.setState({ isPlaying: true }, () => {
+              this.videoPlayer.play();
+              setTimeout(
+                () => this.videoPlayer && this.videoPlayer.pause(),
+                60000
+              );
+            })
           }
-        /*   onMouseLeave={() =>
+          /*   onMouseLeave={() =>
             !mobile &&
             this.setState({ isPlaying: false }, () => this.videoPlayer.pause())
           } */

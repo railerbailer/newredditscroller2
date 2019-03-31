@@ -229,14 +229,14 @@ class AddMarkup extends Component {
                 key={i}
                 ref={el => (this[`gridElement${i}`] = el)}
                 className={`gridElement ${image.className}`}
+                onClick={() => {
+                  this.getElementIndex(i, this[`gridElement${i}`]);
+                }}
               >
                 <Image
                   className="image"
                   key={`image${i}`}
                   fullscreen={fullscreen}
-                  onClick={() => {
-                    this.getElementIndex(i, this[`gridElement${i}`]);
-                  }}
                   src={(mobile && (image.low || image.high)) || image.source}
                 />
                 <div className="title-text">{title}</div>
@@ -273,8 +273,12 @@ class AddMarkup extends Component {
                 key={i}
                 ref={el => (this[`gridElement${i}`] = el)}
                 className={`gridElement ${video.className}`}
+                
               >
                 <Video
+                onClick={() => {
+                  this.getElementIndex(i, this[`gridElement${i}`]);
+                }}
                   key={`video${i}`}
                   mobile={mobile}
                   src={video.url}
@@ -315,13 +319,11 @@ class AddMarkup extends Component {
                 key={i}
                 ref={el => (this[`gridElement${i}`] = el)}
                 className={`gridElement ${gif.className}`}
+                onClick={() => {
+                  this.getElementIndex(i, this[`gridElement${i}`]);
+                }}
               >
-                <img
-                  alt="Gif could not be loaded"
-                  className={`gif`}
-                  key={i}
-                  src={gif.url}
-                />
+                <Image className={`gif`} src={gif.url} />
                 <div className="title-text">{title}</div>
                 <div
                   className="fullscreenIcon"

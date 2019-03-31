@@ -151,7 +151,7 @@ i {
   top: 4%;
   right: 1%;
   padding: 20px;
-  z-index: 6;
+  z-index: 5;
 }
 
 .fullscreenIcon {
@@ -163,7 +163,7 @@ i {
   top: 0%;
   right: 0%;
   padding: 5px;
-  z-index: 6;
+  z-index: 5;
 }
 .hide {
   display: none;
@@ -331,10 +331,11 @@ p {
 
 .grid-container button {
   font-size: 16px;
-  font-weight: 300;
+  font-weight: 400;
   color: white;
   border-radius: 10px;
   border-color: transparent;
+  border: 2px solid white;
 }
 
 .grid-container button:hover {
@@ -369,14 +370,14 @@ p {
   min-height: 25px;
   max-height: 50px;
   background-color: #e1d267;
-  min-width: 75px;
+  min-width: 80px;
 }
 .item4 {
   grid-area: right;
   min-height: 25px;
   max-height: 50px;
   background-color: #e4a8f9;
-  min-width: 75px;
+  min-width: 80px;
 }
 .item5 {
   grid-area: footer;
@@ -385,30 +386,22 @@ p {
   background-color: #99ea86;
 }
 
-.item1:hover {
-  /* background-image: url("./pics/nsfw.jpeg"); */
+/* .item1:hover {
+
   color: #ec6262;
 }
 .item2:hover {
-  /*   background-image: url("./pics/art.jpeg");
- */
   color: #83d6b7;
 }
 .item3:hover {
-  /*   background-image: url("./pics/food.jpeg");
- */
   color: #e1d267;
 }
 .item4:hover {
-  /*   background-image: url("./pics/sfw.jpeg");
- */
   color: #e4a8f9;
 }
 .item5:hover {
-  /*   background-image: url("./pics/animals.jpg");
- */
   color: #99ea86;
-}
+} */
 
 .fullscreen-nextButton {
   position: absolute;
@@ -544,7 +537,7 @@ p {
 
 .iconSetting {
   font-size: 35px;
-  z-index: 2;
+  z-index: 6;
   padding: 4px 4px 0 0;
   width: 100px;
   white-space: wrap;
@@ -562,7 +555,7 @@ p {
 
 .searchWrapper {
   width: 100px;
-  z-index: 3;
+  z-index: 6;
   
 }
 .searchWrapper .anticon {
@@ -607,7 +600,7 @@ p {
   width: 100%;
   display: flex;
   flex-direction: row;
-  z-index: 5;
+  z-index: 6;
   position: fixed;
   top: 0;
   justify-content: space-between;

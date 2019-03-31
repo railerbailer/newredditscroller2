@@ -25,6 +25,9 @@
     "deploy": "gh-pages -d build",
     "postbuild": "react-snap"
   },
+  "engines": {
+    "node": "10.x"
+  },
   "devDependencies": {
     "react-snap": "^1.23.0"
   }

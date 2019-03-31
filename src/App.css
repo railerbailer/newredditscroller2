@@ -314,7 +314,7 @@ p {
   grid-template-areas:
     "continue continue continue"
     "header header header"
-    "menu main  right"
+    "menu main right"
     "menu footer footer ";
   grid-gap: 5px;
   background-color: transparent;
@@ -340,9 +340,6 @@ p {
 
 .grid-container button:hover {
   border: 0;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: left;
 }
 .item0 {
   grid-area: continue;

@@ -89,17 +89,13 @@ class Scroller extends Component {
     let lowerCaseCategory = props.toLowerCase();
     if (lowerCaseCategory === "nsfw") {
       return straight;
-    }
-    if (lowerCaseCategory === "sfw") {
+    } else if (lowerCaseCategory === "sfw") {
       return subredditArray;
-    }
-    if (lowerCaseCategory === "art") {
+    } else if (lowerCaseCategory === "art") {
       return artArray;
-    }
-    if (lowerCaseCategory === "food") {
+    } else if (lowerCaseCategory === "food") {
       return foodArray;
-    }
-    if (lowerCaseCategory === "animals") {
+    } else if (lowerCaseCategory === "animals") {
       return animalsArray;
     } else {
       return subredditArray.concat(artArray, foodArray, animalsArray);
@@ -198,14 +194,15 @@ class Scroller extends Component {
     });
   };
 
-  changeCat = async (e, cat) => {
-    await this.categorySet(cat);
-    await this.getSubreddit(this.shuffleArray(this.dataHandler(cat)));
+  changeCat = (e, cat) => {
+    this.categorySet(cat);
+    this.getSubreddit(this.shuffleArray(this.dataHandler(cat)));
     message.info(
       `Category is ${cat}, press or swipe right to shuffle subreddit`
     );
     this.setState({ isDropDownShowing: false });
   };
+
   openNotification = () => {
     notification.open({
       duration: 3,
@@ -247,13 +244,13 @@ class Scroller extends Component {
           <div onClick={e => this.changeCat(e, "SFW")}>SFW</div>
         </Menu.Item>
         <Menu.Item>
-          <div onClick={e => this.changeCat(e, "Art")}>ART</div>
+          <div onClick={e => this.changeCat(e, "ART")}>ART</div>
         </Menu.Item>
         <Menu.Item>
-          <div onClick={e => this.changeCat(e, "Animals")}>ANIMALS</div>
+          <div onClick={e => this.changeCat(e, "ANIMALS")}>ANIMALS</div>
         </Menu.Item>
         <Menu.Item>
-          <div onClick={e => this.changeCat(e, "Food")}>FOOD</div>
+          <div onClick={e => this.changeCat(e, "FOOD")}>FOOD</div>
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item>
@@ -472,6 +469,7 @@ class Scroller extends Component {
   };
 
   render() {
+    console.log(this.state.category);
     // undone bilder visas ändå (https://thumbs.gfycat.com/SneakyDelightfulErmine-size_restricted.gif fåär access denied)
 
     // code splitting
@@ -644,10 +642,12 @@ class Scroller extends Component {
       await this.setState({ subreddit: subreddit, isLoading: true });
     }
 
-    this.state.category === "No category chosen" &&
+    /* this.state.category === "No category chosen" &&
     !this.props.match.params.subreddit
       ? null
-      : this.props.history.push(`/${this.state.subreddit}`);
+      :  */
+
+    this.props.history.push(`/${this.state.subreddit}`);
 
     await fetch(
       `https://www.reddit.com/r/${this.state.subreddit}.json?limit=100`

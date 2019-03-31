@@ -31,7 +31,7 @@ class Video extends Component {
           onTouchMove={() => {
             this.setState({ isPlaying: false }, () => this.videoPlayer.pause());
           }}
-          autoPlay={mobile ? false : fullscreen?true:false}
+          autoPlay={false}
           allowFullScreen={true}
           onCanPlay={() => this.setState({ loaded: true })}
           className={`video`}

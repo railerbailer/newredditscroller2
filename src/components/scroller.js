@@ -425,27 +425,24 @@ class Scroller extends Component {
     return (
       <React.Fragment>
         <button
-          style={{
-            marginTop: this.state.mobile ? "50%" : 0,
-            height: this.state.mobile ? "50%" : "100%"
-          }}
           ref={button =>
             button && !this.state.isSearchActivated && button.focus()
           }
-          className="iconLeft"
-          onClick={this.goBackToLast}
+          className={`iconLeft`}
         >
-          <i className="material-icons">undo</i>
+          <i onClick={this.goBackToLast} className="material-icons">
+            undo
+          </i>
         </button>
-        <button
-          style={{
-            marginTop: this.state.mobile ? "50%" : 0,
-            height: this.state.mobile ? "50%" : "100%"
-          }}
-          onClick={this.switchCat}
-          className="iconRight"
-        >
-          <i className="material-icons">shuffle</i>
+
+        <button className={`iconRight`}>
+          <i onClick={this.switchCat} className="material-icons">
+            shuffle
+          </i>
+          <p onClick={this.switchCat}>
+            Shuffle <br />
+            category
+          </p>
         </button>
       </React.Fragment>
     );
@@ -469,7 +466,6 @@ class Scroller extends Component {
   };
 
   render() {
-    console.log(this.state.category);
     // undone bilder visas ändå (https://thumbs.gfycat.com/SneakyDelightfulErmine-size_restricted.gif fåär access denied)
 
     // code splitting

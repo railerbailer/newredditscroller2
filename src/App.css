@@ -56,7 +56,7 @@ h2 {
 
 .fullscreenButtonPrevious,
 .fullscreenButtonNext {
-  text-shadow: 1px 1px black; 
+  text-shadow: 1px 1px black;
   border: 0;
   z-index: 5;
   position: absolute;
@@ -241,7 +241,7 @@ button {
   font-size: 14px;
   text-align: center;
   color: white;
-  text-shadow: 1px 1px black; 
+  text-shadow: 1px 1px black;
 }
 
 .subredditNameDiv {
@@ -410,6 +410,10 @@ p {
   right: 0px;
   text-align: right;
 }
+.iconRight i {
+  font-size: 36px;
+}
+
 .iconLeft {
   padding: 0;
   left: 0px;
@@ -425,16 +429,24 @@ p {
   font-size: 16px;
 }
 
+.iconRight p {
+  z-index: 5;
+  opacity: 0.7;
+  line-height: 1;
+  margin-left: -25px;
+  font-size: 12px;
+  margin-top: -7px;
+}
 .iconLeft,
 .iconRight {
-  text-shadow: 1px 1px black; 
+  text-shadow: 1px 1px black;
   cursor: pointer;
   position: absolute;
   background-color: transparent;
-  font-size: 26px;
+
   opacity: 0.9;
   height: 100%;
-  width: 26px;
+  width: 36px;
   position: fixed;
   top: 0;
   bottom: 0;
@@ -549,11 +561,9 @@ p {
   text-shadow: 1px 1px black;
 }
 
-
 .searchWrapper {
   width: 100px;
   z-index: 6;
-  
 }
 .searchWrapper .anticon {
   color: white;
@@ -602,18 +612,6 @@ p {
   top: 0;
   justify-content: space-between;
   border: 0;
-}
-
-@media (max-height: 500px) {
-  .content i,
-  .content h2 {
-    transition: font-size 250ms;
-    font-size: 14px;
-  }
-  .content p {
-    transition: font-size 250ms;
-    font-size: 12px;
-  }
 }
 
 .topBar .ant-btn:focus {

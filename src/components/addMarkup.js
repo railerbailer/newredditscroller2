@@ -127,6 +127,7 @@ class AddMarkup extends Component {
         onKeyPress={e => this.handleKeyDown(e)}
         onSwipedDown={this.swipedDown}
         onSwipedUp={this.swipedUp}
+        style={{backgroundColor: 'rgb(20, 20, 20)'}}
       >
         {fullscreen ? (
           html.length && (

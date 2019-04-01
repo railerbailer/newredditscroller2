@@ -1,10 +1,10 @@
-import React, { Component } from "react";
+import React, { Component, lazy } from "react";
 import Swipeable from "react-swipeable";
 import "antd/dist/antd.css";
+import "../App.css";
 import { throttle } from "lodash";
 import { Transition } from "react-transition-group";
-import AddMarkup from "./addMarkup.js";
-
+/* import AddMarkup from "./addMarkup.js"; */
 import {
   Icon,
   Button,
@@ -25,6 +25,7 @@ import {
   animalsArray
 } from "../subreddits";
 import "../App.css";
+const AddMarkup = lazy(() => import("./addMarkup.js"));
 let sources = [];
 let goBack = [];
 let goBackIndex = 0;

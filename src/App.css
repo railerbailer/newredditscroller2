@@ -320,7 +320,7 @@ p {
 
 .categoryModal {
   position: fixed;
-  background-color: rgb(0, 0, 0, 0.2);
+  background-color: rgb(0, 0, 0, 0.9);
   height: 1000%;
   width: 100%;
   z-index: 7;
@@ -362,7 +362,6 @@ p {
 .grid-container {
   margin-top: 30vh;
   width: 100%;
-
   max-height: 40vh;
   display: grid;
   grid-template-areas:
@@ -370,7 +369,6 @@ p {
     "3 header 4"
     "5 menu 6";
   grid-gap: 5px;
-  background-color: transparent;
 }
 
 /* @media (max-width: 600px) {

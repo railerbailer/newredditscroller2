@@ -49,7 +49,7 @@ class Video extends Component {
           /*  {...havePoster} */
           preload={"metadata"}
         >
-          <source src={src} type="video/mp4" />
+          <source src={`${src}#t=0.5`} type="video/mp4" />
           Sorry, your browser doesn't support embedded videos.
         </video>
         {!this.state.isPlaying ? (

@@ -13,9 +13,7 @@ class App extends Component {
         <Suspense
           fallback={
             <div>
-              <div className="suspense">
-                Loading... <br /> Sliddit.com
-              </div>
+              <div className="suspense">Just Sliddit...</div>
               <svg className="mainSVG" xmlns="http://www.w3.org/2000/svg">
                 <path
                   className="carRot"

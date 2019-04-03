@@ -111,9 +111,6 @@ i {
   grid-auto-flow: dense;
 }
 @media (max-width: 600px) {
-  .mainSVG {
-    left: calc(50% - 130px) !important;
-  }
   .gridMedia {
     border: 0;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -178,12 +175,19 @@ i {
   opacity: 0.6;
   font-size: 54px;
   color: white;
+  margin: auto;
   display: block;
   position: absolute;
+  
   top: 45%;
-  width: 100%;
+  width: 60%;
+  margin-left: 20%;
   text-align: center;
   z-index: 5;
+  padding: 50px;
+  margin-top: -50px;
+  
+  margin-right: -50px;
 }
 .playButton .fullscreen {
   top: 50%;
@@ -191,24 +195,24 @@ i {
 
 .mainSVG {
   position: absolute;
-  top: 40vh;
-  left: calc(50% - 200px);
-  width: 100px;
-  height: 100px;
+  top: 70vh;
+  left: calc(50% - 6vw);
+  width: 12vw;
+  height: 12vh;
 
-  transform-origin: 20vh center;
+  transform-origin: 6vh right;
   animation: rotate 3s linear infinite;
 }
 .mainSVG:before {
   content: "";
-  height: 100%;
-  width: 100%;
+  /* height: 100%;
+  width: 100%; */
   background: blue;
   animation: rotate 3s linear reverse infinite;
 }
 @keyframes rotate {
   100% {
-    transform: rotate(-360deg);
+    transform: rotate(360deg);
   }
 }
 
@@ -220,7 +224,7 @@ i {
   /*  height: 100vh;
   width: 100vh; */
   position: absolute;
-
+  font-size: 22px;
   top: 0;
   right: 0;
 
@@ -288,7 +292,7 @@ button {
 }
 
 .subredditName {
-  font-size: 14px;
+  font-size: 22px;
   text-align: center;
   color: white;
   text-shadow: 1px 1px black;
@@ -339,7 +343,7 @@ p {
 }
 
 .loadMoreButton {
-  margin: auto;
+  margin: auto !important;
 }
 .fullscreen .loadMoreButton {
   display: none;
@@ -357,15 +361,14 @@ p {
 
 .grid-container {
   margin-top: 30vh;
-  width: 250px;
-  margin-left: calc(50% - 125px);
+  width: 100%;
+
   max-height: 40vh;
   display: grid;
   grid-template-areas:
-    "continue continue continue"
-    "header header header"
-    "menu main right"
-    "menu footer footer ";
+    "1 continue 2"
+    "3 header 4"
+    "5 menu 6";
   grid-gap: 5px;
   background-color: transparent;
 }
@@ -380,36 +383,35 @@ p {
 } */
 
 .grid-container button {
-  font-size: 16px;
-  font-weight: 400;
   color: white;
   border-radius: 10px;
   border-color: transparent;
-  border: 2px solid white;
+  cursor: pointer;
 }
 
-.grid-container button:hover {
-  border: 0;
-}
 .item0 {
   grid-area: continue;
   margin-bottom: 15px;
-  min-height: 30px;
-  max-height: 50px;
-  background-color: #40a9ff;
+  padding: 0.5125rem 2.225rem;
+  font-size: 1.275rem;
+  white-space: nowrap;
+  background-color: #83d6b7;
 }
 .item1 {
+  padding: 1.3125rem 2.625rem;
+  font-size: 2.1875rem;
+  white-space: nowrap;
   grid-area: header;
-  min-height: 75px;
-  max-height: 100px;
+
   background-color: #ec6262;
 }
 
 .item2 {
   grid-area: menu;
-  min-height: 100%;
-  background-color: #83d6b7;
-  min-width: 75px;
+  padding: 1.3125rem 2.625rem;
+  font-size: 2.1875rem;
+  white-space: nowrap;
+  background-color: #40a9ff;
 }
 
 .item3 {
@@ -583,7 +585,24 @@ p {
 .ant-spin-dot {
   margin-top: 50%;
 }
+@media (max-width: 400px) {
+  .item0 {
+    font-size: 0.975rem !important;
+  }
+  .item1,
+  .item2 {
+    font-size: 1.0875rem !important;
+  }
+}
 @media (max-width: 800px) {
+  .item0 {
+    font-size: 0.975rem;
+  }
+  .item1,
+  .item2 {
+    font-size: 1.2875rem;
+  }
+
   .ant-dropdown {
     width: 100vw;
   }

@@ -4,7 +4,7 @@ import "antd/dist/antd.css";
 import "../App.css";
 import { throttle } from "lodash";
 import { Transition } from "react-transition-group";
-/* import AddMarkup from "./addMarkup.js"; */
+import AddMarkup from "./addMarkup.js";
 import {
   Icon,
   Button,
@@ -25,7 +25,7 @@ import {
   animalsArray
 } from "../subreddits";
 import "../App.css";
-const AddMarkup = lazy(() => import("./addMarkup.js"));
+/* const AddMarkup = lazy(() => import("./addMarkup.js")); */
 let sources = [];
 let goBack = [];
 let goBackIndex = 0;
@@ -90,7 +90,11 @@ class Scroller extends Component {
     let lowerCaseCategory = props.toLowerCase();
     if (lowerCaseCategory === "nsfw") {
       return straight;
-    } else if (lowerCaseCategory === "sfw") {
+    } 
+    else if(lowerCaseCategory==='sfwall'){
+      return subredditArray.concat(artArray).concat(foodArray).concat(animalsArray)
+    }
+    else if (lowerCaseCategory === "sfw") {
       return subredditArray;
     } else if (lowerCaseCategory === "art") {
       return artArray;
@@ -236,15 +240,15 @@ class Scroller extends Component {
   menu = () => {
     return (
       <Menu theme="dark">
-        <Menu.Item disabled>Categories ({this.state.category})</Menu.Item>
+        <Menu.Item disabled>Domains ({this.state.category})</Menu.Item>
         <Menu.Divider />
         <Menu.Item>
           <div onClick={e => this.changeCat(e, "NSFW")}>NSFW</div>
         </Menu.Item>
         <Menu.Item>
-          <div onClick={e => this.changeCat(e, "SFW")}>SFW</div>
+          <div onClick={e => this.changeCat(e, "SFWALL")}>SFW</div>
         </Menu.Item>
-        <Menu.Item>
+        {/* <Menu.Item>
           <div onClick={e => this.changeCat(e, "ART")}>ART</div>
         </Menu.Item>
         <Menu.Item>
@@ -252,7 +256,7 @@ class Scroller extends Component {
         </Menu.Item>
         <Menu.Item>
           <div onClick={e => this.changeCat(e, "FOOD")}>FOOD</div>
-        </Menu.Item>
+        </Menu.Item> */}
         <Menu.Divider />
         <Menu.Item>
           Gifs only:{"  "}
@@ -490,24 +494,24 @@ class Scroller extends Component {
         {this.state.category === "No category chosen" ? (
           <div className="categoryModal">
             <div className="grid-container">
-              <button
+              {this.props.match.params.subreddit && <button
                 className="item0"
                 onClick={() => this.setState({ category: "Not chosen" })}
               >
-                Continue
-              </button>
+                Continue to {this.props.match.params.subreddit}
+              </button>}
               <button
                 className="item1"
                 onClick={e => this.changeCat(e, "NSFW")}
               >
-                NSFW
+                Not safe for work (nudity)
               </button>
 
-              <button className="item2" onClick={e => this.changeCat(e, "Art")}>
-                ART
+              <button className="item2" onClick={e => this.changeCat(e, "SFWALL")}>
+                Safe for work
               </button>
 
-              <button
+              {/* <button
                 className="item3"
                 onClick={e => this.changeCat(e, "Food")}
               >
@@ -523,7 +527,7 @@ class Scroller extends Component {
                 onClick={e => this.changeCat(e, "Animals")}
               >
                 ANIMALS
-              </button>
+              </button> */}
             </div>
           </div>
         ) : null}

@@ -238,7 +238,7 @@ class AddMarkup extends Component {
                   className="image"
                   key={`image${i}`}
                   fullscreen={fullscreen}
-                  src={(mobile && (image.low || image.high)) || image.source}
+                  src={(mobile? image.low: image.high? image.high: image.low)}
                 />
                 <div className="title-text">{title}</div>
 

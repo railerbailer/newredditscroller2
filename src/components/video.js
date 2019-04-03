@@ -3,15 +3,16 @@ import { Icon } from "antd";
 class Video extends Component {
   state = {
     loaded: false,
-    isPlaying: false
+    isPlaying: false,
+    fadeOut: false
   };
 
   togglePlaying = () => {
     if (this.videoPlayer) {
       this.videoPlayer.pause();
-      this.setState({ isPlaying: false });
+      this.setState({ isPlaying: false, fadeOut: !this.state.fadeOut });
     }
-
+    
     this.setState({ isPlaying: !this.state.isPlaying }, () =>
       this.state.isPlaying ? this.videoPlayer.play() : this.videoPlayer.pause()
     );
@@ -28,7 +29,7 @@ class Video extends Component {
           autoFocus
           ref={el => (this.videoPlayer = el)}
           onClick={() => {
-            this.state.isPlaying ? this.togglePlaying() : onClick();
+            onClick();
           }}
           onTouchMove={() => {
             this.setState({ isPlaying: false }, () => this.videoPlayer.pause());
@@ -38,23 +39,15 @@ class Video extends Component {
           onCanPlay={() => this.setState({ loaded: true })}
           className={`video`}
           playsInline={true}
-          onMouseOver={() =>
-            !mobile &&
-            this.setState({ isPlaying: true }, () => {
-              this.videoPlayer.play();
-              setTimeout(
-                () => this.videoPlayer && this.videoPlayer.pause(),
-                60000
-              );
-            })
-          }
+          onMouseOver={() => !mobile && this.togglePlaying()}
+          onMouseLeave={() => !mobile && this.togglePlaying()}
           /*   onMouseLeave={() =>
             !mobile &&
             this.setState({ isPlaying: false }, () => this.videoPlayer.pause())
           } */
           loop={true}
-          {...havePoster}
-          preload={mobile ? "none" : "metadata"}
+          /*  {...havePoster} */
+          preload={"metadata"}
         >
           <source src={src} type="video/mp4" />
           Sorry, your browser doesn't support embedded videos.
@@ -62,17 +55,26 @@ class Video extends Component {
         {!this.state.isPlaying ? (
           <Icon
             className="playButton"
+        
             type={"youtube"}
             onClick={() => this.togglePlaying()}
           />
+        ) : !this.state.loaded ? (
+          <Icon
+            className="playButton"
+            type={"loading"}
+            onClick={() => this.togglePlaying()}
+          />
         ) : (
-          !this.state.loaded && (
-            <Icon
-              className="playButton"
-              type={"loading"}
-              onClick={() => this.togglePlaying()}
-            />
-          )
+          <Icon
+            className="playButton"
+            style={{
+              opacity: this.state.fadeOut ? 0 : 1,
+              transition: "opacity 1000ms",
+            }}
+            type={"pause"}
+            onClick={() => this.togglePlaying()}
+          />
         )}
       </React.Fragment>
     );

@@ -92,7 +92,7 @@ class Scroller extends Component {
       return straight;
     } 
     else if(lowerCaseCategory==='sfwall'){
-      return subredditArray.concat(artArray).concat(foodArray).concat(animalsArray)
+      return subredditArray.concat(artArray, foodArray, animalsArray);
     }
     else if (lowerCaseCategory === "sfw") {
       return subredditArray;
@@ -302,10 +302,11 @@ class Scroller extends Component {
     return editedString ? editedString : "";
   }
 
-  dataMapper = (fetchedData, notLoadMore) => {
+  dataMapper = async (fetchedData, notLoadMore) => {
     if (!notLoadMore) {
       sources = [];
     }
+    let weGotGifs=false;
     fetchedData.map((item, i) => {
       let mediaData = {};
       const { data } = item;
@@ -336,8 +337,9 @@ class Scroller extends Component {
         mediaData.video.className = this.imageRatioCalculator(
           preview.reddit_video_preview.height,
           preview.reddit_video_preview.width
+          
         );
-
+        weGotGifs = true;
         let low = "";
         preview &&
           preview.images[0].resolutions.map(resolution => {
@@ -361,6 +363,7 @@ class Scroller extends Component {
         mediaData.domain = data.domain || "";
         mediaData.title = data.title;
         mediaData.thumbnail = thumbnail;
+        weGotGifs = true;
       } else if (post_hint === "image") {
         mediaData.image = {};
         let low;
@@ -409,6 +412,7 @@ class Scroller extends Component {
 
          mediaData.domain = data.domain || "";
       } */
+    
 
       if (
         Object.entries(mediaData).length !== 0 &&
@@ -418,12 +422,14 @@ class Scroller extends Component {
         /* console.log(mediaData); */
       }
     });
-    if (!sources.length) {
-      console.log("here");
-      this.getSubreddit(
+    if (!sources.length || this.state.isOnlyGifsShowing && !weGotGifs) {
+      console.log('RUN IN DATAMAPPER')
+      await this.getSubreddit(
         this.shuffleArray(this.dataHandler(this.state.category))
       );
     }
+    
+    
     return;
   };
   switchCatButtons = () => {
@@ -637,6 +643,7 @@ class Scroller extends Component {
   }
 
   getSubreddit = async (subreddit, notShowLoad) => {
+    console.log('GETSUBRREDDITHALLO')
     if (notShowLoad) {
       await this.setState({ subreddit: subreddit, isLoading: false });
     } else {

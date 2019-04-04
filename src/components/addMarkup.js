@@ -198,6 +198,7 @@ class AddMarkup extends Component {
       fullscreen,
       dataSource
     } = this.props;
+    console.log(dataSource)
     let filteredData;
     if (isOnlyPicsShowing)
       filteredData = dataSource

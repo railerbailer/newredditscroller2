@@ -124,10 +124,10 @@ class AddMarkup extends Component {
 
     return (
       <Swipeable
-        onKeyPress={e => this.handleKeyDown(e)}
+        onKeyDown={e => this.handleKeyDown(e)}
         onSwipedDown={this.swipedDown}
         onSwipedUp={this.swipedUp}
-        style={{backgroundColor: 'rgb(20, 20, 20)'}}
+        style={{ backgroundColor: "rgb(20, 20, 20)" }}
       >
         {fullscreen ? (
           html.length && (
@@ -198,7 +198,7 @@ class AddMarkup extends Component {
       fullscreen,
       dataSource
     } = this.props;
-    console.log(dataSource)
+    console.log(dataSource);
     let filteredData;
     if (isOnlyPicsShowing)
       filteredData = dataSource
@@ -239,7 +239,7 @@ class AddMarkup extends Component {
                   className="image"
                   key={`image${i}`}
                   fullscreen={fullscreen}
-                  src={(mobile? image.low: image.high? image.high: image.low)}
+                  src={mobile ? image.low : image.high ? image.high : image.low}
                 />
                 <div className="title-text">{title}</div>
 
@@ -275,12 +275,11 @@ class AddMarkup extends Component {
                 key={i}
                 ref={el => (this[`gridElement${i}`] = el)}
                 className={`gridElement ${video.className}`}
-                
               >
                 <Video
-                onClick={() => {
-                  this.getElementIndex(i, this[`gridElement${i}`]);
-                }}
+                  onClick={() => {
+                    this.getElementIndex(i, this[`gridElement${i}`]);
+                  }}
                   key={`video${i}`}
                   mobile={mobile}
                   src={video.url}
@@ -325,7 +324,7 @@ class AddMarkup extends Component {
                   this.getElementIndex(i, this[`gridElement${i}`]);
                 }}
               >
-           <Image className={`gif`} src={gif.url} />
+                <Image className={`gif`} src={gif.url} />
                 <div className="title-text">{title}</div>
                 <div
                   className="fullscreenIcon"

@@ -90,11 +90,9 @@ class Scroller extends Component {
     let lowerCaseCategory = props.toLowerCase();
     if (lowerCaseCategory === "nsfw") {
       return straight;
-    } 
-    else if(lowerCaseCategory==='sfwall'){
+    } else if (lowerCaseCategory === "sfwall") {
       return subredditArray.concat(artArray, foodArray, animalsArray);
-    }
-    else if (lowerCaseCategory === "sfw") {
+    } else if (lowerCaseCategory === "sfw") {
       return subredditArray;
     } else if (lowerCaseCategory === "art") {
       return artArray;
@@ -306,7 +304,7 @@ class Scroller extends Component {
     if (!notLoadMore) {
       sources = [];
     }
-    let weGotGifs=false;
+    let weGotGifs = false;
     fetchedData.map((item, i) => {
       let mediaData = {};
       const { data } = item;
@@ -337,7 +335,6 @@ class Scroller extends Component {
         mediaData.video.className = this.imageRatioCalculator(
           preview.reddit_video_preview.height,
           preview.reddit_video_preview.width
-          
         );
         weGotGifs = true;
         let low = "";
@@ -412,7 +409,6 @@ class Scroller extends Component {
 
          mediaData.domain = data.domain || "";
       } */
-    
 
       if (
         Object.entries(mediaData).length !== 0 &&
@@ -422,14 +418,13 @@ class Scroller extends Component {
         /* console.log(mediaData); */
       }
     });
-    if (!sources.length || this.state.isOnlyGifsShowing && !weGotGifs) {
-      console.log('RUN IN DATAMAPPER')
+    if (!sources.length || (this.state.isOnlyGifsShowing && !weGotGifs)) {
+      console.log("RUN IN DATAMAPPER");
       await this.getSubreddit(
         this.shuffleArray(this.dataHandler(this.state.category))
       );
     }
-    
-    
+
     return;
   };
   switchCatButtons = () => {
@@ -500,12 +495,14 @@ class Scroller extends Component {
         {this.state.category === "No category chosen" ? (
           <div className="categoryModal">
             <div className="grid-container">
-              {this.props.match.params.subreddit && <button
-                className="item0"
-                onClick={() => this.setState({ category: "Not chosen" })}
-              >
-                Continue to {this.props.match.params.subreddit}
-              </button>}
+              {this.props.match.params.subreddit && (
+                <button
+                  className="item0"
+                  onClick={() => this.setState({ category: "Not chosen" })}
+                >
+                  Continue to {this.props.match.params.subreddit}
+                </button>
+              )}
               <button
                 className="item1"
                 onClick={e => this.changeCat(e, "NSFW")}
@@ -513,7 +510,10 @@ class Scroller extends Component {
                 Not safe for work (nudity)
               </button>
 
-              <button className="item2" onClick={e => this.changeCat(e, "SFWALL")}>
+              <button
+                className="item2"
+                onClick={e => this.changeCat(e, "SFWALL")}
+              >
                 Safe for work
               </button>
 
@@ -643,7 +643,7 @@ class Scroller extends Component {
   }
 
   getSubreddit = async (subreddit, notShowLoad) => {
-    console.log('GETSUBRREDDITHALLO')
+    console.log("GETSUBRREDDITHALLO");
     if (notShowLoad) {
       await this.setState({ subreddit: subreddit, isLoading: false });
     } else {

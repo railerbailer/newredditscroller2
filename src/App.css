@@ -171,6 +171,10 @@ i {
 .fullscreenIcon i {
   color: white;
 }
+
+.playButton:hover {
+  opacity: 1 !important;
+}
 .playButton {
   opacity: 0.6;
   font-size: 54px;
@@ -192,6 +196,7 @@ i {
 .playButton .fullscreen {
   top: 50%;
 }
+
 
 .mainSVG {
   position: absolute;

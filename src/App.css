@@ -178,7 +178,7 @@ i {
   margin: auto;
   display: block;
   position: absolute;
-  
+
   top: 45%;
   width: 60%;
   margin-left: 20%;
@@ -186,7 +186,7 @@ i {
   z-index: 5;
   padding: 50px;
   margin-top: -50px;
-  
+
   margin-right: -50px;
 }
 .playButton .fullscreen {
@@ -558,13 +558,15 @@ p {
   opacity: 0;
   transition: opacity 900ms;
 }
+.searchButton--entering {
+  opacity: 0;
+}
 
-.searchButton--entering,
 .searchButton--entered {
   border: 0 !important;
-  position: relative;
+  position: absolute;
   opacity: 1;
-  transition: opacity 900ms;
+
   border: 1px dashed white;
   font-size: 28px;
 }
@@ -572,13 +574,13 @@ p {
 .searchButton--exiting,
 .searchButton--exited {
   border: 0 !important;
-  position: relative;
-  opacity: 0.3;
-  transition: opacity 100ms;
+  position: absolute;
+  opacity: 0;
+
   border: 1px dashed white;
   font-size: 28px;
-  position: fixed;
-  width: 40vw;
+
+  width: 0;
 }
 .ant-spin-dot {
   margin-top: 50%;
@@ -629,7 +631,12 @@ p {
 }
 
 .searchWrapper {
-  width: 100px;
+  position: relative;
+
+  z-index: 6;
+}
+.searchWrapper button {
+  position: absolute;
   z-index: 6;
 }
 .searchWrapper .anticon {

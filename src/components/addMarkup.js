@@ -58,7 +58,7 @@ class AddMarkup extends Component {
       {
         activeElement: index
       },
-      () => ref && ref.scrollIntoView() //window.scrollTo(0, 430 * index)
+      () => ref && ref.scrollIntoView({block: "center"}) //window.scrollTo(0, 430 * index)
     );
   };
 

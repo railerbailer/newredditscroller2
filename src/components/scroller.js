@@ -100,6 +100,9 @@ class Scroller extends Component {
       return foodArray;
     } else if (lowerCaseCategory === "animals") {
       return animalsArray;
+    }
+    else if (lowerCaseCategory=== 'search'){
+      return subredditArray.concat(artArray, foodArray, animalsArray), straight;
     } else {
       return subredditArray.concat(artArray, foodArray, animalsArray);
     }
@@ -219,7 +222,7 @@ class Scroller extends Component {
     if (!value) {
       value = "Type your search";
     }
-    let result = this.dataHandler(this.state.category).filter(str =>
+    let result = this.dataHandler('search').filter(str =>
       str.toLowerCase().includes(value.toLowerCase())
     );
     result = result.reverse();

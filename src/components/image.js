@@ -6,14 +6,18 @@ class Image extends Component {
   };
 
   render() {
+    imageError=false
     const { className, src, onClick } = this.props;
     const { loaded } = this.state;
+
     return (
       <img
         alt="Image could not be loaded"
-        className={`${className} ${loaded ? "loaded" : "undone"}`}
+        className={className}
+        ref={img => this.img = img}
         onClick={onClick}
-        onLoad={() => this.setState({ loaded: true })}
+   
+
         src={src}
       />
     );

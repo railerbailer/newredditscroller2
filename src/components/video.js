@@ -39,8 +39,8 @@ class Video extends Component {
           onCanPlay={() => this.setState({ loaded: true })}
           className={`video`}
           playsInline={true}
-          onMouseOver={() => !mobile && this.togglePlaying()}
-          onMouseLeave={() => !mobile && this.togglePlaying()}
+          /* onMouseOver={() => !mobile && this.togglePlaying()}
+          onMouseLeave={() => !mobile && this.togglePlaying()} */
           /*   onMouseLeave={() =>
             !mobile &&
             this.setState({ isPlaying: false }, () => this.videoPlayer.pause())
@@ -49,7 +49,8 @@ class Video extends Component {
           /*  {...havePoster} */
           preload={"metadata"}
         >
-          <source src={`${src}#t=0.5`} type="video/mp4" />
+          <source src={`${src}#t=0.1`} type="video/mp4" />
+         {/*  <source src={src} type="video/mp4" /> */}
           Sorry, your browser doesn't support embedded videos.
         </video>
         {!this.state.isPlaying ? (

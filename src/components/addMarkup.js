@@ -301,7 +301,7 @@ class AddMarkup extends Component {
             </LazyLoad>
           );
         }
-        if (gif) {
+        if (gif && !mobile) {
           return (
             <LazyLoad
               unmountIfInvisible={false}
@@ -325,7 +325,7 @@ class AddMarkup extends Component {
                   this.getElementIndex(i, this[`gridElement${i}`]);
                 }}
               >
-                <Image className={`gif`} src={gif.url} />
+           <Image className={`gif`} src={gif.url} />
                 <div className="title-text">{title}</div>
                 <div
                   className="fullscreenIcon"

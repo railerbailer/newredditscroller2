@@ -73,6 +73,19 @@ h2 {
   background-color: transparent;
   opacity: 0.8;
 }
+.closeFullScreen {
+  text-shadow: 1px 1px black;
+  border: 0;
+  z-index: 8;
+  position: absolute;
+  color: white;
+  top: 55px;
+  right: 11px;
+  height: 30px;
+  width: 30px;
+  background-color: transparent;
+  opacity: 0.8;
+}
 .fullscreenButtonPrevious:hover,
 .fullscreenButtonNext:hover {
   background-color: rgb(0, 0, 0, 0);
@@ -200,7 +213,6 @@ i {
   top: 50%;
 }
 
-
 .mainSVG {
   position: absolute;
   top: 70vh;
@@ -242,7 +254,7 @@ i {
 .fullscreenScroll .gridElement {
   background: black;
   display: flex;
-  max-height: 100vh; 
+  max-height: 100vh;
 }
 .gridElement {
   position: relative;
@@ -504,7 +516,8 @@ p {
   background-color: transparent;
 
   opacity: 0.9;
-  height: 100%;
+  height: 70%;
+  margin-top: 30%;
   width: 36px;
   position: fixed;
   top: 0;

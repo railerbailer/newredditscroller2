@@ -30,7 +30,8 @@ class Video extends Component {
     return (
       <React.Fragment>
         <video
-          autoFocus
+        tabIndex="1"
+          onKeyPress={()=> console.log('WHATEVER')}
           ref={el => (this.videoPlayer = el)}
           onClick={() => {
             onClick();

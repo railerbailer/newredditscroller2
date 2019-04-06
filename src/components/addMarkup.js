@@ -106,6 +106,9 @@ class AddMarkup extends Component {
     if (e.key === "ArrowUp") {
       !this.props.isSearchActivated && this.getPreviousElement();
     }
+    if(e.key === ' '){
+      if(this.videoPlayer)   {this.videoPlayer.play(); console.log('hey')}
+    }
   };
 
   swipedUp = (e, deltaY, isFlick) => {
@@ -132,6 +135,11 @@ class AddMarkup extends Component {
         {fullscreen ? (
           html.length && (
             <div className="fullscreenScroll">
+            <Icon
+                type="close"
+                className="closeFullScreen"
+                onClick={() => this.props.toggleFullscreen()}
+              />
               {html[this.state.activeElement]}
               <div style={{ height: "0px" }}>
                 {html[this.state.activeElement + 1]}
@@ -259,7 +267,7 @@ class AddMarkup extends Component {
         if (video) {
           return (
             <LazyLoad
-              unmountIfInvisible={false}
+              unmountIfInvisible={true}
               placeholder={
                 <Spin
                   style={{

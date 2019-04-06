@@ -138,7 +138,7 @@ class AddMarkup extends Component {
                 {!mobile && html[this.state.activeElement + 2]}
                 {!mobile && html[this.state.activeElement + 3]}
               </div>
-
+            <div>
               <Icon
                 autoFocus
                 type="up"
@@ -147,6 +147,7 @@ class AddMarkup extends Component {
               >
                 Show more
               </Icon>
+              </div>
               {!this.props.isSearchActivated && (
                 <button
                   className="inputFocus"
@@ -241,7 +242,7 @@ class AddMarkup extends Component {
                   fullscreen={fullscreen}
                   src={mobile ? image.low : image.high ? image.high : image.low}
                 />
-                <div className="title-text">{title}</div>
+                {/* <div className="title-text">{title}</div>
 
                 <div
                   className="fullscreenIcon"
@@ -250,7 +251,7 @@ class AddMarkup extends Component {
                   }}
                 >
                   <i className="material-icons">fullscreen</i>
-                </div>
+                </div> */}
               </div>
             </LazyLoad>
           );
@@ -287,7 +288,7 @@ class AddMarkup extends Component {
                   poster={video.image ? video.image : data.thumbnail}
                 />
 
-                <div className="title-text">{title}</div>
+                {/* <div className="title-text">{title}</div>
                 <div
                   className="fullscreenIcon"
                   onClick={() => {
@@ -295,7 +296,7 @@ class AddMarkup extends Component {
                   }}
                 >
                   <i className="material-icons">fullscreen</i>
-                </div>
+                </div> */}
               </div>
             </LazyLoad>
           );
@@ -325,7 +326,7 @@ class AddMarkup extends Component {
                 }}
               >
                 <Image className={`gif`} src={gif.url} />
-                <div className="title-text">{title}</div>
+                {/* <div className="title-text">{title}</div>
                 <div
                   className="fullscreenIcon"
                   onClick={() => {
@@ -333,7 +334,7 @@ class AddMarkup extends Component {
                   }}
                 >
                   <i className="material-icons">fullscreen</i>
-                </div>
+                </div> */}
               </div>
             </LazyLoad>
           );

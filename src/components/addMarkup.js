@@ -19,34 +19,6 @@ class AddMarkup extends Component {
     this.renderHtml();
   }
 
-  /*  handleScroll = async () => {
-    const windowHeight =
-      "innerHeight" in window
-        ? window.innerHeight
-        : document.documentElement.offsetHeight;
-    const body = document.body;
-    const html = document.documentElement;
-    const docHeight = Math.max(
-      body.scrollHeight,
-      body.offsetHeight,
-      html.clientHeight,
-      html.scrollHeight,
-      html.offsetHeight
-    );
-    const windowBottom = windowHeight + 800 + window.pageYOffset;
-    if (windowBottom >= docHeight) {
-      console.log('we down here')
-      
-        await this.props.loadMore();
-        setTimeout(
-          () => this.setState({ loading: true }, this.renderHtml()),
-          500
-        );
-        window.removeEventListener("scroll", this.handleScroll);
-
-    }
-  }; */
-
   getElementIndex = (index, ref) => {
     this.props.toggleFullscreen();
 
@@ -243,16 +215,7 @@ class AddMarkup extends Component {
                   fullscreen={fullscreen}
                   src={mobile ? image.low : image.high ? image.high : image.low}
                 />
-                {/* <div className="title-text">{title}</div>
-
-                <div
-                  className="fullscreenIcon"
-                  onClick={() => {
-                    this.getElementIndex(i, this[`gridElement${i}`]);
-                  }}
-                >
-                  <i className="material-icons">fullscreen</i>
-                </div> */}
+               
               </div>
             </LazyLoad>
           );
@@ -317,15 +280,7 @@ class AddMarkup extends Component {
                 }}
               >
                 <Image className={`gif`} src={gif.url} />
-                {/* <div className="title-text">{title}</div>
-                <div
-                  className="fullscreenIcon"
-                  onClick={() => {
-                    this.getElementIndex(i, this[`gridElement${i}`]);
-                  }}
-                >
-                  <i className="material-icons">fullscreen</i>
-                </div> */}
+              
               </div>
             </LazyLoad>
           );

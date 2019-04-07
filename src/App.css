@@ -127,10 +127,11 @@ i {
   grid-auto-flow: dense;
 }
 @media (max-width: 600px) {
-  .gridMedia {
-    border: 0;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  }
+  .iconLeft,
+.iconRight {
+  margin-top: 30% !important;
+}
+  
 }
 
 .gridElement:fullscreen {
@@ -282,7 +283,6 @@ iframe {
   text-align: center;
   color: white;
   width: 100%;
-  height: 100%;
   object-fit: cover;
 }
 .loading {
@@ -517,7 +517,7 @@ p {
 
   opacity: 0.9;
   height: 70%;
-  margin-top: 30%;
+  margin-top: 15%;
   width: 36px;
   position: fixed;
   top: 0;
@@ -617,6 +617,10 @@ p {
   }
 }
 @media (max-width: 800px) {
+  .gridMedia {
+    border: 0;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
   .item0 {
     font-size: 0.975rem;
   }

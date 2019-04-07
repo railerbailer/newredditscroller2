@@ -12,15 +12,10 @@ class AddMarkup extends Component {
     showFullScreenIcon: true,
     html: [],
     activeElement: 0,
-    loading: false
+    loading: false,
+    videoAutoPlay: false
   };
   componentWillMount() {
-    this.renderHtml();
-  }
-  componentDidMount() {
-    /*     window.addEventListener("scroll", this.handleScroll);
-     */
-    /*   console.log("Mounting addMarkup", html, this.props.dataSource); */
     this.renderHtml();
   }
 
@@ -54,11 +49,9 @@ class AddMarkup extends Component {
 
   getElementIndex = (index, ref) => {
     this.props.toggleFullscreen();
-    this.setState(
-      {
-        activeElement: index
-      },
-      () => ref && ref.scrollIntoView({block: "center"}) //window.scrollTo(0, 430 * index)
+
+    this.setState({activeElement: index},
+      () => ref && ref.scrollIntoView({ block: "center" }) //window.scrollTo(0, 430 * index)
     );
   };
 
@@ -77,7 +70,6 @@ class AddMarkup extends Component {
           console.log("error", error);
         }
       }
-      this.renderHtml();
       this.setState({
         activeElement: haveMoreContent
           ? this.state.activeElement + 1
@@ -106,8 +98,10 @@ class AddMarkup extends Component {
     if (e.key === "ArrowUp") {
       !this.props.isSearchActivated && this.getPreviousElement();
     }
-    if(e.key === ' '){
-      if(this.videoPlayer)   {this.videoPlayer.play(); console.log('hey')}
+    if (e.key === " ") {
+      if (this.videoPlayer) {
+        this.videoPlayer.play();
+      }
     }
   };
 
@@ -123,8 +117,8 @@ class AddMarkup extends Component {
     }
   };
   render() {
+    this.renderHtml();
     const { fullscreen, mobile } = this.props;
-
     return (
       <Swipeable
         onKeyDown={e => this.handleKeyDown(e)}
@@ -135,7 +129,7 @@ class AddMarkup extends Component {
         {fullscreen ? (
           html.length && (
             <div className="fullscreenScroll">
-            <Icon
+              <Icon
                 type="close"
                 className="closeFullScreen"
                 onClick={() => this.props.toggleFullscreen()}
@@ -146,15 +140,15 @@ class AddMarkup extends Component {
                 {!mobile && html[this.state.activeElement + 2]}
                 {!mobile && html[this.state.activeElement + 3]}
               </div>
-            <div>
-              <Icon
-                autoFocus
-                type="up"
-                className="fullscreenButtonNext"
-                onClick={() => this.getNextElement()}
-              >
-                Show more
-              </Icon>
+              <div>
+                <Icon
+                  autoFocus
+                  type="up"
+                  className="fullscreenButtonNext"
+                  onClick={() => this.getNextElement()}
+                >
+                  Show more
+                </Icon>
               </div>
               {!this.props.isSearchActivated && (
                 <button
@@ -207,7 +201,6 @@ class AddMarkup extends Component {
       fullscreen,
       dataSource
     } = this.props;
-    console.log(dataSource);
     let filteredData;
     if (isOnlyPicsShowing)
       filteredData = dataSource
@@ -292,19 +285,9 @@ class AddMarkup extends Component {
                   key={`video${i}`}
                   mobile={mobile}
                   src={video.url}
-                  fullscreen={fullscreen}
+                  videoAutoPlay={fullscreen}
                   poster={video.image ? video.image : data.thumbnail}
                 />
-
-                {/* <div className="title-text">{title}</div>
-                <div
-                  className="fullscreenIcon"
-                  onClick={() => {
-                    this.getElementIndex(i, this[`gridElement${i}`]);
-                  }}
-                >
-                  <i className="material-icons">fullscreen</i>
-                </div> */}
               </div>
             </LazyLoad>
           );

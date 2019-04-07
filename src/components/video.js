@@ -5,16 +5,17 @@ class Video extends Component {
     super();
     this.timer = null;
     this.state = {
-      loaded: false,
+      videoLoaded: false,
       isPlaying: false,
-      fadeOut: false
+      fadeOut: false,
+      autoPlay: false
     };
   }
 
   togglePlaying = () => {
     if (this.videoPlayer) {
       this.videoPlayer.pause();
-      this.setState({ isPlaying: false, fadeOut: !this.state.fadeOut });
+      this.setState({ isPlaying: false, fadeOut: false });
     }
 
     this.setState({ isPlaying: !this.state.isPlaying }, () =>
@@ -23,44 +24,34 @@ class Video extends Component {
   };
 
   render() {
-    const { src, poster, mobile, fullscreen, onClick } = this.props;
-    console.log(this.timer);
-    let havePoster = mobile && { poster: poster };
-
+    const { src, videoAutoPlay, onClick } = this.props;
     return (
       <React.Fragment>
         <video
-        tabIndex="1"
-          onKeyPress={()=> console.log('WHATEVER')}
           ref={el => (this.videoPlayer = el)}
           onClick={() => {
             onClick();
+            this.togglePlaying();
           }}
-          // onTouchMove={() => {
-          //   this.setState({ isPlaying: false }, () => this.videoPlayer.pause());
-          // }}
-          autoPlay={false}
+          autoPlay={videoAutoPlay}
           allowFullScreen={true}
-          onCanPlay={() => this.setState({ loaded: true })}
+          onCanPlay={() => this.setState({ videoLoaded: true })}
           className={`video`}
           playsInline={true}
           onPlay={() =>
-            (this.timer = setTimeout(
-              () => this.videoPlayer && this.videoPlayer.pause(),
-              10000
-            ))
+            this.setState(
+              { isPlaying: true, fadeOut: !this.state.fadeOut },
+              () =>
+                (this.timer = setTimeout(
+                  () => this.videoPlayer && this.videoPlayer.pause(),
+                  25000
+                ))
+            )
           }
           onPause={() =>
             this.setState({ isPlaying: false }, clearTimeout(this.timer))
           }
-          /* onMouseOver={() => !mobile && this.togglePlaying()}
-          onMouseLeave={() => !mobile && this.togglePlaying()} */
-          /*   onMouseLeave={() =>
-            !mobile &&
-            this.setState({ isPlaying: false }, () => this.videoPlayer.pause())
-          } */
           loop={true}
-          /*  {...havePoster} */
           preload={"metadata"}
         >
           <source src={`${src}#t=0.1`} type="video/mp4" />
@@ -73,7 +64,7 @@ class Video extends Component {
             type={"youtube"}
             onClick={() => this.togglePlaying()}
           />
-        ) : !this.state.loaded ? (
+        ) : !this.state.videoLoaded ? (
           <Icon
             className="playButton"
             type={"loading"}

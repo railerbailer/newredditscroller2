@@ -6,7 +6,6 @@ class Image extends Component {
   }
   render() {
     const { className, src, onClick } = this.props;
-    console.log(this.img && this.img.error)
     return (
       <img
         alt="Image could not be loaded"

@@ -57,11 +57,6 @@ class Scroller extends Component {
     htmlAndSource: []
   };
 
-  /*  componentWillUpdate() {
-    if (this.state.message === "bottom reached") {
-      this.setState({ message: "hello" }, () => this.moreSubreddits());
-    }
-  } */
   componentWillMount() {
     if (window.screen.availWidth < 800) this.setState({ mobile: true });
   }
@@ -75,11 +70,6 @@ class Scroller extends Component {
           this.shuffleArray(this.dataHandler(this.state.category))
         );
   }
-
-  /*   componentWillUnmount() {
-    window.removeEventListener("scroll", this.handleScroll);
-  }
- */
 
   toggleFullscreen = () => {
     !this.state.isSearchActivated &&
@@ -100,8 +90,7 @@ class Scroller extends Component {
       return foodArray;
     } else if (lowerCaseCategory === "animals") {
       return animalsArray;
-    }
-    else if (lowerCaseCategory=== 'search'){
+    } else if (lowerCaseCategory === "search") {
       return subredditArray.concat(artArray, foodArray, animalsArray), straight;
     } else {
       return subredditArray.concat(artArray, foodArray, animalsArray);
@@ -222,7 +211,7 @@ class Scroller extends Component {
     if (!value) {
       value = "Type your search";
     }
-    let result = this.dataHandler('search').filter(str =>
+    let result = this.dataHandler("search").filter(str =>
       str.toLowerCase().includes(value.toLowerCase())
     );
     result = result.reverse();
@@ -394,35 +383,14 @@ class Scroller extends Component {
         mediaData.thumbnail = thumbnail;
       }
 
-      /*    else if (media_embed && media_embed.content) {
-        mediaData.embed = {};
-        mediaData.embed.iframe = this.htmlParser(
-          media_embed.content || (media && media.oembed.html)
-        );
-         mediaData.domain = data.domain || "";
-      } else if (
-        post_hint === "link" &&
-        (data.domain === "pornhub.com" ||
-          data.domain === "gfycat.com" ||
-          data.domain === "imgur.com" ||
-          data.domain === "i.imgur.com")
-      ) {
-        mediaData.embed = {};
-        mediaData.embed.url = data.url;
-
-         mediaData.domain = data.domain || "";
-      } */
-
       if (
         Object.entries(mediaData).length !== 0 &&
         (mediaData.image || mediaData.video || mediaData.gif)
       ) {
         sources.push(mediaData);
-        /* console.log(mediaData); */
       }
     });
     if (!sources.length || (this.state.isOnlyGifsShowing && !weGotGifs)) {
-      console.log("RUN IN DATAMAPPER");
       await this.getSubreddit(
         this.shuffleArray(this.dataHandler(this.state.category))
       );
@@ -475,10 +443,6 @@ class Scroller extends Component {
   };
 
   render() {
-    // undone bilder visas ändå (https://thumbs.gfycat.com/SneakyDelightfulErmine-size_restricted.gif fåär access denied)
-
-    // code splitting
-
     return (
       <Swipeable
         className={`wrapper`}
@@ -646,17 +610,11 @@ class Scroller extends Component {
   }
 
   getSubreddit = async (subreddit, notShowLoad) => {
-    console.log("GETSUBRREDDITHALLO");
     if (notShowLoad) {
       await this.setState({ subreddit: subreddit, isLoading: false });
     } else {
       await this.setState({ subreddit: subreddit, isLoading: true });
     }
-
-    /* this.state.category === "No category chosen" &&
-    !this.props.match.params.subreddit
-      ? null
-      :  */
 
     this.props.history.push(`/${this.state.subreddit}`);
 
@@ -708,63 +666,3 @@ class Scroller extends Component {
 }
 
 export default Scroller;
-
-/* loadEmbed = (url, domain, embedExists) => {
-  if (embedExists) {
-    return (
-      <div
-        style={{ backgroundColor: "red" }}
-        className="gridElement"
-        dangerouslySetInnerHTML={{
-          __html: this.htmlParser(
-            embedExists.replace("allowfullscreen", "allowFullScreen")
-          )
-        }}
-      />
-    );
-  }
-  if (domain === "erome.com") {
-    return (
-      <Iframe
-        url={url}
-        className="gridElement"
-        display="initial"
-        position="relative"
-        allowFullScreen
-      />
-    );
-  }
-  if (false && domain.includes("pornhub") && url.includes("pornhub")) {
-    let pornhubEmbedId = url.split("=");
-    console.log("pornhub");
-    return (
-      <Iframe
-        url={`https://www.pornhub.com/embed/${pornhubEmbedId[1]}`}
-        className="gridElement"
-        display="initial"
-        position="relative"
-        allowFullScreen
-      />
-    );
-  }
-
-  if (domain.includes("imgur")) {
-    let imgurEmbedId = url.split("/a/");
-    imgurEmbedId = imgurEmbedId[1];
-    let newScriptTag = document.createElement("script");
-    newScriptTag.imgurEmbedId = "globalImgurEmbedScriptTag";
-    newScriptTag.src = "//s.imgur.com/min/embed.js";
-    newScriptTag.type = "text/javascript";
-
-    document.querySelector("body").appendChild(newScriptTag);
-    return (
-      <blockquote
-        className="imgur-embed-pub imgur"
-        lang="en"
-        data-id={`a/${imgurEmbedId}`}
-      >
-        <a href={`//imgur.com/${imgurEmbedId}`}>Results of day drinking</a>
-      </blockquote>
-    );
-  }
-}; */

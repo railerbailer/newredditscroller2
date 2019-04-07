@@ -249,7 +249,7 @@ class AddMarkup extends Component {
                   mobile={mobile}
                   src={video.url}
                   videoAutoPlay={fullscreen}
-                  poster={data.thumbnail}
+                  poster={video.image || thumbnail}
                 />
               </div>
             </LazyLoad>

@@ -330,14 +330,11 @@ class Scroller extends Component {
         );
         weGotGifs = true;
         let low = "";
-        preview &&
-          preview.images[0].resolutions.map(resolution => {
-            let res = resolution.height + resolution.width;
-            if (res > 500 && res < 1000) {
-              low = this.htmlParser(resolution.url);
-            }
-          });
-        mediaData.video.image = low;
+        const { resolutions } = preview.images[0];
+        low = this.htmlParser(resolutions[resolutions.length - 1].url || "");
+        if (low) {
+          mediaData.video.image = low;
+        }
         mediaData.video.poster = data.thumbnail;
         mediaData.domain = data.domain || "";
         mediaData.title = data.title;

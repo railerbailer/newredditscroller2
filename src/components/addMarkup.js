@@ -107,7 +107,7 @@ class AddMarkup extends Component {
                 onClick={() => this.props.toggleFullscreen()}
               />
               {html[this.state.activeElement]}
-              <div style={{ height: "0px" }}>
+              <div style={{display: 'none', height: "0px" }}>
                 {html[this.state.activeElement + 1]}
                 {!mobile || this.state.activeElement > 2 && html[this.state.activeElement + 2]}
                 {!mobile || this.state.activeElement > 9 && html[this.state.activeElement + 3]}
@@ -174,6 +174,8 @@ class AddMarkup extends Component {
       dataSource
     } = this.props;
     let filteredData;
+    if(mobile)
+      filteredData = dataSource.filter(item=> !item.gif)
     if (isOnlyPicsShowing)
       filteredData = dataSource
         .filter(item => !item.video)

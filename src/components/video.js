@@ -24,7 +24,7 @@ class Video extends Component {
   };
 
   render() {
-    const { src, videoAutoPlay, onClick } = this.props;
+    const { src, videoAutoPlay, onClick, poster, mobile } = this.props;
     return (
       <React.Fragment>
         <video
@@ -34,6 +34,7 @@ class Video extends Component {
             this.togglePlaying();
           }}
           autoPlay={videoAutoPlay}
+          poster={mobile && poster}
           allowFullScreen={true}
           onCanPlay={() => this.setState({ videoLoaded: true })}
           className={`video`}
@@ -54,7 +55,7 @@ class Video extends Component {
           loop={true}
           preload={"metadata"}
         >
-          <source src={`${src}#t=0.1`} type="video/mp4" />
+          {!mobile &&<source src={`${src}#t=0.1`} type="video/mp4" />}
           <source src={src} type="video/mp4" />
           Sorry, your browser doesn't support embedded videos.
         </video>

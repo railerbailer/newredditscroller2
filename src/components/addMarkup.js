@@ -109,8 +109,8 @@ class AddMarkup extends Component {
               {html[this.state.activeElement]}
               <div style={{ height: "0px" }}>
                 {html[this.state.activeElement + 1]}
-                {!mobile && html[this.state.activeElement + 2]}
-                {!mobile && html[this.state.activeElement + 3]}
+                {!mobile || this.state.activeElement > 2 && html[this.state.activeElement + 2]}
+                {!mobile || this.state.activeElement > 9 && html[this.state.activeElement + 3]}
               </div>
               <div>
                 <Icon
@@ -185,7 +185,7 @@ class AddMarkup extends Component {
     html = filteredData
       .filter(item => Object.entries(item).length !== 0)
       .map((data, i) => {
-        const { gif, image, video, title } = data;
+        const { gif, image, video, title, thumbnail } = data;
         if (image) {
           return (
             <LazyLoad
@@ -249,7 +249,7 @@ class AddMarkup extends Component {
                   mobile={mobile}
                   src={video.url}
                   videoAutoPlay={fullscreen}
-                  poster={video.image ? video.image : data.thumbnail}
+                  poster={data.thumbnail}
                 />
               </div>
             </LazyLoad>

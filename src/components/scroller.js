@@ -66,9 +66,7 @@ class Scroller extends Component {
     }
     this.props.match.params.subreddit
       ? this.getSubreddit(this.props.match.params.subreddit)
-      : this.getSubreddit(
-          this.shuffleArray(this.dataHandler(this.state.category))
-        );
+      : null
   }
 
   toggleFullscreen = () => {
@@ -458,6 +456,7 @@ class Scroller extends Component {
 
         {this.state.category === "No category chosen" ? (
           <div className="categoryModal">
+          <h2>More than 1000 000 pics and gifs! <br/><br/>Which ones do you prefer?</h2>
             <div className="grid-container">
               {this.props.match.params.subreddit && (
                 <button
@@ -471,7 +470,7 @@ class Scroller extends Component {
                 className="item1"
                 onClick={e => this.changeCat(e, "NSFW")}
               >
-                Not safe for work (nudity)
+                Not safe for work (18+)
               </button>
 
               <button
@@ -569,10 +568,15 @@ class Scroller extends Component {
           {this.switchCatButtons()}
           {this.state.isLoading ? (
             <div className="spinner">
-              <Spin />
-              <div className="centered-text">
+            <div className="centered-text">
+            <div className="centered-text">
                 Loading <strong>{this.state.subreddit}</strong> category
               </div>
+              </div>
+              <Spin />
+              <br/>
+              <br/>
+              <p><i>Swipe right get a new random subreddit</i></p>
             </div>
           ) : (
             <React.Fragment>

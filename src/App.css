@@ -350,6 +350,13 @@ p {
   width: 100%;
   z-index: 7;
 }
+.categoryModal h2{
+  color: white;
+  position: absolute;
+  top: 80px;
+  width: 100%;
+  text-align: center;
+}
 
 .description {
   margin: auto;

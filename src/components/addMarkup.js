@@ -109,8 +109,8 @@ class AddMarkup extends Component {
               {html[this.state.activeElement]}
               <div style={{display: 'none', height: "0px" }}>
                 {html[this.state.activeElement + 1]}
-                {!mobile || this.state.activeElement > 2 && html[this.state.activeElement + 2]}
-                {!mobile || this.state.activeElement > 9 && html[this.state.activeElement + 3]}
+                {!mobile || (this.state.activeElement > 2 && html[this.state.activeElement + 2])}
+                {!mobile || (this.state.activeElement > 9 && html[this.state.activeElement + 3])}
               </div>
               <div>
                 <Icon
@@ -225,7 +225,7 @@ class AddMarkup extends Component {
         if (video) {
           return (
             <LazyLoad
-              unmountIfInvisible={true}
+              unmountIfInvisible={false}
               placeholder={
                 <Spin
                   style={{
@@ -247,6 +247,7 @@ class AddMarkup extends Component {
                   onClick={() => {
                     this.getElementIndex(i, this[`gridElement${i}`]);
                   }}
+                  
                   key={`video${i}`}
                   mobile={mobile}
                   src={video.url}

@@ -110,12 +110,10 @@ class AddMarkup extends Component {
               {html[this.state.activeElement]}
               <div style={{ opacity: 1, height: "1px" }}>
                 {html[this.state.activeElement + 1]}
-                {(!mobile ||
-                  this.state.activeElement > 2) &&
-                    html[this.state.activeElement + 2]}
-                {(!mobile ||
-                  this.state.activeElement > 9) &&
-                    html[this.state.activeElement + 3]}
+                {(!mobile || this.state.activeElement > 2) &&
+                  html[this.state.activeElement + 2]}
+                {(!mobile || this.state.activeElement > 9) &&
+                  html[this.state.activeElement + 3]}
               </div>
               <div>
                 <Icon
@@ -220,7 +218,9 @@ class AddMarkup extends Component {
                   key={`image${i}`}
                   fullscreen={fullscreen}
                   src={
-                    mobile ? image.low || image.high : image.high || image.low
+                    mobile
+                      ? image.low || image.high
+                      : image.high || image.low || image.source
                   }
                 />
               </div>

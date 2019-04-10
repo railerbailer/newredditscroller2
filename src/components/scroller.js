@@ -1,4 +1,4 @@
-import React, { Component, lazy } from "react";
+import React, { Component } from "react";
 import Swipeable from "react-swipeable";
 import "antd/dist/antd.css";
 import "../App.css";
@@ -66,7 +66,7 @@ class Scroller extends Component {
     }
     this.props.match.params.subreddit
       ? this.getSubreddit(this.props.match.params.subreddit)
-      : null
+      : null;
   }
 
   toggleFullscreen = () => {
@@ -372,6 +372,9 @@ class Scroller extends Component {
                 resolution.width
               )
             };
+            if (this.state.mobile && (!high && !low)) {
+              mediaData.image = null;
+            }
           });
         mediaData.domain = data.domain || "";
         mediaData.title = data.title;
@@ -454,54 +457,10 @@ class Scroller extends Component {
           />
         )} */}
 
-        {this.state.category === "No category chosen" ? (
-          <div className="categoryModal">
-          <h2>More than 1000 000 pics and gifs! <br/><br/>Which ones do you prefer?</h2>
-            <div className="grid-container">
-              {this.props.match.params.subreddit && (
-                <button
-                  className="item0"
-                  onClick={() => this.setState({ category: "Not chosen" })}
-                >
-                  Continue to {this.props.match.params.subreddit}
-                </button>
-              )}
-              <button
-                className="item1"
-                onClick={e => this.changeCat(e, "NSFW")}
-              >
-                Not safe for work (18+)
-              </button>
-
-              <button
-                className="item2"
-                onClick={e => this.changeCat(e, "SFWALL")}
-              >
-                Safe for work
-              </button>
-
-              {/* <button
-                className="item3"
-                onClick={e => this.changeCat(e, "Food")}
-              >
-                FOOD
-              </button>
-
-              <button className="item4" onClick={e => this.changeCat(e, "SFW")}>
-                SFW
-              </button>
-
-              <button
-                className="item5"
-                onClick={e => this.changeCat(e, "Animals")}
-              >
-                ANIMALS
-              </button> */}
-            </div>
-          </div>
-        ) : null}
-        {/* <Icon onClick={this.previous} className="iconUp" type="up" /> */}
-
+        {/*{this.state.category === "No category chosen" ? 
+          <ChooseCategory setCategoryState={this.categorySet} changeCategory={this.changeCat} category={this.state.category} params={this.props.match.params.subreddit}/> : null}
+         <Icon onClick={this.previous} className="iconUp" type="up" /> 
+      */}
         <div className={this.state.fullscreen ? "topbarZen" : "topbarZen"}>
           <div className="searchWrapper">
             <Transition
@@ -568,15 +527,17 @@ class Scroller extends Component {
           {this.switchCatButtons()}
           {this.state.isLoading ? (
             <div className="spinner">
-            <div className="centered-text">
-            <div className="centered-text">
-                Loading <strong>{this.state.subreddit}</strong> category
-              </div>
+              <div className="centered-text">
+                <div className="centered-text">
+                  Loading <strong>{this.state.subreddit}</strong> category
+                </div>
               </div>
               <Spin />
-              <br/>
-              <br/>
-              <p><i>Swipe right get a new random subreddit</i></p>
+              <br />
+              <br />
+              <p>
+                <i>Swipe right get a new random subreddit</i>
+              </p>
             </div>
           ) : (
             <React.Fragment>

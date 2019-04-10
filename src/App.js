@@ -1,12 +1,10 @@
 import "./App.css";
 import { BrowserRouter, Route } from "react-router-dom";
 import React, { Component, Suspense, lazy } from "react";
-
 const Scroller = lazy(() => import("./components/scroller"));
+const ChooseCategory = lazy(() => import("./components/chooseCategory"));
+
 class App extends Component {
-  componentDidMount() {
-    Scroller;
-  }
   render() {
     return (
       <BrowserRouter>
@@ -27,7 +25,7 @@ class App extends Component {
             </div>
           }
         >
-          <Route path="/" exact component={Scroller} />
+          <Route path="/" exact component={ChooseCategory} />
           <Route path="/:subreddit" exact component={Scroller} />
         </Suspense>
       </BrowserRouter>

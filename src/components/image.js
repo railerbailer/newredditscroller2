@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 
 class Image extends Component {
-  componentDidMount(){
-
-  }
   render() {
     const { className, src, onClick } = this.props;
     return (

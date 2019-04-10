@@ -22,7 +22,8 @@ class AddMarkup extends Component {
   getElementIndex = (index, ref) => {
     this.props.toggleFullscreen();
 
-    this.setState({activeElement: index},
+    this.setState(
+      { activeElement: index },
       () => ref && ref.scrollIntoView({ block: "center" }) //window.scrollTo(0, 430 * index)
     );
   };
@@ -107,10 +108,14 @@ class AddMarkup extends Component {
                 onClick={() => this.props.toggleFullscreen()}
               />
               {html[this.state.activeElement]}
-              <div style={{display: 'none', height: "0px" }}>
+              <div style={{ opacity: 1, height: "1px" }}>
                 {html[this.state.activeElement + 1]}
-                {!mobile || (this.state.activeElement > 2 && html[this.state.activeElement + 2])}
-                {!mobile || (this.state.activeElement > 9 && html[this.state.activeElement + 3])}
+                {(!mobile ||
+                  this.state.activeElement > 2) &&
+                    html[this.state.activeElement + 2]}
+                {(!mobile ||
+                  this.state.activeElement > 9) &&
+                    html[this.state.activeElement + 3]}
               </div>
               <div>
                 <Icon
@@ -174,8 +179,7 @@ class AddMarkup extends Component {
       dataSource
     } = this.props;
     let filteredData;
-    if(mobile)
-      filteredData = dataSource.filter(item=> !item.gif)
+    if (mobile) filteredData = dataSource.filter(item => !item.gif);
     if (isOnlyPicsShowing)
       filteredData = dataSource
         .filter(item => !item.video)
@@ -215,9 +219,10 @@ class AddMarkup extends Component {
                   className="image"
                   key={`image${i}`}
                   fullscreen={fullscreen}
-                  src={mobile ? image.low : image.high ? image.high : image.low}
+                  src={
+                    mobile ? image.low || image.high : image.high || image.low
+                  }
                 />
-               
               </div>
             </LazyLoad>
           );
@@ -247,7 +252,6 @@ class AddMarkup extends Component {
                   onClick={() => {
                     this.getElementIndex(i, this[`gridElement${i}`]);
                   }}
-                  
                   key={`video${i}`}
                   mobile={mobile}
                   src={video.url}
@@ -283,7 +287,6 @@ class AddMarkup extends Component {
                 }}
               >
                 <Image className={`gif`} src={gif.url} />
-              
               </div>
             </LazyLoad>
           );

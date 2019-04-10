@@ -119,12 +119,12 @@ i {
   background-color: white;
   border: 5px solid white;
   overflow: hidden;
-  max-width: 76vw;
+  max-width: 1200px;
   margin: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(25vw, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   grid-gap: 5px;
-  grid-auto-rows: 12.5vh;
+  grid-auto-rows: 125px;
   grid-auto-flow: dense;
 }
 @media (max-width: 600px) {
@@ -156,13 +156,13 @@ i {
   grid-row: span 4;
 }
 .tall {
-  grid-row: span 5;
+  grid-row: span 4;
 }
 .veryTall {
-  grid-row: span 6;
+  grid-row: span 5;
 }
 .superTall {
-  grid-row: span 7;
+  grid-row: span 5;
 }
 
 .fullscreenScroll .fullscreenIcon {
@@ -265,6 +265,7 @@ i {
 .gridElement {
   position: relative;
   height: 100%;
+  max-height: 100vh;
   display: flex;
   background-color: transparent;
   width: 100%;

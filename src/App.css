@@ -629,6 +629,9 @@ p {
   }
 }
 @media (max-width: 800px) {
+  .categoryModal h2{
+    top: 30px;
+  }
   .gridMedia {
     border: 0;
     grid-template-columns: repeat(auto-fill, minmax(100vw, 1fr));

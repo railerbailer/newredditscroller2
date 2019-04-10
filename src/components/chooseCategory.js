@@ -4,9 +4,14 @@ class ChooseCategory extends Component {
     return (
       <div className="categoryModal">
         <h2>
-          More than 1000 000 pics and gifs! <br />
-          <br />
-          Which ones do you prefer?
+        Welcome to Sliddit.com!
+        <br/>
+          Scroll more than 1.000.000 of pics and gifs!
+          <br/>
+          <br/>
+          Pick a domain
+          
+          
         </h2>
         <div className="grid-container">
           <button

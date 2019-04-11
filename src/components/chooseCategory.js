@@ -3,17 +3,17 @@ class ChooseCategory extends Component {
   render() {
     return (
       <div className="categoryModal">
-        <h2>
-        Welcome to Sliddit.com!
-        <br/>
+       <h1 className="scrollLogo">sliddit.</h1>
+        <div className="grid-container">
+        <h2 className="item0">
+        
           Scroll more than 1.000.000 of pics and gifs!
           <br/>
-          <br/>
-          Pick a domain
+          
+          <p style={{marginBottom: '-20px', fontSize: '.8em'}}>Pick a domain</p>
           
           
         </h2>
-        <div className="grid-container">
           <button
             onClick={() => {
               this.props.history.push("/nsfw");

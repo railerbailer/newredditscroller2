@@ -3,7 +3,8 @@ html {
 }
 body {
   background: rgb(20, 20, 20);
-  font-family: "Roboto", sans-serif;
+  font-family: "Varela Round", sans-serif !important;
+  /* font-family: "Roboto", sans-serif; */
   margin: 0;
   padding: 0;
 }
@@ -128,11 +129,13 @@ i {
   grid-auto-flow: dense;
 }
 @media (max-width: 600px) {
+  .grid-container button {
+    width: 280px !important;
+  }
   .iconLeft,
-.iconRight {
-  margin-top: 30% !important;
-}
-  
+  .iconRight {
+    margin-top: 30% !important;
+  }
 }
 
 .gridElement:fullscreen {
@@ -142,11 +145,9 @@ i {
 }
 
 .superWide {
-
   grid-row: span 3;
 }
 .veryWide {
-
   grid-row: span 3;
 }
 .wide {
@@ -318,7 +319,7 @@ button {
 }
 
 .subredditName {
-  font-size: 22px;
+  font-size: 1em;
   text-align: center;
   color: white;
   text-shadow: 1px 1px black;
@@ -350,13 +351,6 @@ p {
   height: 1000%;
   width: 100%;
   z-index: 7;
-}
-.categoryModal h2{
-  color: white;
-  position: absolute;
-  top: 80px;
-  width: 100%;
-  text-align: center;
 }
 
 .description {
@@ -393,9 +387,9 @@ p {
 }
 
 .grid-container {
-  margin-top: 30vh;
+  margin-top: 20vh;
   width: 100%;
-  max-height: 40vh;
+
   display: grid;
   grid-template-areas:
     "1 continue 2"
@@ -418,6 +412,8 @@ p {
   border-radius: 10px;
   border-color: transparent;
   cursor: pointer;
+  margin: auto;
+  width: 550px;
 }
 
 .item0 {
@@ -425,8 +421,8 @@ p {
   margin-bottom: 15px;
   padding: 0.5125rem 2.225rem;
   font-size: 1.275rem;
-  white-space: nowrap;
-  background-color: #83d6b7;
+  text-align: center;
+  white-space: wrap;
 }
 .item1 {
   padding: 1.3125rem 2.625rem;
@@ -629,9 +625,6 @@ p {
   }
 }
 @media (max-width: 800px) {
-  .categoryModal h2{
-    top: 30px;
-  }
   .gridMedia {
     border: 0;
     grid-template-columns: repeat(auto-fill, minmax(100vw, 1fr));

@@ -107,7 +107,7 @@ export const artArray=[
 
 'Museum',
 
-'NSFWArt',
+// 'NSFWArt',
 
 'PaintingPixels101',
 
@@ -235,15 +235,8 @@ export const subredditArray= [
 ,'interestingasfuck'
 ,'damnthatsinteresting'
 ,'beamazed'
-,'gentlemanboners'
-,'prettygirls'
-,'hardbodies'
 ,'girlsmirin'
-,'thinspo'
-,'goddesses'
-,'shorthairedhotties'
-,'fitandnatural'
-,'asiancuties'
+,'gentlemanboners'
 ,'PhotoshopBattles'
 ,'ColorizedHistory'
 ,'reallifedoodles'
@@ -277,6 +270,13 @@ export const subredditArray= [
 ]
 
 export const NSFW=[
+    'prettygirls'
+,'hardbodies'
+,'thinspo'
+,'goddesses'
+,'shorthairedhotties'
+,'fitandnatural'
+,'asiancuties',
 'gonewild',
 'nsfw',
 'NSFW_GIF',

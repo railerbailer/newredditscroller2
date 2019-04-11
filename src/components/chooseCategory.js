@@ -6,7 +6,7 @@ import {
   foodArray,
   animalsArray
 } from "../subreddits";
-import { AutoComplete } from "antd";
+// import { AutoComplete } from "antd";
 const subreddits = subredditArray.concat(
   straight,
   artArray,
@@ -36,20 +36,19 @@ class ChooseCategory extends Component {
   pushHistory = subreddit => {
     this.props.history.push(subreddit);
   };
+  // <div style={{ color: "white !important", zIndex: 123123123123, background: 'red', height: '500px' }}>
+  // <AutoComplete
+  //   placeholder="Search here"
+  //   autoFocus
+    
+  //   dataSource={["this.state.dataSource", "two", "three"]}
+  //   onSelect={this.onSelect}
+  //   onSearch={this.handleSearch}
+  // />
   render() {
-    console.log(this.state.dataSource);
     return (
-      <div style={{height: '100%'}}>
-      <AutoComplete
-          placeholder="Search here"
-          autoFocus
-          dataSource={["this.state.dataSource", "two", "three"]}
-          onSelect={this.onSelect}
-          onSearch={this.handleSearch}
-        />
       <div className="categoryModal">
         <h1 className="scrollLogo">sliddit.</h1>
-     
         <div className="grid-container">
           <h2 className="item0">
             Scroll more than 1.000.000 of pics and gifs!
@@ -75,8 +74,6 @@ class ChooseCategory extends Component {
           >
             Safe for work
           </button>
-        </div>
-
         </div>
       </div>
     );

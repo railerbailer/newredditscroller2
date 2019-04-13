@@ -8,7 +8,8 @@ class Video extends Component {
       videoLoaded: false,
       isPlaying: false,
       fadeOut: false,
-      autoPlay: false
+      autoPlay: false,
+      lol: true
     };
   }
 
@@ -25,9 +26,11 @@ class Video extends Component {
 
   render() {
     const { src, videoAutoPlay, onClick, poster, mobile } = this.props;
+    console.log(this.state.lol)
     return (
       <React.Fragment>
         <video
+          onEnded={()=>this.setState({lol: false})}
           ref={el => (this.videoPlayer = el)}
           onClick={() => {
             onClick();

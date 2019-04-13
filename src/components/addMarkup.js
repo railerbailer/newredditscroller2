@@ -105,7 +105,7 @@ class AddMarkup extends Component {
               <Icon
                 type="close"
                 className="closeFullScreen"
-                onClick={() => this.props.toggleFullscreen()}
+                onClick={() => this.getElementIndex(this.state.activeElement)}
               />
               {this.props.isLoadingMore && (
                 <div className="loadingMoreSpinner">
@@ -204,10 +204,18 @@ class AddMarkup extends Component {
       .map((data, i) => {
         const { gif, image, video, title, thumbnail } = data;
         if (image) {
+          const size = {
+            superTall: 645,
+            veryTall: 645,
+            rectangular: 385,
+            superWide: 255,
+            veryWide: 255
+          };
+          console.log(size[image.className])
           return (
             <LazyLoad
               placeholder={
-                <div style={{ height: "400px" }}>
+                <div style={{ height: `${size[image.className]}px` }}>
                   <svg xmlns="http://www.w3.org/2000/svg">
                     <path
                       fill="#FFF"
@@ -219,8 +227,9 @@ class AddMarkup extends Component {
                   </svg>
                 </div>
               }
-              height={400}
-              offset={mobile ? 800 : 2000}
+              height={size[image.className]}
+              offset={mobile ? 400 : 800}
+              throttle={250}
               key={i}
             >
               <div
@@ -268,7 +277,7 @@ class AddMarkup extends Component {
               }
               throttle={250}
               height={400}
-              offset={mobile ? 800 : 2000}
+              offset={mobile ? 400 : 800}
               key={i}
             >
               <div
@@ -293,7 +302,6 @@ class AddMarkup extends Component {
         if (gif && !mobile) {
           return (
             <LazyLoad
-              unmountIfInvisible={false}
               placeholder={
                 <Spin
                   style={{
@@ -303,7 +311,7 @@ class AddMarkup extends Component {
               }
               throttle={250}
               height={400}
-              offset={mobile ? 800 : 2000}
+              offset={mobile ? 400 : 800}
               key={i}
             >
               <div

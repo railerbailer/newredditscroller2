@@ -529,7 +529,7 @@ class Scroller extends Component {
             <div className="spinner">
               <div className="centered-text">
                 <div className="centered-text">
-                  Loading <strong>{this.state.subreddit}</strong> subreddit
+                  Loading <strong>{this.state.subreddit}</strong>
                 </div>
               </div>
               <div className="carSpinner">

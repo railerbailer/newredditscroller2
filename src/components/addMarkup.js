@@ -15,7 +15,7 @@ class AddMarkup extends Component {
     loading: false,
     videoAutoPlay: false
   };
-  componentDidMount() {
+  componentWillMount() {
     this.renderHtml();
   }
 
@@ -97,7 +97,6 @@ class AddMarkup extends Component {
         onKeyDown={e => this.handleKeyDown(e)}
         onSwipedDown={this.swipedDown}
         onSwipedUp={this.swipedUp}
-        style={{ backgroundColor: "rgb(20, 20, 20)" }}
       >
         {fullscreen ? (
           html.length && (
@@ -206,8 +205,9 @@ class AddMarkup extends Component {
         if (image) {
           return (
             <LazyLoad
+            once
               placeholder={
-                <div style={{height: '400px', width: '100%'}} className="loadingMoreSpinner">
+                <div style={{height: '400px'}}>
                   <svg xmlns="http://www.w3.org/2000/svg">
                     <path
                       fill="#FFF"
@@ -220,7 +220,6 @@ class AddMarkup extends Component {
                 </div>
 
               }
-              unmountIfInvisible={false}
               height={400}
               offset={mobile ? 800 : 2000}
               key={i}
@@ -261,7 +260,7 @@ class AddMarkup extends Component {
         if (video) {
           return (
             <LazyLoad
-              unmountIfInvisible={false}
+            once
               placeholder={
                 <Spin
                   style={{
@@ -296,6 +295,7 @@ class AddMarkup extends Component {
         if (gif && !mobile) {
           return (
             <LazyLoad
+            once
               unmountIfInvisible={false}
               placeholder={
                 <Spin

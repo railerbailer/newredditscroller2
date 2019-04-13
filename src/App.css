@@ -145,24 +145,31 @@ i {
 }
 
 .superWide {
-  grid-row: span 3;
+  min-height: 250px;
+  grid-row: span 2;
 }
 .veryWide {
-  grid-row: span 3;
+  min-height: 250px;
+  grid-row: span 2;
 }
 .wide {
-  grid-row: span 4;
+  min-height: 375px;
+  grid-row: span 3;
 }
 .rectangular {
-  grid-row: span 4;
+  min-height: 375px;
+  grid-row: span 3;
 }
 .tall {
-  grid-row: span 4;
+  min-height: 375px;
+  grid-row: span 3;
 }
 .veryTall {
-  grid-row: span 5;
+  min-height: 500px;
+  grid-row: span 4;
 }
 .superTall {
+  min-height: 625px;
   grid-row: span 5;
 }
 

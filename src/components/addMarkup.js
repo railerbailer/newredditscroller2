@@ -19,12 +19,12 @@ class AddMarkup extends Component {
     this.renderHtml();
   }
 
-  getElementIndex = (index, ref) => {
+  getElementIndex = async (index, ref) => {
     this.props.toggleFullscreen();
-
-    this.setState(
-      { activeElement: index },
-      () => ref && ref.scrollIntoView({ block: "center" }) //window.scrollTo(0, 430 * index)
+    this.setState({ activeElement: index }, () =>
+      this[`gridElement${this.state.index || index}`].scrollIntoView({
+        block: "start"
+      })
     );
   };
 
@@ -97,6 +97,7 @@ class AddMarkup extends Component {
         onKeyDown={e => this.handleKeyDown(e)}
         onSwipedDown={this.swipedDown}
         onSwipedUp={this.swipedUp}
+        style={{ backgroundColor: "rgb(20, 20, 20)" }}
       >
         {fullscreen ? (
           html.length && (
@@ -205,9 +206,8 @@ class AddMarkup extends Component {
         if (image) {
           return (
             <LazyLoad
-            once
               placeholder={
-                <div style={{height: '400px'}}>
+                <div style={{ height: "400px" }}>
                   <svg xmlns="http://www.w3.org/2000/svg">
                     <path
                       fill="#FFF"
@@ -218,7 +218,6 @@ class AddMarkup extends Component {
                     />
                   </svg>
                 </div>
-
               }
               height={400}
               offset={mobile ? 800 : 2000}
@@ -232,7 +231,7 @@ class AddMarkup extends Component {
                   this.getElementIndex(i, this[`gridElement${i}`]);
                 }}
               >
-              <div style={{zIndex: 1}} className="loadingMoreSpinner">
+                <div style={{ zIndex: 1 }} className="loadingMoreSpinner">
                   <svg xmlns="http://www.w3.org/2000/svg">
                     <path
                       fill="#FFF"
@@ -260,7 +259,6 @@ class AddMarkup extends Component {
         if (video) {
           return (
             <LazyLoad
-            once
               placeholder={
                 <Spin
                   style={{
@@ -295,7 +293,6 @@ class AddMarkup extends Component {
         if (gif && !mobile) {
           return (
             <LazyLoad
-            once
               unmountIfInvisible={false}
               placeholder={
                 <Spin

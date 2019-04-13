@@ -68,7 +68,7 @@ class ChooseCategory extends Component {
 
           <button
             onClick={() => {
-              this.pushHistory("sfw");
+              this.pushHistory("imaginarylandscapes");
             }}
             className="item2"
           >

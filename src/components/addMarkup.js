@@ -21,10 +21,13 @@ class AddMarkup extends Component {
 
   getElementIndex = async (index, ref) => {
     this.props.toggleFullscreen();
-    this.setState({ activeElement: index }, () =>
-      this[`gridElement${this.state.index || index}`].scrollIntoView({
-        block: "start"
-      })
+    this.setState(
+      { activeElement: index },
+      () =>
+        this[`gridElement${this.state.index || index}`] &&
+        this[`gridElement${this.state.index || index}`].scrollIntoView({
+          block: "center"
+        })
     );
   };
 
@@ -91,7 +94,7 @@ class AddMarkup extends Component {
   };
   render() {
     this.renderHtml();
-    const { fullscreen, mobile } = this.props;
+    const { fullscreen, mobile, isLoadingMore } = this.props;
     return (
       <Swipeable
         onKeyDown={e => this.handleKeyDown(e)}
@@ -107,19 +110,22 @@ class AddMarkup extends Component {
                 className="closeFullScreen"
                 onClick={() => this.getElementIndex(this.state.activeElement)}
               />
-              {this.props.isLoadingMore && (
-                <div className="loadingMoreSpinner">
-                  <svg xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      fill="#FFF"
-                      d="M45.6,16.9l0-11.4c0-3-1.5-5.5-4.5-5.5L3.5,0C0.5,0,0,1.5,0,4.5l0,13.4c0,3,0.5,4.5,3.5,4.5l37.6,0
+
+              <div
+                style={{ zIndex: isLoadingMore ? 10 : fullscreen ? 1 : 0 }}
+                className="loadingMoreSpinner"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    fill="#FFF"
+                    d="M45.6,16.9l0-11.4c0-3-1.5-5.5-4.5-5.5L3.5,0C0.5,0,0,1.5,0,4.5l0,13.4c0,3,0.5,4.5,3.5,4.5l37.6,0
     C44.1,22.4,45.6,19.9,45.6,16.9z M31.9,21.4l-23.3,0l2.2-2.6l14.1,0L31.9,21.4z M34.2,21c-3.8-1-7.3-3.1-7.3-3.1l0-13.4l7.3-3.1
     C34.2,1.4,37.1,11.9,34.2,21z M6.9,1.5c0-0.9,2.3,3.1,2.3,3.1l0,13.4c0,0-0.7,1.5-2.3,3.1C5.8,19.3,5.1,5.8,6.9,1.5z M24.9,3.9
     l-14.1,0L8.6,1.3l23.3,0L24.9,3.9z"
-                    />
-                  </svg>
-                </div>
-              )}
+                  />
+                </svg>
+              </div>
+
               {html[this.state.activeElement]}
               <div style={{ opacity: 1, height: "1px" }}>
                 {html[this.state.activeElement + 1]}
@@ -203,54 +209,43 @@ class AddMarkup extends Component {
       .filter(item => Object.entries(item).length !== 0)
       .map((data, i) => {
         const { gif, image, video, title, thumbnail } = data;
+        const size = {
+          superTall: 645,
+          veryTall: 645,
+          rectangular: 385,
+          superWide: 255,
+          veryWide: 255
+        };
         if (image) {
-          const size = {
-            superTall: 645,
-            veryTall: 645,
-            rectangular: 385,
-            superWide: 255,
-            veryWide: 255
-          };
-          console.log(size[image.className])
           return (
-            <LazyLoad
-              placeholder={
-                <div style={{ height: `${size[image.className]}px` }}>
-                  <svg xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      fill="#FFF"
-                      d="M45.6,16.9l0-11.4c0-3-1.5-5.5-4.5-5.5L3.5,0C0.5,0,0,1.5,0,4.5l0,13.4c0,3,0.5,4.5,3.5,4.5l37.6,0
-    C44.1,22.4,45.6,19.9,45.6,16.9z M31.9,21.4l-23.3,0l2.2-2.6l14.1,0L31.9,21.4z M34.2,21c-3.8-1-7.3-3.1-7.3-3.1l0-13.4l7.3-3.1
-    C34.2,1.4,37.1,11.9,34.2,21z M6.9,1.5c0-0.9,2.3,3.1,2.3,3.1l0,13.4c0,0-0.7,1.5-2.3,3.1C5.8,19.3,5.1,5.8,6.9,1.5z M24.9,3.9
-    l-14.1,0L8.6,1.3l23.3,0L24.9,3.9z"
-                    />
-                  </svg>
-                </div>
-              }
-              height={size[image.className]}
-              offset={mobile ? 400 : 800}
-              throttle={250}
+            <div
               key={i}
+              ref={el => (this[`gridElement${i}`] = el)}
+              className={`gridElement ${image.className}`}
+              onClick={() => {
+                this.getElementIndex(i, this[`gridElement${i}`]);
+              }}
             >
-              <div
+              <LazyLoad
+                unmountIfInvisible={true}
+    //             placeholder={
+    //               <div style={{ height: `${size[image.className]}px` }}>
+    //                 <svg xmlns="http://www.w3.org/2000/svg">
+    //                   <path
+    //                     fill="#FFF"
+    //                     d="M45.6,16.9l0-11.4c0-3-1.5-5.5-4.5-5.5L3.5,0C0.5,0,0,1.5,0,4.5l0,13.4c0,3,0.5,4.5,3.5,4.5l37.6,0
+    // C44.1,22.4,45.6,19.9,45.6,16.9z M31.9,21.4l-23.3,0l2.2-2.6l14.1,0L31.9,21.4z M34.2,21c-3.8-1-7.3-3.1-7.3-3.1l0-13.4l7.3-3.1
+    // C34.2,1.4,37.1,11.9,34.2,21z M6.9,1.5c0-0.9,2.3,3.1,2.3,3.1l0,13.4c0,0-0.7,1.5-2.3,3.1C5.8,19.3,5.1,5.8,6.9,1.5z M24.9,3.9
+    // l-14.1,0L8.6,1.3l23.3,0L24.9,3.9z"
+    //                   />
+    //                 </svg>
+    //               </div>
+    //             }
+                height={size[image.className]}
+                offset={mobile ? 1000 : 1200}
+                throttle={250}
                 key={i}
-                ref={el => (this[`gridElement${i}`] = el)}
-                className={`gridElement ${image.className}`}
-                onClick={() => {
-                  this.getElementIndex(i, this[`gridElement${i}`]);
-                }}
               >
-                <div style={{ zIndex: 1 }} className="loadingMoreSpinner">
-                  <svg xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      fill="#FFF"
-                      d="M45.6,16.9l0-11.4c0-3-1.5-5.5-4.5-5.5L3.5,0C0.5,0,0,1.5,0,4.5l0,13.4c0,3,0.5,4.5,3.5,4.5l37.6,0
-    C44.1,22.4,45.6,19.9,45.6,16.9z M31.9,21.4l-23.3,0l2.2-2.6l14.1,0L31.9,21.4z M34.2,21c-3.8-1-7.3-3.1-7.3-3.1l0-13.4l7.3-3.1
-    C34.2,1.4,37.1,11.9,34.2,21z M6.9,1.5c0-0.9,2.3,3.1,2.3,3.1l0,13.4c0,0-0.7,1.5-2.3,3.1C5.8,19.3,5.1,5.8,6.9,1.5z M24.9,3.9
-    l-14.1,0L8.6,1.3l23.3,0L24.9,3.9z"
-                    />
-                  </svg>
-                </div>
                 <Image
                   className="image"
                   key={`image${i}`}
@@ -261,29 +256,30 @@ class AddMarkup extends Component {
                       : image.high || image.low || image.source
                   }
                 />
-              </div>
-            </LazyLoad>
+              </LazyLoad>
+            </div>
           );
         }
         if (video) {
           return (
-            <LazyLoad
-              placeholder={
-                <Spin
-                  style={{
-                    height: "400px"
-                  }}
-                />
-              }
-              throttle={250}
-              height={400}
-              offset={mobile ? 400 : 800}
+            <div
               key={i}
+              ref={el => (this[`gridElement${i}`] = el)}
+              className={`gridElement ${video.className}`}
             >
-              <div
+              <LazyLoad
+                unmountIfInvisible={true}
+                placeholder={
+                  <Spin
+                    style={{
+                      height: `${size[video.className]}px`
+                    }}
+                  />
+                }
+                throttle={250}
+                height={size[video.className]}
+                offset={mobile ? 800 : 1400}
                 key={i}
-                ref={el => (this[`gridElement${i}`] = el)}
-                className={`gridElement ${video.className}`}
               >
                 <Video
                   onClick={() => {
@@ -295,36 +291,37 @@ class AddMarkup extends Component {
                   videoAutoPlay={fullscreen}
                   poster={video.image || thumbnail}
                 />
-              </div>
-            </LazyLoad>
+              </LazyLoad>
+            </div>
           );
         }
         if (gif && !mobile) {
           return (
-            <LazyLoad
-              placeholder={
-                <Spin
-                  style={{
-                    height: "400px"
-                  }}
-                />
-              }
-              throttle={250}
-              height={400}
-              offset={mobile ? 400 : 800}
+            <div
               key={i}
+              ref={el => (this[`gridElement${i}`] = el)}
+              className={`gridElement ${gif.className}`}
+              onClick={() => {
+                this.getElementIndex(i, this[`gridElement${i}`]);
+              }}
             >
-              <div
+              <LazyLoad
+                unmountIfInvisible={true}
+                placeholder={
+                  <Spin
+                    style={{
+                      height: `${size[gif.className]}px`
+                    }}
+                  />
+                }
+                throttle={250}
+                height={size[gif.className]}
+                offset={mobile ? 800 : 1400}
                 key={i}
-                ref={el => (this[`gridElement${i}`] = el)}
-                className={`gridElement ${gif.className}`}
-                onClick={() => {
-                  this.getElementIndex(i, this[`gridElement${i}`]);
-                }}
               >
                 <Image className={`gif`} src={gif.url} />
-              </div>
-            </LazyLoad>
+              </LazyLoad>
+            </div>
           );
         }
       });

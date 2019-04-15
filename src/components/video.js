@@ -9,8 +9,12 @@ class Video extends Component {
       isPlaying: false,
       fadeOut: false,
       autoPlay: false,
-      lol: true
     };
+  }
+  componentDidMount(){
+    if(this.props.mobile && this.props.videoAutoPlay){
+      this.togglePlaying();
+    }
   }
 
   togglePlaying = () => {
@@ -26,11 +30,9 @@ class Video extends Component {
 
   render() {
     const { src, videoAutoPlay, onClick, poster, mobile } = this.props;
-    console.log(this.state.lol)
     return (
       <React.Fragment>
         <video
-          onEnded={()=>this.setState({lol: false})}
           ref={el => (this.videoPlayer = el)}
           onClick={() => {
             onClick();

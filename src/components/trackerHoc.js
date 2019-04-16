@@ -1,41 +1,42 @@
-import React, { Component } from "react"
-import GoogleAnalytics from "react-ga"
+import React, { Component } from "react";
+import GoogleAnalytics from "react-ga";
 
-GoogleAnalytics.initialize("UA-121718818-1")
+GoogleAnalytics.initialize("UA-121718818-1");
 
 const trackerHoc = (WrappedComponent, options = {}) => {
   const trackPage = page => {
     GoogleAnalytics.set({
       page,
       ...options
-    })
-    GoogleAnalytics.pageview(page)
-  }
+    });
+    GoogleAnalytics.pageview(page);
+  };
 
   // eslint-disable-next-line
   const HOC = class extends Component {
     componentDidMount() {
       // eslint-disable-next-line
-      const page = this.props.location.pathname + this.props.location.search
-      trackPage(page)
+      const page = this.props.location.pathname + this.props.location.search;
+      trackPage(page);
     }
 
     componentDidUpdate(prevProps) {
       const currentPage =
-        prevProps.location.pathname + prevProps.location.search
-      const nextPage = this.props.location.pathname + this.props.location.search
+        prevProps.location.pathname + prevProps.location.search;
+      const nextPage =
+        this.props.location.pathname + this.props.location.search;
 
       if (currentPage !== nextPage) {
-        trackPage(nextPage)
+        trackPage(nextPage);
       }
     }
 
     render() {
-      return <WrappedComponent {...this.props} />
+      return <WrappedComponent {...this.props} />;
     }
-  }
+  };
 
-  return HOC
-}
+  return HOC;
+};
 
-export default trackerHoc
+export default trackerHoc;

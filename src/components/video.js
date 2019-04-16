@@ -8,11 +8,11 @@ class Video extends Component {
       videoLoaded: false,
       isPlaying: false,
       fadeOut: false,
-      autoPlay: false,
+      autoPlay: false
     };
   }
-  componentDidMount(){
-    if(this.props.mobile && this.props.videoAutoPlay){
+  componentDidMount() {
+    if (this.props.mobile && this.props.videoAutoPlay) {
       this.togglePlaying();
     }
   }
@@ -48,6 +48,7 @@ class Video extends Component {
             this.setState(
               { isPlaying: true, fadeOut: !this.state.fadeOut },
               () =>
+                !videoAutoPlay &&
                 (this.timer = setTimeout(
                   () => this.videoPlayer && this.videoPlayer.pause(),
                   25000
@@ -60,7 +61,7 @@ class Video extends Component {
           loop={true}
           preload={"metadata"}
         >
-          {!mobile &&<source src={`${src}#t=0.1`} type="video/mp4" />}
+          {!mobile && <source src={`${src}#t=0.1`} type="video/mp4" />}
           <source src={src} type="video/mp4" />
           Sorry, your browser doesn't support embedded videos.
         </video>

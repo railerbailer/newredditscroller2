@@ -1,41 +1,41 @@
-import React, { Component } from "react";
+import React, { Component } from "react"
 import {
   subredditArray,
   straight,
   artArray,
   foodArray,
   animalsArray
-} from "../subreddits";
+} from "../subreddits"
 // import { AutoComplete } from "antd";
 const subreddits = subredditArray.concat(
   straight,
   artArray,
   foodArray,
   animalsArray
-);
+)
 class ChooseCategory extends Component {
   state = {
     dataSource: []
-  };
+  }
   handleSearch = value => {
     if (!value) {
-      value = "Type your search";
+      value = "Type your search"
     }
     let result = subreddits.filter(str =>
       str.toLowerCase().includes(value.toLowerCase())
-    );
-    result = result.reverse();
-    result.push(value);
-    result = result.reverse();
-    this.setState({ dataSource: result.slice(0, 7) });
-  };
+    )
+    result = result.reverse()
+    result.push(value)
+    result = result.reverse()
+    this.setState({ dataSource: result.slice(0, 7) })
+  }
   onSelect = value => {
-    this.pushHistory(value);
-  };
+    this.pushHistory(value)
+  }
 
   pushHistory = subreddit => {
-    this.props.history.push(subreddit);
-  };
+    this.props.history.push(subreddit)
+  }
   // <div style={{ color: "white !important", zIndex: 123123123123, background: 'red', height: '500px' }}>
   // <AutoComplete
   //   placeholder="Search here"
@@ -105,7 +105,7 @@ class ChooseCategory extends Component {
           />
 
           <svg x="60%" y="20">
-            <circle cx="10" cy="10" r="10" fill="green">
+            <circle cx="10" cy="10" r="10" fill="#01B96B">
               <animateMotion dur="22s" repeatCount="indefinite">
                 <mpath xlinkHref="#smallcircle" />
               </animateMotion>
@@ -118,7 +118,7 @@ class ChooseCategory extends Component {
             </circle>
           </svg>
           <svg x="70" y="110">
-            <circle cx="5" cy="5" r="5" fill="blue">
+            <circle cx="5" cy="5" r="5" fill="#40a9ff">
               <animateMotion dur="30s" repeatCount="indefinite">
                 <mpath xlinkHref="#strangepath" />
               </animateMotion>
@@ -132,7 +132,7 @@ class ChooseCategory extends Component {
             </circle>
           </svg>
           <svg x="0" y="0">
-            <circle cx="15" cy="15" r="15" fill="purple">
+            <circle cx="15" cy="15" r="15" fill="hotpink">
               <animateMotion dur="30s" repeatCount="indefinite">
                 <mpath xlinkHref="#verysmallcircle" />
               </animateMotion>
@@ -164,7 +164,7 @@ class ChooseCategory extends Component {
           </h2>
           <button
             onClick={() => {
-              this.pushHistory("nsfw");
+              this.pushHistory("nsfw")
             }}
             className="item1"
           >
@@ -173,7 +173,7 @@ class ChooseCategory extends Component {
 
           <button
             onClick={() => {
-              this.pushHistory("imaginarylandscapes");
+              this.pushHistory("imaginarylandscapes")
             }}
             className="item2"
           >
@@ -181,8 +181,8 @@ class ChooseCategory extends Component {
           </button>
         </div>
       </div>
-    );
+    )
   }
 }
 
-export default ChooseCategory;
+export default ChooseCategory

@@ -119,7 +119,7 @@ class ChooseCategory extends Component {
           </svg>
           <svg x="70" y="110">
             <circle cx="5" cy="5" r="5" fill="#40a9ff">
-              <animateMotion dur="30s" repeatCount="indefinite">
+              <animateMotion dur="31s" repeatCount="indefinite">
                 <mpath xlinkHref="#strangepath" />
               </animateMotion>
             </circle>

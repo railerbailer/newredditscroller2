@@ -1,10 +1,10 @@
-import React, { Component } from "react"
-import Swipeable from "react-swipeable"
-import "antd/dist/antd.css"
-import "../App.css"
-import { throttle } from "lodash"
-import { Transition } from "react-transition-group"
-import AddMarkup from "./addMarkup.js"
+import React, { Component } from "react";
+import Swipeable from "react-swipeable";
+import "antd/dist/antd.css";
+import "../App.css";
+import { throttle } from "lodash";
+import { Transition } from "react-transition-group";
+import AddMarkup from "./addMarkup.js";
 import {
   Icon,
   Button,
@@ -15,7 +15,7 @@ import {
   Dropdown,
   AutoComplete,
   Switch
-} from "antd"
+} from "antd";
 
 import {
   subredditArray,
@@ -23,12 +23,12 @@ import {
   artArray,
   foodArray,
   animalsArray
-} from "../subreddits"
-import "../App.css"
+} from "../subreddits";
+import "../App.css";
 /* const AddMarkup = lazy(() => import("./addMarkup.js")); */
-let sources = []
-let goBack = []
-let goBackIndex = 0
+let sources = [];
+let goBack = [];
+let goBackIndex = 0;
 class Scroller extends Component {
   state = {
     mobile: false,
@@ -55,146 +55,146 @@ class Scroller extends Component {
     preloadElement: "",
     isFirstVisit: true,
     htmlAndSource: []
-  }
+  };
 
   componentWillMount() {
-    if (window.screen.availWidth < 800) this.setState({ mobile: true })
+    if (window.screen.availWidth < 800) this.setState({ mobile: true });
   }
   componentDidMount() {
     if (straight.includes(this.props.match.params.subreddit)) {
-      this.setState({ category: "nsfw" })
+      this.setState({ category: "nsfw" });
     }
     this.props.match.params.subreddit
       ? this.getSubreddit(this.props.match.params.subreddit)
-      : null
+      : null;
   }
 
   toggleFullscreen = () => {
     !this.state.isSearchActivated &&
-      this.setState({ fullscreenActive: !this.state.fullscreenActive })
-  }
+      this.setState({ fullscreenActive: !this.state.fullscreenActive });
+  };
 
   dataHandler(props) {
-    let lowerCaseCategory = props.toLowerCase()
+    let lowerCaseCategory = props.toLowerCase();
     if (lowerCaseCategory === "nsfw") {
-      return straight
+      return straight;
     } else if (lowerCaseCategory === "sfwall") {
-      return subredditArray.concat(artArray, foodArray, animalsArray)
+      return subredditArray.concat(artArray, foodArray, animalsArray);
     } else if (lowerCaseCategory === "sfw") {
-      return subredditArray
+      return subredditArray;
     } else if (lowerCaseCategory === "art") {
-      return artArray
+      return artArray;
     } else if (lowerCaseCategory === "food") {
-      return foodArray
+      return foodArray;
     } else if (lowerCaseCategory === "animals") {
-      return animalsArray
+      return animalsArray;
     } else if (lowerCaseCategory === "search") {
-      return subredditArray.concat(artArray, foodArray, animalsArray), straight
+      return subredditArray.concat(artArray, foodArray, animalsArray), straight;
     } else {
-      return subredditArray.concat(artArray, foodArray, animalsArray)
+      return subredditArray.concat(artArray, foodArray, animalsArray);
     }
   }
 
   //checks for file type
   checkGif(url) {
-    return url.match(/\.(gif)$/) !== null
+    return url.match(/\.(gif)$/) !== null;
   }
   checkImg(url) {
-    return url.match(/\.(jpeg|jpg|png)$/) !== null
+    return url.match(/\.(jpeg|jpg|png)$/) !== null;
   }
 
   switchCat = throttle(async () => {
-    this.state.isDropDownShowing && this.showDropDown()
+    this.state.isDropDownShowing && this.showDropDown();
 
     if (goBackIndex > 0) {
-      goBackIndex = goBackIndex - 1
+      goBackIndex = goBackIndex - 1;
       if (this.state.subreddit === goBack[goBack.length - 1 - goBackIndex]) {
         !this.state.isLoading &&
-          (await this.getSubreddit(goBack[goBack.length - goBackIndex]))
+          (await this.getSubreddit(goBack[goBack.length - goBackIndex]));
       } else
         !this.state.isLoading &&
-          (await this.getSubreddit(goBack[goBack.length - 1 - goBackIndex]))
+          (await this.getSubreddit(goBack[goBack.length - 1 - goBackIndex]));
     } else {
       !this.state.isLoading &&
         (await this.getSubreddit(
           this.shuffleArray(this.dataHandler(this.state.category))
-        ))
+        ));
       if (
         goBackIndex === 0 &&
         goBack[goBack.length - 1] !== this.state.subreddit
       ) {
-        goBack.push(this.state.subreddit)
+        goBack.push(this.state.subreddit);
       }
     }
-  }, 500)
+  }, 500);
 
   goBackToLast = () => {
-    this.setState({ isVideoLoading: true })
+    this.setState({ isVideoLoading: true });
     if (goBack.length > 1 && goBack[0] !== this.state.subreddit) {
       if (this.state.subreddit === goBack[goBack.length - 1 - goBackIndex]) {
-        this.getSubreddit(goBack[goBack.length - 2 - goBackIndex])
-      } else this.getSubreddit(goBack[goBack.length - 1 - goBackIndex])
+        this.getSubreddit(goBack[goBack.length - 2 - goBackIndex]);
+      } else this.getSubreddit(goBack[goBack.length - 1 - goBackIndex]);
     }
     goBackIndex < goBack.length
       ? (goBackIndex = goBackIndex + 1)
-      : console.log("doing nothin...")
+      : console.log("doing nothin...");
 
     if (!goBack.includes(this.state.subreddit)) {
-      goBack.push(this.state.subreddit)
+      goBack.push(this.state.subreddit);
     }
-  }
+  };
 
   handleKeyDown = e => {
-    const { isSearchActivated } = this.state
+    const { isSearchActivated } = this.state;
     if (e.key === "ArrowLeft") {
-      !isSearchActivated && this.goBackToLast()
+      !isSearchActivated && this.goBackToLast();
     }
     if (e.key === "Escape") {
-      !isSearchActivated && this.setState({ fullscreenActive: false })
+      !isSearchActivated && this.setState({ fullscreenActive: false });
     }
     if (e.key === "a") {
-      !isSearchActivated && this.goBackToLast()
+      !isSearchActivated && this.goBackToLast();
     }
 
     if (e.key === "ArrowRight") {
-      !isSearchActivated && this.switchCat()
+      !isSearchActivated && this.switchCat();
     }
     if (e.key === "d") {
-      !isSearchActivated && this.switchCat()
+      !isSearchActivated && this.switchCat();
     }
-  }
+  };
 
   swipedLeft = (e, absX, isFlick) => {
     if (isFlick || absX > 30) {
-      this.switchCat()
+      this.switchCat();
     }
-  }
+  };
 
   swipedRight = (e, absX, isFlick) => {
     if (isFlick || absX > 30) {
-      this.goBackToLast()
+      this.goBackToLast();
     }
-  }
+  };
 
   shuffleArray = array => {
-    let random = Math.floor(Math.random() * array.length)
-    return array[random]
-  }
+    let random = Math.floor(Math.random() * array.length);
+    return array[random];
+  };
 
   categorySet = val => {
     this.setState({
       category: val
-    })
-  }
+    });
+  };
 
   changeCat = (e, cat) => {
-    this.categorySet(cat)
-    this.getSubreddit(this.shuffleArray(this.dataHandler(cat)))
+    this.categorySet(cat);
+    this.getSubreddit(this.shuffleArray(this.dataHandler(cat)));
     message.info(
       `Category is ${cat}, press or swipe right to shuffle subreddit`
-    )
-    this.setState({ isDropDownShowing: false })
-  }
+    );
+    this.setState({ isDropDownShowing: false });
+  };
 
   openNotification = () => {
     notification.open({
@@ -202,28 +202,28 @@ class Scroller extends Component {
       message: "Note!",
       description:
         "Swipe, or use your keyboard arrows or a,s,w,d to shuffle or scroll posts."
-    })
-  }
+    });
+  };
 
   handleSearch = value => {
     if (!value) {
-      value = "Type your search"
+      value = "Type your search";
     }
     let result = this.dataHandler("search").filter(str =>
       str.toLowerCase().includes(value.toLowerCase())
-    )
-    result = result.reverse()
-    result.push(value)
-    result = result.reverse()
-    this.setState({ dataSource: result.slice(0, 7) })
-  }
+    );
+    result = result.reverse();
+    result.push(value);
+    result = result.reverse();
+    this.setState({ dataSource: result.slice(0, 7) });
+  };
   onSelect = value => {
-    this.getSubreddit(value)
-    this.searchBoxOpenClose()
-  }
+    this.getSubreddit(value);
+    this.searchBoxOpenClose();
+  };
   searchBoxOpenClose = () => {
-    this.setState({ isSearchActivated: !this.state.isSearchActivated })
-  }
+    this.setState({ isSearchActivated: !this.state.isSearchActivated });
+  };
 
   menu = () => {
     return (
@@ -255,49 +255,49 @@ class Scroller extends Component {
           <Switch onChange={this.togglePicsOnly} />
         </Menu.Item>
       </Menu>
-    )
-  }
+    );
+  };
 
-  toggleIsLoading = state => this.setState({ isLoading: state })
+  toggleIsLoading = state => this.setState({ isLoading: state });
 
   toggleGifsOnly = async () => {
     this.setState({
       isOnlyGifsShowing: !this.state.isOnlyGifsShowing,
       isDropDownShowing: false
-    })
-    await this.getSubreddit(this.state.subreddit)
-  }
+    });
+    await this.getSubreddit(this.state.subreddit);
+  };
   togglePicsOnly = () => {
     this.setState({
       isOnlyPicsShowing: !this.state.isOnlyPicsShowing,
       isDropDownShowing: false
-    })
-    this.getSubreddit(this.state.subreddit)
-  }
+    });
+    this.getSubreddit(this.state.subreddit);
+  };
 
   showDropDown = () => {
-    this.setState({ isDropDownShowing: !this.state.isDropDownShowing })
-  }
+    this.setState({ isDropDownShowing: !this.state.isDropDownShowing });
+  };
 
   htmlParser(string) {
-    let editedString = ""
+    let editedString = "";
     editedString =
       string &&
       string
         .replace(/&gt;/gi, ">")
         .replace(/&lt;/gi, "<")
-        .replace(/&amp;/gi, "&")
-    return editedString ? editedString : ""
+        .replace(/&amp;/gi, "&");
+    return editedString ? editedString : "";
   }
 
   dataMapper = async (fetchedData, notLoadMore) => {
     if (!notLoadMore) {
-      sources = []
+      sources = [];
     }
-    let weGotGifs = false
+    let weGotGifs = false;
     fetchedData.map((item, i) => {
-      let mediaData = {}
-      const { data } = item
+      let mediaData = {};
+      const { data } = item;
       const {
         preview,
         post_hint,
@@ -306,8 +306,8 @@ class Scroller extends Component {
         thumbnail_height = 1,
         thumbnail_width = 2,
         thumbnail
-      } = data
-      const isGif = data.url.includes(".gif")
+      } = data;
+      const isGif = data.url.includes(".gif");
 
       if (
         preview &&
@@ -317,50 +317,50 @@ class Scroller extends Component {
         this.imageRatioCalculator(
           preview.reddit_video_preview.height,
           preview.reddit_video_preview.width
-        )
-        mediaData.video = {}
-        mediaData.video.url = preview.reddit_video_preview.scrubber_media_url
-        mediaData.video.height = preview.reddit_video_preview.height
-        mediaData.video.width = preview.reddit_video_preview.width
+        );
+        mediaData.video = {};
+        mediaData.video.url = preview.reddit_video_preview.scrubber_media_url;
+        mediaData.video.height = preview.reddit_video_preview.height;
+        mediaData.video.width = preview.reddit_video_preview.width;
         mediaData.video.className = this.imageRatioCalculator(
           preview.reddit_video_preview.height,
           preview.reddit_video_preview.width
-        )
-        weGotGifs = true
-        let low = ""
-        const { resolutions } = preview.images[0]
-        low = this.htmlParser(resolutions[resolutions.length - 1].url || "")
+        );
+        weGotGifs = true;
+        let low = "";
+        const { resolutions } = preview.images[0];
+        low = this.htmlParser(resolutions[resolutions.length - 1].url || "");
         if (low) {
-          mediaData.video.image = low
+          mediaData.video.image = low;
         }
-        mediaData.video.poster = data.thumbnail
-        mediaData.domain = data.domain || ""
-        mediaData.title = data.title
-        mediaData.thumbnail = thumbnail
+        mediaData.video.poster = data.thumbnail;
+        mediaData.domain = data.domain || "";
+        mediaData.title = data.title;
+        mediaData.thumbnail = thumbnail;
       } else if (isGif) {
-        mediaData.gif = {}
-        mediaData.gif.url = data.url.replace(".gifv", ".gif")
+        mediaData.gif = {};
+        mediaData.gif.url = data.url.replace(".gifv", ".gif");
         mediaData.gif.className = this.imageRatioCalculator(
           thumbnail_height,
           thumbnail_width
-        )
-        mediaData.domain = data.domain || ""
-        mediaData.title = data.title
-        mediaData.thumbnail = thumbnail
-        weGotGifs = true
+        );
+        mediaData.domain = data.domain || "";
+        mediaData.title = data.title;
+        mediaData.thumbnail = thumbnail;
+        weGotGifs = true;
       } else if (post_hint === "image") {
-        mediaData.image = {}
-        let low
-        let high
+        mediaData.image = {};
+        let low;
+        let high;
         preview &&
           preview.images[0] &&
           preview.images[0].resolutions.map(resolution => {
-            let res = resolution.height + resolution.width
+            let res = resolution.height + resolution.width;
             if (res > 500 && res < 1000) {
-              low = this.htmlParser(resolution.url)
+              low = this.htmlParser(resolution.url);
             }
             if (res > 1000 && res < 2000) {
-              high = this.htmlParser(resolution.url)
+              high = this.htmlParser(resolution.url);
             }
 
             mediaData.image = {
@@ -371,31 +371,31 @@ class Scroller extends Component {
                 resolution.height,
                 resolution.width
               )
-            }
+            };
             if (this.state.mobile && (!high && !low)) {
-              mediaData.image = null
+              mediaData.image = null;
             }
-          })
-        mediaData.domain = data.domain || ""
-        mediaData.title = data.title
-        mediaData.thumbnail = thumbnail
+          });
+        mediaData.domain = data.domain || "";
+        mediaData.title = data.title;
+        mediaData.thumbnail = thumbnail;
       }
 
       if (
         Object.entries(mediaData).length !== 0 &&
         (mediaData.image || mediaData.video || mediaData.gif)
       ) {
-        sources.push(mediaData)
+        sources.push(mediaData);
       }
-    })
+    });
     if (!sources.length || (this.state.isOnlyGifsShowing && !weGotGifs)) {
       await this.getSubreddit(
         this.shuffleArray(this.dataHandler(this.state.category))
-      )
+      );
     }
 
-    return
-  }
+    return;
+  };
   switchCatButtons = () => {
     return (
       <React.Fragment>
@@ -420,25 +420,25 @@ class Scroller extends Component {
           </p>
         </button>
       </React.Fragment>
-    )
-  }
+    );
+  };
 
   imageRatioCalculator = (height, width) => {
-    let ratio = height / width
-    if (ratio < 0.7) return "superWide"
+    let ratio = height / width;
+    if (ratio < 0.7) return "superWide";
 
-    if (ratio >= 0.7 && ratio < 0.9) return "veryWide"
+    if (ratio >= 0.7 && ratio < 0.9) return "veryWide";
 
     /*  if (ratio >= 0.7 && ratio < 0.9) return "wide"; */
 
-    if (ratio >= 0.9 && ratio < 1.2) return "rectangular"
+    if (ratio >= 0.9 && ratio < 1.2) return "rectangular";
 
     /* if (ratio >= 1.1 && ratio < 1.3) return "tall"; */
 
-    if (ratio >= 1.2 && ratio < 1.5) return "veryTall"
+    if (ratio >= 1.2 && ratio < 1.5) return "veryTall";
 
-    if (ratio >= 1.5) return "superTall"
-  }
+    if (ratio >= 1.5) return "superTall";
+  };
 
   render() {
     return (
@@ -579,17 +579,15 @@ class Scroller extends Component {
           )}
         </div>
       </Swipeable>
-    )
+    );
   }
 
   getSubreddit = async (subreddit, notShowLoad) => {
     if (notShowLoad) {
-      await this.setState({ subreddit: subreddit, isLoading: false })
+      await this.setState({ subreddit: subreddit, isLoading: false });
     } else {
-      await this.setState({ subreddit: subreddit, isLoading: true })
+      await this.setState({ subreddit: subreddit, isLoading: true });
     }
-
-    this.props.history.push(`/${this.state.subreddit}`)
 
     await fetch(
       `https://www.reddit.com/r/${this.state.subreddit}.json?limit=100`
@@ -599,8 +597,8 @@ class Scroller extends Component {
         this.setState({
           after: jsonData.data.after,
           lastAfter: jsonData.data.after
-        })
-        this.dataMapper(jsonData.data.children)
+        });
+        this.dataMapper(jsonData.data.children);
         /* this.dataToHtml(jsonData.data.children); */
       })
 
@@ -608,17 +606,17 @@ class Scroller extends Component {
         try {
           await this.getSubreddit(
             this.shuffleArray(this.dataHandler(this.state.category))
-          )
+          );
         } catch (error) {
-          console.log("error", error)
+          console.log("error", error);
         }
-      })
-
-    this.setState({ isLoading: false })
-  }
+      });
+    this.props.history.push(`/${this.state.subreddit}`);
+    this.setState({ isLoading: false });
+  };
 
   moreSubreddits = async () => {
-    this.setState({ isLoadingMore: true })
+    this.setState({ isLoadingMore: true });
     await fetch(
       `https://www.reddit.com/r/${this.state.subreddit}.json?after=${
         this.state.after
@@ -628,14 +626,14 @@ class Scroller extends Component {
       .then(jsonData => {
         this.setState({
           after: jsonData.data.after
-        })
-        this.dataMapper(jsonData.data.children, true)
+        });
+        this.dataMapper(jsonData.data.children, true);
       })
       .catch(error => {
-        console.log("error", error)
-      })
-    this.setState({ isLoadingMore: false })
-  }
+        console.log("error", error);
+      });
+    this.setState({ isLoadingMore: false });
+  };
 }
 
-export default Scroller
+export default Scroller;

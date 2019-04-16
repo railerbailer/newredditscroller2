@@ -1,8 +1,10 @@
-import "./App.css";
-import { BrowserRouter, Route } from "react-router-dom";
-import React, { Component, Suspense, lazy } from "react";
-const Scroller = lazy(() => import("./components/scroller"));
-const ChooseCategory = lazy(() => import("./components/chooseCategory"));
+import "./App.css"
+import { BrowserRouter, Route } from "react-router-dom"
+import React, { Component, Suspense, lazy } from "react"
+import trackerHoc from "./components/trackerHoc"
+
+const Scroller = lazy(() => import("./components/scroller"))
+const ChooseCategory = lazy(() => import("./components/chooseCategory"))
 
 class App extends Component {
   render() {
@@ -25,12 +27,12 @@ class App extends Component {
             </div>
           }
         >
-          <Route path="/" exact component={ChooseCategory} />
-          <Route path="/:subreddit" exact component={Scroller} />
+          <Route path="/" exact component={trackerHoc(ChooseCategory)} />
+          <Route path="/:subreddit" exact component={trackerHoc(Scroller)} />
         </Suspense>
       </BrowserRouter>
-    );
+    )
   }
 }
 
-export default App;
+export default App

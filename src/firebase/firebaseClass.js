@@ -38,8 +38,8 @@ class Firebase {
     }
   };
 
-  pushDataToCollection = (uid, collection, data) => {
-    this.db.ref(`${uid}/${collection}`).push(data);
+  pushDataToCollection = (data, collection, uid) => {
+    this.db.ref(`${uid}/collections/${collection}`).push(data);
   };
 
   updateDataOnUser = (fieldsToUpdate, data) => {

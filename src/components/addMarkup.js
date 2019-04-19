@@ -1,76 +1,66 @@
-import React, { Component } from "react";
-import { Spin, Icon, Button } from "antd";
+import React, { useState, useEffect } from "react";
+import { Spin, Icon, Button, Dropdown, Menu } from "antd";
 import LazyLoad from "react-lazyload";
 import Image from "./image.js";
 import Video from "./video.js";
 import { throttle } from "lodash";
 import Swipeable from "react-swipeable";
+let html = [];
+const AddMarkup = props => {
+  // const [html, setHtml] = useState([]);
+  const [activeElement, setActiveElement] = useState(0);
 
-let html;
-class AddMarkup extends Component {
-  state = {
-    showFullScreenIcon: true,
-    html: [],
-    activeElement: 0,
-    loading: false,
-    videoAutoPlay: false
-  };
-  componentWillMount() {
-    this.renderHtml();
-  }
-
-  getElementIndex = async (index, ref) => {
-    this.props.toggleFullscreen();
-    this.setState(
-      { activeElement: index },
-      () =>
-        this[`gridElement${this.state.index || index}`] &&
-        this[`gridElement${this.state.index || index}`].scrollIntoView({
+  useEffect(() => {
+    return () => {
+      this[`gridElement${activeElement}`] &&
+        this[`gridElement${activeElement}`].scrollIntoView({
           block: "center"
-        })
-    );
+        });
+    };
+  }, [props.fullscreen]);
+  const { collections } = props;
+
+  const getElementIndex = async (index, ref) => {
+    props.toggleFullscreen();
+    setActiveElement(index);
   };
 
-  getPreviousElement = throttle(() => {
-    if (!this.state.activeElement) return;
-    this.setState({ activeElement: this.state.activeElement - 1 });
+  const getPreviousElement = throttle(() => {
+    if (!activeElement) return;
+    setActiveElement(activeElement - 1);
   }, 100);
 
-  getNextElement = throttle(async () => {
-    const haveMoreContent = this.state.activeElement + 1 >= html.length;
+  const getNextElement = throttle(async () => {
+    const haveMoreContent = activeElement + 1 >= html.length;
     if (haveMoreContent) {
-      if (!this.props.isLoadingMore) {
+      if (!props.isLoadingMore) {
         try {
-          await this.props.loadMore();
+          await props.loadMore();
         } catch (error) {
           console.log("error", error);
         }
       }
-      this.setState({
-        activeElement: haveMoreContent ? this.state.activeElement + 1 : this.state.activeElement
-      });
+      setActiveElement(haveMoreContent ? activeElement + 1 : activeElement);
+
       return;
     }
-
-    this.setState({
-      activeElement: this.state.activeElement + 1
-    });
+    setActiveElement(activeElement + 1);
   }, 200);
 
-  handleKeyDown = e => {
+  const handleKeyDown = e => {
     if (e.key === "ArrowDown") {
-      !this.props.isSearchActivated && this.getNextElement();
+      !props.isSearchActivated && getNextElement();
     }
 
     if (e.key === "s") {
-      !this.props.isSearchActivated && this.getNextElement();
+      !props.isSearchActivated && getNextElement();
     }
     if (e.key === "w") {
-      !this.props.isSearchActivated && this.getPreviousElement();
+      !props.isSearchActivated && getPreviousElement();
     }
 
     if (e.key === "ArrowUp") {
-      !this.props.isSearchActivated && this.getPreviousElement();
+      !props.isSearchActivated && getPreviousElement();
     }
     if (e.key === " ") {
       if (this.videoPlayer) {
@@ -79,96 +69,19 @@ class AddMarkup extends Component {
     }
   };
 
-  swipedUp = (e, deltaY, isFlick) => {
+  const swipedUp = (e, deltaY, isFlick) => {
     if (isFlick || deltaY > 75) {
-      this.getNextElement();
+      getNextElement();
     }
   };
 
-  swipedDown = (e, deltaY, isFlick) => {
+  const swipedDown = (e, deltaY, isFlick) => {
     if (isFlick || deltaY > 50) {
-      this.getPreviousElement();
+      getPreviousElement();
     }
   };
-  render() {
-    this.renderHtml();
-    const { fullscreen, mobile, isLoadingMore } = this.props;
-    return (
-      <Swipeable
-        onKeyDown={e => this.handleKeyDown(e)}
-        onSwipedDown={this.swipedDown}
-        onSwipedUp={this.swipedUp}
-        style={{ backgroundColor: "rgb(20, 20, 20)" }}
-      >
-        {fullscreen ? (
-          html.length && (
-            <div className="fullscreenScroll">
-              <Icon
-                type="close"
-                className="closeFullScreen"
-                onClick={() => this.getElementIndex(this.state.activeElement)}
-              />
-
-              <div style={{ zIndex: isLoadingMore ? 10 : fullscreen ? 1 : 0 }} className="loadingMoreSpinner">
-                <svg xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    fill="#FFF"
-                    d="M45.6,16.9l0-11.4c0-3-1.5-5.5-4.5-5.5L3.5,0C0.5,0,0,1.5,0,4.5l0,13.4c0,3,0.5,4.5,3.5,4.5l37.6,0
-    C44.1,22.4,45.6,19.9,45.6,16.9z M31.9,21.4l-23.3,0l2.2-2.6l14.1,0L31.9,21.4z M34.2,21c-3.8-1-7.3-3.1-7.3-3.1l0-13.4l7.3-3.1
-    C34.2,1.4,37.1,11.9,34.2,21z M6.9,1.5c0-0.9,2.3,3.1,2.3,3.1l0,13.4c0,0-0.7,1.5-2.3,3.1C5.8,19.3,5.1,5.8,6.9,1.5z M24.9,3.9
-    l-14.1,0L8.6,1.3l23.3,0L24.9,3.9z"
-                  />
-                </svg>
-              </div>
-
-              {html[this.state.activeElement]}
-              <div style={{ opacity: 1, height: "1px" }}>
-                {html[this.state.activeElement + 1]}
-                {(!mobile || this.state.activeElement > 2) && html[this.state.activeElement + 2]}
-                {(!mobile || this.state.activeElement > 9) && html[this.state.activeElement + 3]}
-              </div>
-              <div className="fullscreenButtonNext">
-                <Icon autoFocus type="up" className="fullscreenButtonNext" onClick={() => this.getNextElement()} />
-                <span>Show more</span>
-              </div>
-              {!this.props.isSearchActivated && (
-                <button
-                  className="inputFocus"
-                  ref={button => button && !this.state.isSearchActivated && button.focus()}
-                />
-              )}
-            </div>
-          )
-        ) : (
-          <div className="gridMedia">{html}</div>
-        )}
-        {!fullscreen && (
-          <div className="loadMoreWrapper">
-            {!this.props.isLoading && html.length && (
-              <Button
-                onClick={async () => {
-                  try {
-                    await this.props.loadMore();
-                  } catch (error) {
-                    console.log("error", error);
-                  }
-                  setTimeout(() => this.setState({ loading: true }, this.renderHtml()), 500);
-                }}
-                type="primary"
-                icon={this.props.isLoadingMore ? "loading" : "loading-3-quarters"}
-                className="loadMoreButton"
-              >
-                Load more
-              </Button>
-            )}
-          </div>
-        )}
-      </Swipeable>
-    );
-  }
-
-  renderHtml = () => {
-    const { isOnlyPicsShowing, isOnlyGifsShowing, mobile, fullscreen, dataSource } = this.props;
+  const renderHtml = () => {
+    const { isOnlyPicsShowing, isOnlyGifsShowing, mobile, fullscreen, dataSource } = props;
     let filteredData;
     if (mobile) filteredData = dataSource.filter(item => !item.gif);
     if (isOnlyPicsShowing) filteredData = dataSource.filter(item => !item.video).filter(item => !item.gif);
@@ -192,9 +105,9 @@ class AddMarkup extends Component {
             <div
               key={i}
               ref={el => (this[`gridElement${i}`] = el)}
-              className={`gridElement ${image.className}`}
+              className={`gridElement pics ${image.className}`}
               onClick={() => {
-                this.getElementIndex(i, this[`gridElement${i}`]);
+                fullscreen && getElementIndex(i, this[`gridElement${i}`]);
               }}
             >
               <LazyLoad
@@ -217,50 +130,54 @@ class AddMarkup extends Component {
                 throttle={250}
                 key={i}
               >
-                <Image className="image" key={`image${i}`} fullscreen={fullscreen} src={source} />
+                <Image
+                  index={i}
+                  toggleFullscreen={getElementIndex}
+                  addMediaToCollection={props.addMediaToCollection}
+                  collections={collections}
+                  className="image"
+                  key={`image${i}`}
+                  fullscreen={fullscreen}
+                  src={source}
+                />
               </LazyLoad>
-
-              <Icon
-                onClick={() => this.props.addMediaToCollection("image", source, "11")}
-                style={{
-                  position: "absolute",
-                  zIndex: 2,
-                  bottom: 5,
-                  left: 5,
-                  fontSize: 16,
-                  opacity: 0.8,
-                  color: "white"
-                }}
-                type="heart"
-              />
             </div>
           );
         }
         if (video) {
           return (
-            <div key={i} ref={el => (this[`gridElement${i}`] = el)} className={`gridElement ${video.className}`}>
+            <div
+              onClick={() => {
+                fullscreen && getElementIndex(i, this[`gridElement${i}`]);
+              }}
+              key={i}
+              ref={el => (this[`gridElement${i}`] = el)}
+              className={`gridElement gifs ${video.className}`}
+            >
               <LazyLoad
                 unmountIfInvisible={true}
-                placeholder={
-                  <Spin
-                    style={{
-                      height: `${size[video.className]}px`
-                    }}
-                  />
-                }
+                // placeholder={
+                //   <Spin
+                //     style={{
+                //       height: `${size[video.className]}px`
+                //     }}
+                //   />
+                // }
                 throttle={250}
                 height={size[video.className]}
                 offset={mobile ? 800 : 1400}
                 key={i}
               >
                 <Video
-                  onClick={() => {
-                    this.getElementIndex(i, this[`gridElement${i}`]);
-                  }}
+                  className="video"
+                  index={i}
+                  toggleFullscreen={getElementIndex}
+                  addMediaToCollection={props.addMediaToCollection}
+                  collections={collections}
                   key={`video${i}`}
                   mobile={mobile}
                   src={video.url}
-                  videoAutoPlay={fullscreen}
+                  fullscreen={fullscreen}
                   poster={video.image || thumbnail}
                 />
               </LazyLoad>
@@ -272,26 +189,33 @@ class AddMarkup extends Component {
             <div
               key={i}
               ref={el => (this[`gridElement${i}`] = el)}
-              className={`gridElement ${gif.className}`}
+              className={`gridElement gifs ${gif.className}`}
               onClick={() => {
-                this.getElementIndex(i, this[`gridElement${i}`]);
+                getElementIndex(i, this[`gridElement${i}`]);
               }}
             >
               <LazyLoad
                 unmountIfInvisible={true}
-                placeholder={
-                  <Spin
-                    style={{
-                      height: `${size[gif.className]}px`
-                    }}
-                  />
-                }
+                // placeholder={
+                //   <Spin
+                //     style={{
+                //       height: `${size[gif.className]}px`
+                //     }}
+                //   />
+                // }
                 throttle={250}
                 height={size[gif.className]}
                 offset={mobile ? 800 : 1400}
                 key={i}
               >
-                <Image className={`gif`} src={gif.url} />
+                <Image
+                  index={i}
+                  toggleFullscreen={getElementIndex}
+                  addMediaToCollection={props.addMediaToCollection}
+                  collections={collections}
+                  className={`gif`}
+                  src={gif.url}
+                />
               </LazyLoad>
             </div>
           );
@@ -299,6 +223,71 @@ class AddMarkup extends Component {
         return null;
       });
   };
-}
+  const { fullscreen, mobile, isLoadingMore } = props;
+  renderHtml();
+  return (
+    <Swipeable
+      onKeyDown={e => handleKeyDown(e)}
+      onSwipedDown={swipedDown}
+      onSwipedUp={swipedUp}
+      style={{ backgroundColor: "rgb(20, 20, 20)" }}
+    >
+      {fullscreen ? (
+        html.length && (
+          <div className="fullscreenScroll">
+            <Icon type="close" className="closeFullScreen" onClick={() => getElementIndex(activeElement)} />
+
+            <div style={{ zIndex: isLoadingMore ? 10 : fullscreen ? 1 : 0 }} className="loadingMoreSpinner">
+              <svg xmlns="http://www.w3.org/2000/svg">
+                <path
+                  fill="#FFF"
+                  d="M45.6,16.9l0-11.4c0-3-1.5-5.5-4.5-5.5L3.5,0C0.5,0,0,1.5,0,4.5l0,13.4c0,3,0.5,4.5,3.5,4.5l37.6,0
+    C44.1,22.4,45.6,19.9,45.6,16.9z M31.9,21.4l-23.3,0l2.2-2.6l14.1,0L31.9,21.4z M34.2,21c-3.8-1-7.3-3.1-7.3-3.1l0-13.4l7.3-3.1
+    C34.2,1.4,37.1,11.9,34.2,21z M6.9,1.5c0-0.9,2.3,3.1,2.3,3.1l0,13.4c0,0-0.7,1.5-2.3,3.1C5.8,19.3,5.1,5.8,6.9,1.5z M24.9,3.9
+    l-14.1,0L8.6,1.3l23.3,0L24.9,3.9z"
+                />
+              </svg>
+            </div>
+
+            {html[activeElement]}
+            <div style={{ opacity: 1, height: "1px" }}>
+              {html[activeElement + 1]}
+              {(!mobile || activeElement > 2) && html[activeElement + 2]}
+              {(!mobile || activeElement > 9) && html[activeElement + 3]}
+            </div>
+            <div className="fullscreenButtonNext">
+              <Icon autoFocus type="up" className="fullscreenButtonNext" onClick={() => getNextElement()} />
+              <span>Show more</span>
+            </div>
+            {!props.isSearchActivated && <button className="inputFocus" ref={button => button && button.focus()} />}
+          </div>
+        )
+      ) : (
+        <div className="gridMedia">{html}</div>
+      )}
+      {!fullscreen && (
+        <div className="loadMoreWrapper">
+          {!props.isLoading && html.length && (
+            <Button
+              onClick={async () => {
+                try {
+                  await props.loadMore();
+                } catch (error) {
+                  console.log("error", error);
+                }
+                renderHtml();
+              }}
+              type="primary"
+              icon={props.isLoadingMore ? "loading" : "loading-3-quarters"}
+              className="loadMoreButton"
+            >
+              Load more
+            </Button>
+          )}
+        </div>
+      )}
+    </Swipeable>
+  );
+};
 
 export default AddMarkup;

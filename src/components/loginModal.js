@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Modal, Button, Input, Tooltip, Icon } from "antd";
+import { Modal, Button, Input, Tooltip, Icon, message } from "antd";
 
 class LoginModal extends Component {
   state = {
@@ -35,6 +35,7 @@ class LoginModal extends Component {
         isLoading: false
       });
       this.props.toggleIsModalVisible();
+      message.info(`Logged in, you can now add pics and gifs to your collections`);
     } catch (error) {
       console.log(error);
       error.code.includes("password")
@@ -64,7 +65,6 @@ class LoginModal extends Component {
     } = this.state;
     return (
       <Modal
-        style={{ backgroundColor: "black" }}
         confirmLoading={isLoading}
         title={registerMode ? "Register" : "Login"}
         centered

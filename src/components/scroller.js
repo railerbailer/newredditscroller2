@@ -192,6 +192,7 @@ class Scroller extends Component {
   };
   logOut = async () => {
     await this.props.firebase.doSignOut();
+    message.info(`Logged out`);
     this.toggleAuth();
     this.toggleDropDown();
   };
@@ -207,7 +208,7 @@ class Scroller extends Component {
   };
   addMediaToCollection = (type, url, collection) => {
     const { uid } = this.state.user;
-    this.props.firebase.pushDataToCollection(uid, collection, { [type]: url });
+    this.props.firebase.pushDataToCollection({ [type]: url }, collection, uid);
   };
   menu = () => {
     const {
@@ -222,7 +223,7 @@ class Scroller extends Component {
     } = this.state;
     const filledBgGif = isOnlyGifsShowing ? "#1890ff" : "transparent";
     const filledBgPic = isOnlyPicsShowing ? "#1890ff" : "transparent";
-    const { collections = { LoadingAga: "in" } } = userCollections;
+    const { collections = { ["Log in to use"]: "in" } } = userCollections;
     const lists = Object.keys(collections).reverse();
     const listMenuItem = lists.map(list => (
       <Menu.Item key={list} onClick={() => this.setState({ activeList: list })}>
@@ -411,8 +412,10 @@ class Scroller extends Component {
       isOnlyPicsShowing,
       mobile,
       isLoadingMore,
-      showListInput
+      showListInput,
+      userCollections
     } = this.state;
+    const { collections = { ["Log in to use"]: "hehe" } } = userCollections;
     const { firebase } = this.props;
     return (
       <Swipeable
@@ -455,7 +458,12 @@ class Scroller extends Component {
               )}
             </Transition>
           </div>
-          <Dropdown visible={isDropDownShowing} overlay={this.menu()} onClick={this.toggleDropDown}>
+          <Dropdown
+            overlayClassName="dropDownMenu"
+            visible={isDropDownShowing}
+            overlay={this.menu()}
+            onClick={this.toggleDropDown}
+          >
             <div className="iconSetting">
               <Icon type={isDropDownShowing ? "close" : "setting"} className="chooseCat" />
             </div>
@@ -505,6 +513,7 @@ class Scroller extends Component {
             <React.Fragment>
               {sources.length && (
                 <AddMarkup
+                  collections={collections}
                   addMediaToCollection={this.addMediaToCollection}
                   isSearchActivated={isSearchActivated}
                   toggleFullscreen={this.toggleFullscreen}

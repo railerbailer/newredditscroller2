@@ -81,9 +81,10 @@ h2 {
 .closeFullScreen {
   text-shadow: 1px 1px black;
   border: 0;
+  font-size: 20px;
   z-index: 8;
   position: absolute;
-  color: white;
+  color: white !important;
   top: 55px;
   right: 11px;
   height: 30px;
@@ -136,7 +137,7 @@ input {
 } */
 .gridMedia {
   background: rgb(20, 20, 20);
-  border: 2px solid white;
+  /* border: 2px solid white; */
   overflow: hidden;
   max-width: 1200px;
   margin: auto;
@@ -221,8 +222,8 @@ input {
 } */
 .playButton {
   opacity: 0.6;
-  font-size: 54px;
-  color: white;
+  font-size: 48px;
+  color: white !important;
   margin: auto;
   display: block;
   position: absolute;
@@ -298,6 +299,7 @@ input {
   background-size: cover;
   background-repeat: no-repeat;
   overflow: hidden;
+  border: 1px solid white;
 }
 .video {
   position: relative;
@@ -306,7 +308,6 @@ input {
 .gif,
 .video,
 iframe {
-  border: 1px solid white;
   z-index: 2;
   text-align: center;
   color: white;
@@ -696,11 +697,9 @@ button {
   }
 }
 @media (max-width: 800px) {
-  /* .gridMedia {
+  .gridMedia {
     border: 0;
-    grid-template-columns: repeat(auto-fill, minmax(100vw, 1fr));
-    max-width: 100vw;
-  } */
+  }
   .item0 {
     font-size: 0.975rem;
   }
@@ -709,18 +708,21 @@ button {
     font-size: 1.2875rem;
   }
 
-  .ant-dropdown {
+  .dropDownMenu {
     width: 100vw !important;
   }
 }
 
-.ant-dropdown {
+.dropDownMenu {
   width: 30vh;
   position: fixed !important;
   top: 1px;
   right: 5px;
   max-height: 90vh !important;
   overflow: scroll;
+}
+.mediaAddDropdown {
+  position: absolute !important;
 }
 .loginButton {
   font-size: 28px;

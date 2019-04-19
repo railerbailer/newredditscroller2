@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import GoogleAnalytics from "react-ga";
+import { FirebaseContext } from "../firebase";
 
 GoogleAnalytics.initialize("UA-121718818-1");
 
 const trackerHoc = (WrappedComponent, options = {}) => {
   const trackPage = page => {
+    if (process.env.NODE_ENV !== "development") return;
     GoogleAnalytics.set({
       page,
       ...options
@@ -21,10 +23,8 @@ const trackerHoc = (WrappedComponent, options = {}) => {
     }
 
     componentDidUpdate(prevProps) {
-      const currentPage =
-        prevProps.location.pathname + prevProps.location.search;
-      const nextPage =
-        this.props.location.pathname + this.props.location.search;
+      const currentPage = prevProps.location.pathname + prevProps.location.search;
+      const nextPage = this.props.location.pathname + this.props.location.search;
 
       if (currentPage !== nextPage) {
         trackPage(nextPage);
@@ -32,7 +32,13 @@ const trackerHoc = (WrappedComponent, options = {}) => {
     }
 
     render() {
-      return <WrappedComponent {...this.props} />;
+      return (
+        <FirebaseContext.Consumer>
+          {firebase => {
+            return <WrappedComponent {...this.props} firebase={firebase} />;
+          }}
+        </FirebaseContext.Consumer>
+      );
     }
   };
 

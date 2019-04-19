@@ -57,21 +57,25 @@ h2 {
   background-color: transparent;
   color: white;
 }
-
 .fullscreenButtonPrevious,
 .fullscreenButtonNext {
   text-shadow: 1px 1px black;
   border: 0;
   z-index: 5;
   position: absolute;
-  color: white;
+  color: white !important;
   bottom: 0px;
-
+  text-align: center;
   right: 0;
   left: 0;
   height: 54px;
   width: 100%;
   background-color: transparent;
+  opacity: 0.8;
+}
+.fullscreenButtonNext span {
+  display: block;
+  margin: 12px;
   opacity: 0.8;
 }
 .closeFullScreen {
@@ -87,11 +91,7 @@ h2 {
   background-color: transparent;
   opacity: 0.8;
 }
-.fullscreenButtonPrevious:hover,
-.fullscreenButtonNext:hover {
-  background-color: rgb(0, 0, 0, 0);
-  color: white;
-}
+
 .fullscreenScroll .video,
 .fullscreenScroll .image,
 .fullscreenScroll .gif,
@@ -116,6 +116,24 @@ i {
   height: 0.1px;
   opacity: 0.1;
 }
+.ant-modal-header {
+  position: fixed !important;
+  top: 0;
+  right: 0;
+}
+/* .ant-modal-content,
+.ant-modal-header,
+.ant-modal-title {
+  background: rgb(20, 20, 20) !important;
+  color: white !important;
+}
+.ant-modal-content button,
+input,
+.ant-modal-header button,
+input {
+  background: rgb(20, 20, 20) !important;
+  color: white !important;
+} */
 .gridMedia {
   background: rgb(20, 20, 20);
   border: 2px solid white;
@@ -132,7 +150,8 @@ i {
   .veryWide {
     grid-row: span 6 !important;
   }
-  .superTall, .veryTall{
+  .superTall,
+  .veryTall {
     grid-row: span 8 !important;
   }
   .grid-container button {
@@ -260,7 +279,7 @@ i {
 }
 
 .fullscreenScroll .gridElement {
-  background: rgb(20, 20, 20);;
+  background: rgb(20, 20, 20);
   display: flex;
   height: 100vh;
 }
@@ -347,7 +366,7 @@ button {
   z-index: 2;
   vertical-align: bottom;
 }
-.centered-text{
+.centered-text {
   font-size: 1.3em;
 }
 .subredditNameDiv h2,
@@ -398,18 +417,18 @@ p {
 }
 @keyframes spin {
   100% {
-    -webkit-transform: rotate(360deg); 
-    transform:rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
   }
 }
-.loadingMoreSpinner{
+.loadingMoreSpinner {
   position: absolute;
   z-index: 12;
   top: calc(50% - 12px);
   left: calc(50% - 24px);
 }
-.loadingMoreSpinner svg{
-  animation: spin 1.8s linear infinite; 
+.loadingMoreSpinner svg {
+  animation: spin 1.8s linear infinite;
   width: 48px;
   height: 24px;
 }
@@ -423,12 +442,11 @@ p {
   width: 100%;
   color: white;
 }
-.carSpinner{
+.carSpinner {
   padding: 48px;
-
 }
-.spinner svg{
-  animation: spin 1.8s linear infinite; 
+.spinner svg {
+  animation: spin 1.8s linear infinite;
   width: 48px;
   height: 24px;
 }
@@ -453,7 +471,8 @@ p {
     
   }
 } */
-.grid-container h2, button{
+.grid-container h2,
+button {
   z-index: 5;
 }
 
@@ -576,11 +595,10 @@ p {
   background-color: transparent;
 
   opacity: 0.9;
-  
-  
+
   width: 36px;
   position: fixed;
-  
+
   bottom: 0px;
   z-index: 7;
   color: white;
@@ -613,6 +631,7 @@ p {
 .autocomplete--entered {
   opacity: 1;
   transition: opacity 900ms;
+  padding: 8px !important;
   margin: 5px 0 0 5px;
   font-size: 16px;
   max-width: 200px;
@@ -691,28 +710,37 @@ p {
   }
 
   .ant-dropdown {
-    width: 100vw;
+    width: 100vw !important;
   }
 }
 
 .ant-dropdown {
   width: 30vh;
-  position: fixed;
+  position: fixed !important;
+  top: 1px;
+  right: 5px;
+  max-height: 90vh !important;
+  overflow: scroll;
 }
-
+.loginButton {
+  font-size: 28px;
+  color: white !important;
+  position: absolute;
+  right: 5px;
+  top: 45px;
+}
 .iconSetting {
-  font-size: 35px;
+  font-size: 32px;
   z-index: 6;
-  padding: 4px 4px 0 0;
+  padding: 0px 4px 0 0;
   width: 100px;
-  white-space: wrap;
   border: 0;
+  text-align: right;
 }
 
 .iconSetting .anticon {
   display: inline;
   fill: white;
-  text-align: right;
   color: white;
   text-shadow: 1px 1px black;
 }
@@ -724,6 +752,7 @@ p {
 }
 .searchWrapper button {
   position: absolute;
+  padding: 10px;
   z-index: 6;
 }
 .searchWrapper .anticon {

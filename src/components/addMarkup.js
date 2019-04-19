@@ -47,9 +47,7 @@ class AddMarkup extends Component {
         }
       }
       this.setState({
-        activeElement: haveMoreContent
-          ? this.state.activeElement + 1
-          : this.state.activeElement
+        activeElement: haveMoreContent ? this.state.activeElement + 1 : this.state.activeElement
       });
       return;
     }
@@ -111,10 +109,7 @@ class AddMarkup extends Component {
                 onClick={() => this.getElementIndex(this.state.activeElement)}
               />
 
-              <div
-                style={{ zIndex: isLoadingMore ? 10 : fullscreen ? 1 : 0 }}
-                className="loadingMoreSpinner"
-              >
+              <div style={{ zIndex: isLoadingMore ? 10 : fullscreen ? 1 : 0 }} className="loadingMoreSpinner">
                 <svg xmlns="http://www.w3.org/2000/svg">
                   <path
                     fill="#FFF"
@@ -129,27 +124,17 @@ class AddMarkup extends Component {
               {html[this.state.activeElement]}
               <div style={{ opacity: 1, height: "1px" }}>
                 {html[this.state.activeElement + 1]}
-                {(!mobile || this.state.activeElement > 2) &&
-                  html[this.state.activeElement + 2]}
-                {(!mobile || this.state.activeElement > 9) &&
-                  html[this.state.activeElement + 3]}
+                {(!mobile || this.state.activeElement > 2) && html[this.state.activeElement + 2]}
+                {(!mobile || this.state.activeElement > 9) && html[this.state.activeElement + 3]}
               </div>
-              <div>
-                <Icon
-                  autoFocus
-                  type="up"
-                  className="fullscreenButtonNext"
-                  onClick={() => this.getNextElement()}
-                >
-                  Show more
-                </Icon>
+              <div className="fullscreenButtonNext">
+                <Icon autoFocus type="up" className="fullscreenButtonNext" onClick={() => this.getNextElement()} />
+                <span>Show more</span>
               </div>
               {!this.props.isSearchActivated && (
                 <button
                   className="inputFocus"
-                  ref={button =>
-                    button && !this.state.isSearchActivated && button.focus()
-                  }
+                  ref={button => button && !this.state.isSearchActivated && button.focus()}
                 />
               )}
             </div>
@@ -167,15 +152,10 @@ class AddMarkup extends Component {
                   } catch (error) {
                     console.log("error", error);
                   }
-                  setTimeout(
-                    () => this.setState({ loading: true }, this.renderHtml()),
-                    500
-                  );
+                  setTimeout(() => this.setState({ loading: true }, this.renderHtml()), 500);
                 }}
                 type="primary"
-                icon={
-                  this.props.isLoadingMore ? "loading" : "loading-3-quarters"
-                }
+                icon={this.props.isLoadingMore ? "loading" : "loading-3-quarters"}
                 className="loadMoreButton"
               >
                 Load more
@@ -188,27 +168,17 @@ class AddMarkup extends Component {
   }
 
   renderHtml = () => {
-    const {
-      isOnlyPicsShowing,
-      isOnlyGifsShowing,
-      mobile,
-      fullscreen,
-      dataSource
-    } = this.props;
+    const { isOnlyPicsShowing, isOnlyGifsShowing, mobile, fullscreen, dataSource } = this.props;
     let filteredData;
     if (mobile) filteredData = dataSource.filter(item => !item.gif);
-    if (isOnlyPicsShowing)
-      filteredData = dataSource
-        .filter(item => !item.video)
-        .filter(item => !item.gif);
-    else if (isOnlyGifsShowing)
-      filteredData = dataSource.filter(item => !item.image);
+    if (isOnlyPicsShowing) filteredData = dataSource.filter(item => !item.video).filter(item => !item.gif);
+    else if (isOnlyGifsShowing) filteredData = dataSource.filter(item => !item.image);
     else if (isOnlyPicsShowing && isOnlyGifsShowing) filteredData = dataSource;
     else filteredData = dataSource;
     html = filteredData
       .filter(item => Object.entries(item).length !== 0)
       .map((data, i) => {
-        const { gif, image, video, title, thumbnail } = data;
+        const { gif, image, video, thumbnail } = data;
         const size = {
           superTall: 645,
           veryTall: 645,
@@ -217,6 +187,7 @@ class AddMarkup extends Component {
           veryWide: 255
         };
         if (image) {
+          const source = mobile ? image.low || image.high : image.high || image.low || image.source;
           return (
             <div
               key={i}
@@ -246,27 +217,28 @@ class AddMarkup extends Component {
                 throttle={250}
                 key={i}
               >
-                <Image
-                  className="image"
-                  key={`image${i}`}
-                  fullscreen={fullscreen}
-                  src={
-                    mobile
-                      ? image.low || image.high
-                      : image.high || image.low || image.source
-                  }
-                />
+                <Image className="image" key={`image${i}`} fullscreen={fullscreen} src={source} />
               </LazyLoad>
+
+              <Icon
+                onClick={() => this.props.addMediaToCollection("image", source, "11")}
+                style={{
+                  position: "absolute",
+                  zIndex: 2,
+                  bottom: 5,
+                  left: 5,
+                  fontSize: 16,
+                  opacity: 0.8,
+                  color: "white"
+                }}
+                type="heart"
+              />
             </div>
           );
         }
         if (video) {
           return (
-            <div
-              key={i}
-              ref={el => (this[`gridElement${i}`] = el)}
-              className={`gridElement ${video.className}`}
-            >
+            <div key={i} ref={el => (this[`gridElement${i}`] = el)} className={`gridElement ${video.className}`}>
               <LazyLoad
                 unmountIfInvisible={true}
                 placeholder={
@@ -324,6 +296,7 @@ class AddMarkup extends Component {
             </div>
           );
         }
+        return null;
       });
   };
 }

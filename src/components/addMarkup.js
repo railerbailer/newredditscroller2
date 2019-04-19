@@ -20,7 +20,7 @@ const AddMarkup = props => {
   }, [props.fullscreen]);
   const { collections } = props;
 
-  const getElementIndex = async (index, ref) => {
+  const getElementIndex = (index, ref) => {
     props.toggleFullscreen();
     setActiveElement(index);
   };
@@ -32,7 +32,7 @@ const AddMarkup = props => {
 
   const getNextElement = throttle(async () => {
     const haveMoreContent = activeElement + 1 >= html.length;
-    if (haveMoreContent) {
+    if (!props.activeCollection.length && haveMoreContent) {
       if (!props.isLoadingMore) {
         try {
           await props.loadMore();
@@ -44,7 +44,7 @@ const AddMarkup = props => {
 
       return;
     }
-    setActiveElement(activeElement + 1);
+    html.length !== activeElement + 1 && setActiveElement(activeElement + 1);
   }, 200);
 
   const handleKeyDown = e => {
@@ -126,11 +126,12 @@ const AddMarkup = props => {
                 //               </div>
                 //             }
                 height={size[image.className]}
-                offset={mobile ? 1000 : 1200}
+                offset={mobile ? 800 : 1200}
                 throttle={250}
                 key={i}
               >
                 <Image
+                  ratioClassName={image.className}
                   index={i}
                   toggleFullscreen={getElementIndex}
                   addMediaToCollection={props.addMediaToCollection}
@@ -170,6 +171,7 @@ const AddMarkup = props => {
               >
                 <Video
                   className="video"
+                  ratioClassName={video.className}
                   index={i}
                   toggleFullscreen={getElementIndex}
                   addMediaToCollection={props.addMediaToCollection}
@@ -209,6 +211,7 @@ const AddMarkup = props => {
                 key={i}
               >
                 <Image
+                  ratioClassName={gif.className}
                   index={i}
                   toggleFullscreen={getElementIndex}
                   addMediaToCollection={props.addMediaToCollection}
@@ -267,7 +270,7 @@ const AddMarkup = props => {
       )}
       {!fullscreen && (
         <div className="loadMoreWrapper">
-          {!props.isLoading && html.length && (
+          {!props.activeCollection.length && !props.isLoading && html.length && (
             <Button
               onClick={async () => {
                 try {

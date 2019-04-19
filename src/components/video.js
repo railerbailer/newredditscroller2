@@ -17,26 +17,37 @@ class Video extends Component {
       this.togglePlaying();
     }
   }
-  toggleIsDropDownShowing = () => {
-    this.setState({ isDropDownShowing: !this.state.isDropDownShowing });
+  toggleIsDropDownShowing = value => {
+    this.setState({ isDropDownShowing: value });
   };
   menu = () => {
-    const { collections, src, className } = this.props;
+    const { collections, src, className, poster, ratioClassName } = this.props;
     console.log(collections);
     const lists = Object.keys(collections).reverse();
     const listMenuItem = lists.map(list => (
       <Menu.Item
         key={list}
         onClick={() => {
-          this.props.addMediaToCollection(className, src, list);
-          this.toggleIsDropDownShowing();
+          this.props.addMediaToCollection(
+            { [className]: { className: ratioClassName, url: src, image: poster } },
+            list
+          );
           message.info(`Added to collection ${list}`);
+          this.setState({ isDropDownShowing: false });
         }}
       >
         {list}
       </Menu.Item>
     ));
-    return <Menu>{listMenuItem}</Menu>;
+    return (
+      <Menu>
+        <h4 style={{ marginLeft: "4px" }}>
+          <Icon type="bars" /> My collections
+        </h4>
+        <h5 style={{ padding: "5%" }}> Add to which collection? </h5>
+        {listMenuItem}
+      </Menu>
+    );
   };
 
   togglePlaying = () => {
@@ -81,24 +92,15 @@ class Video extends Component {
           Sorry, your browser doesn't support embedded videos.
         </video>
         <Dropdown
+          onBlur={() => setTimeout((() => this.toggleIsDropDownShowing(false), 500))}
           overlayClassName="mediaAddDropdown"
           placement="topRight"
           visible={this.state.isDropDownShowing}
           overlay={this.menu()}
         >
           <Icon
-            onClick={this.toggleIsDropDownShowing}
-            style={{
-              position: "absolute",
-              zIndex: 2,
-              bottom: 5,
-              left: 5,
-              fontSize: 20,
-              opacity: 0.8,
-              color: "#1890ff",
-              background: "white",
-              borderRadius: "100%"
-            }}
+            onClick={() => this.toggleIsDropDownShowing(!this.state.isDropDownShowing)}
+            className="addNewMediaIcon"
             type="plus-circle"
           />
         </Dropdown>

@@ -5,7 +5,7 @@ import "../App.css";
 import { throttle } from "lodash";
 import { Transition } from "react-transition-group";
 import AddMarkup from "./addMarkup.js";
-import { Input, Icon, Button, message, Menu, Dropdown, AutoComplete } from "antd";
+import { Modal, Input, Icon, Button, message, Menu, Dropdown, AutoComplete } from "antd";
 
 import { subredditArray, straight, artArray, foodArray, animalsArray } from "../subreddits";
 import "../App.css";
@@ -36,7 +36,7 @@ class Scroller extends Component {
     newListName: "",
     userCollections: { Loading: "kek" },
     user: null,
-    activeList: ""
+    activeCollection: ""
   };
 
   componentWillMount() {
@@ -47,7 +47,8 @@ class Scroller extends Component {
       if (user) {
         this.setState({ user: user });
         this.props.firebase.db.ref(user.uid).on("value", snapshot => {
-          this.setState({ userCollections: snapshot.val() });
+          snapshot.val() && this.setState({ userCollections: snapshot.val() });
+          // Object.values(snapshot.val().collections).some(collection => this.props.match.params.subreddit === collection)
         });
       } else {
         this.setState({ user: null });
@@ -198,7 +199,8 @@ class Scroller extends Component {
   };
   addNewList = () => {
     const { newListName, userCollections } = this.state;
-    const nameExists = Object.keys(userCollections.collections).some(name => name === newListName);
+    const { collections = { none: "none" } } = userCollections;
+    const nameExists = Object.keys(collections).some(name => name === newListName);
     if (nameExists) {
       alert("You already have a collection with that name");
       return;
@@ -206,9 +208,46 @@ class Scroller extends Component {
     this.props.firebase.updateDataOnUser("collections", { [newListName]: Date.now() });
     this.setState({ showListInput: false, newListName: "" });
   };
-  addMediaToCollection = (type, url, collection) => {
-    const { uid } = this.state.user;
-    this.props.firebase.pushDataToCollection({ [type]: url }, collection, uid);
+  addMediaToCollection = (fields, collection) => {
+    console.log("fields", fields);
+    console.log("collection", collection);
+    this.state.user ? this.props.firebase.pushDataToCollection({ ...fields }, collection) : this.toggleIsModalVisible();
+  };
+
+  showDeleteConfirm = () => {
+    const confirm = Modal.confirm;
+    confirm({
+      title: "Are you sure delete this task?",
+      content: "Some descriptions",
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      onOk() {
+        console.log("OK");
+      },
+      onCancel() {
+        console.log("Cancel");
+      }
+    });
+  };
+  showDeleteConfirm = collection => {
+    const deleteCollection = () => this.props.firebase.removeCollection(collection);
+    const confirm = Modal.confirm;
+    confirm({
+      title: `Are you sure delete ${collection}?`,
+      content: "This can not be reversed",
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      zIndex: 12313123,
+      onOk() {
+        deleteCollection();
+        message.info(`${collection} has been deleted`);
+      }
+      // onCancel() {
+      //   console.log("Cancel");
+      // }
+    });
   };
   menu = () => {
     const {
@@ -218,16 +257,29 @@ class Scroller extends Component {
       showListInput,
       newListName,
       userCollections,
-      activeList,
+      activeCollection,
       user
     } = this.state;
     const filledBgGif = isOnlyGifsShowing ? "#1890ff" : "transparent";
     const filledBgPic = isOnlyPicsShowing ? "#1890ff" : "transparent";
-    const { collections = { ["Log in to use"]: "in" } } = userCollections;
+    const { collections = {} } = userCollections;
     const lists = Object.keys(collections).reverse();
-    const listMenuItem = lists.map(list => (
-      <Menu.Item key={list} onClick={() => this.setState({ activeList: list })}>
-        {list}
+    const listMenuItem = lists.map(collection => (
+      <Menu.Item style={{ color: activeCollection === collection ? "#1890ff" : "" }} key={collection}>
+        <span
+          className="collectionNameDropdown"
+          onClick={() => {
+            this.setState({ activeCollection: collection });
+            sources = Object.values(collections[collection]);
+            message.info(`Showing your collection: ${collection}`);
+            this.props.history.push(`/${collection}`);
+          }}
+        >
+          {collection}
+        </span>
+        {collection !== "Favourites" && (
+          <Icon onClick={() => this.showDeleteConfirm(collection)} className="deleteCollectionIcon" type="delete" />
+        )}
       </Menu.Item>
     ));
     return (
@@ -256,12 +308,24 @@ class Scroller extends Component {
           <Icon type="global" /> Domains
         </h4>
         <Menu.Item>
-          <div style={{ color: category === "NSFW" ? "#1890ff" : "" }} onClick={e => this.changeCat(e, "NSFW")}>
+          <div
+            style={{ color: category === "NSFW" ? "#1890ff" : "" }}
+            onClick={e => {
+              this.changeCat(e, "NSFW");
+              this.setState({ activeCollection: "" });
+            }}
+          >
             Nsfw
           </div>
         </Menu.Item>
         <Menu.Item>
-          <div style={{ color: category === "SFWALL" ? "#1890ff" : "" }} onClick={e => this.changeCat(e, "SFWALL")}>
+          <div
+            style={{ color: category === "SFWALL" ? "#1890ff" : "" }}
+            onClick={e => {
+              this.changeCat(e, "SFWALL");
+              this.setState({ activeCollection: "" });
+            }}
+          >
             Sfw
           </div>
         </Menu.Item>
@@ -281,7 +345,17 @@ class Scroller extends Component {
               <React.Fragment>
                 <Input
                   value={newListName}
-                  onChange={event => this.setState({ newListName: event.target.value })}
+                  onChange={event =>
+                    this.setState({
+                      newListName: event.target.value
+                        .replace("]", "")
+                        .replace("[", "")
+                        .replace("/", "")
+                        .replace("$", "")
+                        .replace("#", "")
+                        .replace(".", "")
+                    })
+                  }
                   size="small"
                   style={{ maxWidth: "70%" }}
                 />{" "}
@@ -413,9 +487,11 @@ class Scroller extends Component {
       mobile,
       isLoadingMore,
       showListInput,
-      userCollections
+      userCollections,
+      activeCollection
     } = this.state;
-    const { collections = { ["Log in to use"]: "hehe" } } = userCollections;
+    // console.log(this.state.userCollections.collections[activeCollection]);
+    const { collections = {} } = userCollections;
     const { firebase } = this.props;
     return (
       <Swipeable
@@ -458,6 +534,7 @@ class Scroller extends Component {
               )}
             </Transition>
           </div>
+
           <Dropdown
             overlayClassName="dropDownMenu"
             visible={isDropDownShowing}
@@ -465,7 +542,11 @@ class Scroller extends Component {
             onClick={this.toggleDropDown}
           >
             <div className="iconSetting">
-              <Icon type={isDropDownShowing ? "close" : "setting"} className="chooseCat" />
+              <Icon
+                onBlur={() => this.toggleDropDown()}
+                type={isDropDownShowing ? "close" : "setting"}
+                className="chooseCat"
+              />
             </div>
           </Dropdown>
         </div>
@@ -513,6 +594,7 @@ class Scroller extends Component {
             <React.Fragment>
               {sources.length && (
                 <AddMarkup
+                  activeCollection={this.state.activeCollection}
                   collections={collections}
                   addMediaToCollection={this.addMediaToCollection}
                   isSearchActivated={isSearchActivated}

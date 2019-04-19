@@ -112,6 +112,7 @@ class LoginModal extends Component {
         {this.state.registerMode && (
           <React.Fragment>
             <Input.Password
+              autoFocus
               value={secondPassword}
               prefix={
                 <Icon

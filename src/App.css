@@ -27,7 +27,17 @@ h2 {
 .contentZen .titleText {
   top: 0vh;
 }
-
+.collectionNameDropdown:hover {
+  color: #1890ff;
+}
+.deleteCollectionIcon {
+  float: right;
+  opacity: 0.8;
+  z-index: 5 !important;
+}
+.deleteCollectionIcon:hover {
+  color: rgb(255, 50, 50, 0.55);
+}
 .title-text {
   color: white;
   display: none;
@@ -117,10 +127,19 @@ i {
   height: 0.1px;
   opacity: 0.1;
 }
-.ant-modal-header {
-  position: fixed !important;
-  top: 0;
-  right: 0;
+.addNewMediaIcon {
+  padding: 20px 20px 0 0;
+  position: absolute;
+  z-index: 2;
+  bottom: 5px;
+  left: 5px;
+  font-size: 20px;
+  opacity: 0.8;
+  color: white !important;
+}
+.addNewMediaIcon svg {
+  background: #1890ff;
+  border-radius: 100%;
 }
 /* .ant-modal-content,
 .ant-modal-header,

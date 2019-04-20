@@ -221,7 +221,6 @@ class Scroller extends Component {
   showShareConfirm = collection => {
     const { userCollections } = this.state;
     const collectionData = userCollections.collections[collection];
-    console.log("COLLECTIONDATASHARE", collectionData, userCollections.collections[collection]);
     let description = "";
     const addCollectionToPublic = () =>
       this.props.firebase.updateCollectionToPublic({
@@ -287,7 +286,7 @@ class Scroller extends Component {
           className="collectionNameDropdown"
           onClick={() => {
             this.setState({ activeCollection: collection });
-            sources = Object.values(collections[collection].data);
+            sources = Object.values(collections[collection]);
             message.info(`Showing your collection: ${collection}`);
             this.props.history.push(`/${collection}`);
             this.toggleDropDown(false);
@@ -434,7 +433,7 @@ class Scroller extends Component {
             shuffle
           </i>
           <p onClick={this.switchCat}>
-            Shuffled <br />
+            Shuffle <br />
             subreddit
           </p>
         </button>

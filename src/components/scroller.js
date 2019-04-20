@@ -300,12 +300,17 @@ class Scroller extends Component {
               >
                 Pics
               </Button>
+              <Icon
+                onClick={() => this.toggleDropDown(false)}
+                style={{ float: "right", fontSize: 12, margin: 4 }}
+                type="close"
+              />
             </span>
           </div>
         </Menu.Item>
         <Menu.Divider />
         <h4 style={{ marginLeft: "4px" }}>
-          <Icon type="global" /> Domains
+          <Icon type="global" /> Browse subreddits
         </h4>
         <Menu.Item>
           <div
@@ -594,6 +599,7 @@ class Scroller extends Component {
             <React.Fragment>
               {sources.length && (
                 <AddMarkup
+                  toggleIsModalVisible={this.toggleIsModalVisible}
                   activeCollection={this.state.activeCollection}
                   collections={collections}
                   addMediaToCollection={this.addMediaToCollection}
@@ -612,7 +618,7 @@ class Scroller extends Component {
               )}
               <div style={{ opacity: isSearchActivated ? 0.1 : 1 }} className="subredditNameDiv">
                 <h2 className="subredditName">
-                  {subreddit} <Icon type="tag-o" />
+                  {activeCollection.length ? activeCollection : subreddit} <Icon type="tag-o" />
                 </h2>
               </div>
             </React.Fragment>

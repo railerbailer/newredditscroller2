@@ -3,7 +3,7 @@ import { Icon, Dropdown, Menu, message } from "antd";
 
 const Image = props => {
   const [isDropDownShowing, setDropDown] = useState(false);
-  const { className, src, toggleFullscreen, index, ratioClassName, addMediaToCollection } = props;
+  const { className, src, toggleFullscreen, index, ratioClassName, toggleIsModalVisible, addMediaToCollection } = props;
 
   const menu = () => {
     let collections = props.collections;
@@ -24,8 +24,15 @@ const Image = props => {
       <Menu>
         <h4 style={{ marginLeft: "4px" }}>
           <Icon type="bars" /> My collections
+          <Icon onClick={() => setDropDown(false)} style={{ float: "right", fontSize: 12, margin: 4 }} type="close" />
         </h4>
-        <h5 style={{ padding: "5%" }}> Add to collection </h5>
+
+        {!lists.length && (
+          <div onClick={() => toggleIsModalVisible()}>
+            <Icon style={{ marginLeft: 4 }} type="login" />
+            Log in or register
+          </div>
+        )}
         {listMenuItem}
       </Menu>
     );

@@ -65,6 +65,7 @@ class LoginModal extends Component {
     } = this.state;
     return (
       <Modal
+        zIndex={123123}
         confirmLoading={isLoading}
         title={registerMode ? "Register" : "Login"}
         centered
@@ -126,7 +127,7 @@ class LoginModal extends Component {
               placeholder="Confirm password"
               onPressEnter={() => this.submitForm()}
             />
-            >{errorMessageMatchingPassword}
+            {errorMessageMatchingPassword}
           </React.Fragment>
         )}
         {/* {errorMessagePassword.length && (

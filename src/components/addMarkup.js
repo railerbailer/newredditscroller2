@@ -131,6 +131,7 @@ const AddMarkup = props => {
                 key={i}
               >
                 <Image
+                  toggleIsModalVisible={props.toggleIsModalVisible}
                   ratioClassName={image.className}
                   index={i}
                   toggleFullscreen={getElementIndex}
@@ -170,6 +171,7 @@ const AddMarkup = props => {
                 key={i}
               >
                 <Video
+                  toggleIsModalVisible={props.toggleIsModalVisible}
                   className="video"
                   ratioClassName={video.className}
                   index={i}
@@ -211,6 +213,7 @@ const AddMarkup = props => {
                 key={i}
               >
                 <Image
+                  toggleIsModalVisible={props.toggleIsModalVisible}
                   ratioClassName={gif.className}
                   index={i}
                   toggleFullscreen={getElementIndex}

@@ -716,6 +716,9 @@ button {
   }
 }
 @media (max-width: 800px) {
+  .mediaAddDropdown {
+    min-width: 50vw;
+  }
   .gridMedia {
     border: 0;
     grid-template-columns: repeat(auto-fit, minmax(300px, 2fr));

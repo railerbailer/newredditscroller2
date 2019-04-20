@@ -44,7 +44,6 @@ class Video extends Component {
         <h4 style={{ marginLeft: "4px" }}>
           <Icon type="bars" /> My collections
         </h4>
-        <h5 style={{ padding: "5%" }}> Add to which collection? </h5>
         {listMenuItem}
       </Menu>
     );

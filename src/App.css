@@ -120,6 +120,9 @@ h2 {
   z-index: 12390139123;
   color: white;
 }
+.loginModal .ant-modal-body > span {
+  margin: 8px 0;
+}
 i {
   cursor: pointer;
 }
@@ -136,10 +139,11 @@ i {
   font-size: 20px;
   opacity: 0.8;
   color: white !important;
+  filter: drop-shadow(1px 1px black);
 }
 .addNewMediaIcon svg {
-  background: #1890ff;
-  border-radius: 100%;
+  /* background: #1890ff; */
+  /* border-radius: 100%; */
 }
 /* .ant-modal-content,
 .ant-modal-header,

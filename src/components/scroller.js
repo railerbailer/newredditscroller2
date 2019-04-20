@@ -230,6 +230,20 @@ class Scroller extends Component {
       }
     });
   };
+  showShareConfirm = collection => {
+    const confirm = Modal.confirm;
+    confirm({
+      title: `Share collection "${collection}"`,
+      content: "This will publish your collection and make it available to share.",
+      zIndex: 12313123,
+      onOk() {
+        console.log("OK");
+      },
+      onCancel() {
+        console.log("Cancel");
+      }
+    });
+  };
   showDeleteConfirm = collection => {
     const deleteCollection = () => this.props.firebase.removeCollection(collection);
     const confirm = Modal.confirm;
@@ -273,12 +287,16 @@ class Scroller extends Component {
             sources = Object.values(collections[collection]);
             message.info(`Showing your collection: ${collection}`);
             this.props.history.push(`/${collection}`);
+            this.toggleDropDown(false);
           }}
         >
           {collection}
         </span>
         {collection !== "Favourites" && (
-          <Icon onClick={() => this.showDeleteConfirm(collection)} className="deleteCollectionIcon" type="delete" />
+          <React.Fragment>
+            <Icon onClick={() => this.showDeleteConfirm(collection)} className="deleteCollectionIcon" type="delete" />
+            <Icon onClick={() => this.showShareConfirm(collection)} className="deleteCollectionIcon" type="share-alt" />
+          </React.Fragment>
         )}
       </Menu.Item>
     ));
@@ -374,7 +392,7 @@ class Scroller extends Component {
         <Menu.Item>
           {user ? (
             <div onClick={() => this.logOut()}>
-              <Icon type="logout" /> Log out
+              <Icon type="logout" /> Log out {userCollections.userName && `(logged in as ${userCollections.userName})`}
             </div>
           ) : (
             <div

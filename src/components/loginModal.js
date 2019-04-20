@@ -3,21 +3,22 @@ import { Modal, Button, Input, Tooltip, Icon, message } from "antd";
 
 class LoginModal extends Component {
   state = {
+    email: "",
     userName: "",
     password: "",
     secondPassword: "",
-    errorMessageUserName: "",
+    errorMessageEmail: "",
     errorMessagePassword: "",
     registerMode: false,
     errorMessageMatchingPassword: ""
   };
 
   submitForm = async () => {
-    const { secondPassword, password, userName, registerMode } = this.state;
+    const { secondPassword, password, email, registerMode, userName } = this.state;
     const { firebase } = this.props;
     this.setState({
       errorMessagePassword: "",
-      errorMessageUserName: "",
+      errorMessageEmail: "",
       errorMessageMatchingPassword: ""
     });
     if (registerMode && secondPassword !== password) {
@@ -27,11 +28,11 @@ class LoginModal extends Component {
     try {
       this.setState({ isLoading: true });
       registerMode
-        ? await firebase.doCreateUserWithEmailAndPassword(userName, password)
-        : await firebase.doSignInWithEmailAndPassword(userName, password);
+        ? await firebase.doCreateUserWithEmailAndPassword(email, password, userName)
+        : await firebase.doSignInWithEmailAndPassword(email, password);
       this.setState({
         errorMessagePassword: "",
-        errorMessageUserName: "",
+        errorMessageEmail: "",
         isLoading: false
       });
       this.props.toggleIsModalVisible();
@@ -41,11 +42,11 @@ class LoginModal extends Component {
       error.code.includes("password")
         ? this.setState({
             errorMessagePassword: "Wrong password",
-            errorMessageUserName: "",
+            errorMessageEmail: "",
             isLoading: false
           })
         : this.setState({
-            errorMessageUserName: error.code.includes("auth/invalid-email") ? "Use your e-mail" : "User not found",
+            errorMessageEmail: error.code.includes("auth/invalid-email") ? "Use your e-mail" : "User email not found",
             errorMessagePassword: "",
             isLoading: false
           });
@@ -55,8 +56,9 @@ class LoginModal extends Component {
   render() {
     const {
       isLoading,
-      errorMessageUserName,
+      errorMessageEmail,
       errorMessagePassword,
+      email,
       userName,
       password,
       registerMode,
@@ -68,6 +70,7 @@ class LoginModal extends Component {
         zIndex={123123}
         confirmLoading={isLoading}
         title={registerMode ? "Register" : "Login"}
+        wrapClassName="loginModal"
         centered
         visible={this.props.isModalVisible}
         onOk={() => this.submitForm()}
@@ -77,14 +80,14 @@ class LoginModal extends Component {
           placeholder="Enter your email"
           prefix={
             <Icon
-              type="user"
+              type="mail"
               style={{
-                color: !errorMessageUserName.length ? "rgba(0,0,0,.25)" : "red"
+                color: !errorMessageEmail.length ? "rgba(0,0,0,.25)" : "red"
               }}
             />
           }
-          value={userName}
-          onChange={event => this.setState({ userName: event.target.value })}
+          value={email}
+          onChange={event => this.setState({ email: event.target.value })}
           suffix={
             <Tooltip title="Extra information">
               <Icon type="info-circle" style={{ color: "rgba(0,0,0,.25)" }} />
@@ -92,8 +95,27 @@ class LoginModal extends Component {
           }
         />
 
-        {errorMessageUserName}
-
+        {errorMessageEmail}
+        {this.state.registerMode && (
+          <Input
+            placeholder="Pick a user name (optional)"
+            prefix={
+              <Icon
+                type="user"
+                style={{
+                  color: "rgba(0,0,0,.25)"
+                }}
+              />
+            }
+            value={userName}
+            onChange={event => this.setState({ userName: event.target.value })}
+            suffix={
+              <Tooltip title="Choose user name">
+                <Icon type="info-circle" style={{ color: "rgba(0,0,0,.25)" }} />
+              </Tooltip>
+            }
+          />
+        )}
         <Input.Password
           value={password}
           prefix={
@@ -117,7 +139,7 @@ class LoginModal extends Component {
               value={secondPassword}
               prefix={
                 <Icon
-                  type={!errorMessageMatchingPassword.length ? "lock" : "unlock"}
+                  type={!errorMessageMatchingPassword.length ? "unlock" : "lock"}
                   style={{
                     color: !errorMessageMatchingPassword.length ? "rgba(0,0,0,.25)" : "red"
                   }}

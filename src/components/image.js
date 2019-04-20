@@ -23,7 +23,7 @@ const Image = props => {
     return (
       <Menu>
         <h4 style={{ marginLeft: "4px" }}>
-          <Icon type="bars" /> My collections
+          <Icon type="bars" /> Add to collection
           <Icon onClick={() => setDropDown(false)} style={{ float: "right", fontSize: 12, margin: 4 }} type="close" />
         </h4>
 
@@ -55,7 +55,7 @@ const Image = props => {
         visible={isDropDownShowing}
         overlay={menu()}
       >
-        <Icon onClick={() => setDropDown(!isDropDownShowing)} className="addNewMediaIcon" type="plus-circle" />
+        <Icon onClick={() => setDropDown(!isDropDownShowing)} className="addNewMediaIcon" type="plus" />
       </Dropdown>
     </React.Fragment>
   );

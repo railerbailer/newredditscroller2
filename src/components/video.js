@@ -42,7 +42,7 @@ class Video extends Component {
     return (
       <Menu>
         <h4 style={{ marginLeft: "4px" }}>
-          <Icon type="bars" /> My collections
+          <Icon type="bars" /> Add to collection
         </h4>
         {listMenuItem}
       </Menu>
@@ -100,7 +100,7 @@ class Video extends Component {
           <Icon
             onClick={() => this.toggleIsDropDownShowing(!this.state.isDropDownShowing)}
             className="addNewMediaIcon"
-            type="plus-circle"
+            type="plus"
           />
         </Dropdown>
         {!this.state.isPlaying ? (

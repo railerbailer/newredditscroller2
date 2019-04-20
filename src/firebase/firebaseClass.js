@@ -37,8 +37,14 @@ class Firebase {
       this.db.ref(this.auth.currentUser.uid).set({ ...fields });
     }
   };
+  setCollectionToPublic = (data, collection, uid) => {
+    this.db.ref(`public/${collection}`).set(data);
+  };
   setDataToCollection = (data, collection, uid) => {
     this.db.ref(`${uid}/collections/${collection}`).set(data);
+  };
+  pushDataToCollection = (data, collection) => {
+    this.db.ref(`${this.auth.currentUser.uid}/collections/${collection}`).push(data);
   };
   pushDataToCollection = (data, collection) => {
     this.db.ref(`${this.auth.currentUser.uid}/collections/${collection}`).push(data);
@@ -69,9 +75,10 @@ class Firebase {
   userId = () => this.auth.currentUser && this.auth.currentUser.uid;
   userEmail = () => this.auth.currentUser && this.auth.currentUser.email;
 
-  doCreateUserWithEmailAndPassword = async (email, password) => {
+  doCreateUserWithEmailAndPassword = async (email, password, userName) => {
     await this.auth.createUserWithEmailAndPassword(email, password);
     this.db.ref(`${this.auth.currentUser.uid}/collections/${["Favourites"]}`).set("set at creation");
+    userName && this.db.ref(`${this.auth.currentUser.uid}/userName`).set(userName);
   };
   // sign in with user
   doSignInWithEmailAndPassword = (email, password) => this.auth.signInWithEmailAndPassword(email, password);

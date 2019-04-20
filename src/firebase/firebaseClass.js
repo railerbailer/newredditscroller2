@@ -39,30 +39,33 @@ class Firebase {
   };
 
   setDataToCollection = (data, collection, uid) => {
-    this.db.ref(`${uid}/collections/${collection}`).set(data);
+    this.db.ref(`users/${uid}/collections/${collection}`).set(data);
   };
-  setCollectionToPublic = data => {
-    this.db.ref(`public/collections/${this.auth.currentUser.uid}`).set(data);
+  updateCollectionToPublic = fields => {
+    this.db.ref(`public/collections/${this.auth.currentUser.uid}`).update(fields);
   };
-  pushDataToCollection = (data, collection) => {
-    this.db.ref(`${this.auth.currentUser.uid}/collections/${collection}`).push(data);
+  pushDataToCollection = (fields, collection) => {
+    this.db.ref(`users/${this.auth.currentUser.uid}/collections/${collection}`).push(fields);
+  };
+  updateDataToCollection = (fields, collection) => {
+    this.db.ref(`users/${this.auth.currentUser.uid}/collections/${collection}`).update(fields);
   };
 
   removeCollection = collection => {
-    this.db.ref(`${this.auth.currentUser.uid}/collections/${collection}`).remove();
+    this.db.ref(`users/${this.auth.currentUser.uid}/collections/${collection}`).remove();
   };
 
   updateDataOnUser = (fieldsToUpdate, data) => {
     if (!this.db.ref(this.auth.currentUser.uid)) {
       this.db.ref().set({ [this.auth.currentUser.uid]: {} });
     } else {
-      this.db.ref(`${this.auth.currentUser.uid}/${fieldsToUpdate}`).update({ ...data });
+      this.db.ref(`users/${this.auth.currentUser.uid}/${fieldsToUpdate}`).update({ ...data });
     }
   };
 
   readDataOnUser = async userId => {
     let val;
-    await this.db.ref(userId).on("value", function(snapshot) {
+    await this.db.ref(`users/${userId}`).on("value", function(snapshot) {
       val = snapshot.val();
     });
     return val;
@@ -76,7 +79,7 @@ class Firebase {
   doCreateUserWithEmailAndPassword = async (email, password, userName) => {
     await this.auth.createUserWithEmailAndPassword(email, password);
     userName && this.auth.currentUser.updateProfile({ displayName: userName });
-    this.db.ref(`${this.auth.currentUser.uid}/collections/${["Favourites"]}`).set("set at creation");
+    this.db.ref(`users/${this.auth.currentUser.uid}/collections/${["Favourites"]}`).set("set at creation");
   };
   // sign in with user
   doSignInWithEmailAndPassword = (email, password) => this.auth.signInWithEmailAndPassword(email, password);

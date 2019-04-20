@@ -4,6 +4,7 @@ import React, { Component, Suspense, lazy } from "react";
 import trackerHoc from "./components/trackerHoc";
 
 const Scroller = lazy(() => import("./components/scroller"));
+const Collections = lazy(() => import("./components/collections"));
 const ChooseCategory = lazy(() => import("./components/chooseCategory"));
 
 class App extends Component {
@@ -27,6 +28,7 @@ class App extends Component {
             </div>
           }
         >
+          <Route path="/collections/:collection" exact component={trackerHoc(Collections)} />
           <Route path="/" exact component={trackerHoc(ChooseCategory)} />
           <Route path="/:subreddit" exact component={trackerHoc(Scroller)} />
         </Suspense>

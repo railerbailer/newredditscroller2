@@ -71,7 +71,7 @@ class Video extends Component {
             this.togglePlaying();
           }}
           autoPlay={!mobile && fullscreen}
-          poster={mobile && poster}
+          poster={mobile ? poster : undefined}
           allowFullScreen={true}
           onCanPlay={() => this.setState({ videoLoaded: true })}
           className={className}

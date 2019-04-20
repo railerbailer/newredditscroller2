@@ -6,7 +6,7 @@ import { throttle } from "lodash";
 import { Transition } from "react-transition-group";
 import AddMarkup from "./addMarkup.js";
 import { Modal, Input, Icon, Button, message, Menu, Dropdown, AutoComplete } from "antd";
-
+import { Link } from "react-router-dom";
 import { subredditArray, straight, artArray, foodArray, animalsArray } from "../subreddits";
 import "../App.css";
 import LoginModal from "./loginModal";
@@ -46,7 +46,7 @@ class Scroller extends Component {
     this.props.firebase.auth.onAuthStateChanged(user => {
       if (user) {
         this.setState({ user: user });
-        this.props.firebase.db.ref(user.uid).on("value", snapshot => {
+        this.props.firebase.db.ref(`users/${user.uid}`).on("value", snapshot => {
           snapshot.val() && this.setState({ userCollections: snapshot.val() });
           // Object.values(snapshot.val().collections).some(collection => this.props.match.params.subreddit === collection)
         });
@@ -100,7 +100,7 @@ class Scroller extends Component {
 
   switchCat = throttle(async () => {
     this.state.isDropDownShowing && this.toggleDropDown();
-
+    this.setState({ activeCollection: "" });
     if (goBackIndex >= 0) {
       goBackIndex = goBackIndex - 1;
       if (this.state.subreddit === goBack[goBack.length - 1 - goBackIndex]) {
@@ -211,15 +211,22 @@ class Scroller extends Component {
   addMediaToCollection = (fields, collection) => {
     console.log("fields", fields);
     console.log("collection", collection);
+    // const key = Object.keys(fields)[0];
+    // key === "image";
+    // key === "video";
+    // key === "gif";
     this.state.user ? this.props.firebase.pushDataToCollection({ ...fields }, collection) : this.toggleIsModalVisible();
   };
 
   showShareConfirm = collection => {
     const { userCollections } = this.state;
-    const collectionData = Object.values(userCollections.collections[collection]);
-    let description;
+    const collectionData = userCollections.collections[collection];
+    console.log("COLLECTIONDATASHARE", collectionData, userCollections.collections[collection]);
+    let description = "";
     const addCollectionToPublic = () =>
-      this.props.firebase.setCollectionToPublic({ [collection]: collectionData, description: description });
+      this.props.firebase.updateCollectionToPublic({
+        [collection]: { data: collectionData, description: description }
+      });
     const confirm = Modal.confirm;
     confirm({
       title: `Share collection "${collection}"`,
@@ -233,6 +240,7 @@ class Scroller extends Component {
       zIndex: 12313123,
       onOk() {
         addCollectionToPublic();
+        message.info(`${collection} has been added to public usercollections`);
       },
       onCancel() {
         console.log("Cancel");
@@ -279,7 +287,7 @@ class Scroller extends Component {
           className="collectionNameDropdown"
           onClick={() => {
             this.setState({ activeCollection: collection });
-            sources = Object.values(collections[collection]);
+            sources = Object.values(collections[collection].data);
             message.info(`Showing your collection: ${collection}`);
             this.props.history.push(`/${collection}`);
             this.toggleDropDown(false);
@@ -347,6 +355,12 @@ class Scroller extends Component {
             Sfw
           </div>
         </Menu.Item>
+        <Menu.Divider />
+        <h4 style={{ marginLeft: "4px" }}>
+          <Link to={`/collections/whatever`}>
+            <Icon type="solution" /> Browse user collections
+          </Link>
+        </h4>
         <Menu.Divider />
         <h4 style={{ marginLeft: "4px" }}>
           <Icon type="bars" /> My collections{!user && " (Log in required)"}
@@ -420,8 +434,8 @@ class Scroller extends Component {
             shuffle
           </i>
           <p onClick={this.switchCat}>
-            Shuffle <br />
-            category
+            Shuffled <br />
+            subreddit
           </p>
         </button>
       </React.Fragment>

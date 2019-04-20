@@ -195,7 +195,7 @@ const AddMarkup = props => {
               ref={el => (this[`gridElement${i}`] = el)}
               className={`gridElement gifs ${gif.className}`}
               onClick={() => {
-                getElementIndex(i, this[`gridElement${i}`]);
+                fullscreen && getElementIndex(i, this[`gridElement${i}`]);
               }}
             >
               <LazyLoad

@@ -8,11 +8,12 @@ const Image = props => {
   const menu = () => {
     let collections = props.collections;
     const lists = Object.keys(collections).reverse();
+    const srcKey = className === "gif" ? "url" : "low";
     const listMenuItem = lists.map(list => (
       <Menu.Item
         key={list}
         onClick={() => {
-          addMediaToCollection({ [className]: { className: ratioClassName, low: src } }, list);
+          addMediaToCollection({ [className]: { className: ratioClassName, [srcKey]: src } }, list);
           setDropDown(false);
           message.info(`Added to collection ${list}`);
         }}

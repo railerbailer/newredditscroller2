@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Spin, Icon, Button, Dropdown, Menu } from "antd";
+import { Icon, Button } from "antd";
 import LazyLoad from "react-lazyload";
 import Image from "./image.js";
 import Video from "./video.js";

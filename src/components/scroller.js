@@ -214,30 +214,25 @@ class Scroller extends Component {
     this.state.user ? this.props.firebase.pushDataToCollection({ ...fields }, collection) : this.toggleIsModalVisible();
   };
 
-  showDeleteConfirm = () => {
-    const confirm = Modal.confirm;
-    confirm({
-      title: "Are you sure delete this task?",
-      content: "Some descriptions",
-      okText: "Yes",
-      okType: "danger",
-      cancelText: "No",
-      onOk() {
-        console.log("OK");
-      },
-      onCancel() {
-        console.log("Cancel");
-      }
-    });
-  };
   showShareConfirm = collection => {
+    const { userCollections } = this.state;
+    const collectionData = Object.values(userCollections.collections[collection]);
+    let description;
+    const addCollectionToPublic = () =>
+      this.props.firebase.setCollectionToPublic({ [collection]: collectionData, description: description });
     const confirm = Modal.confirm;
     confirm({
       title: `Share collection "${collection}"`,
-      content: "This will publish your collection and make it available to share.",
+      okText: "Publish",
+      content: (
+        <React.Fragment>
+          <div>Description:</div>
+          <Input onChange={e => (description = e.target.value)} prefix={<Icon type="info-circle" />} />
+        </React.Fragment>
+      ),
       zIndex: 12313123,
       onOk() {
-        console.log("OK");
+        addCollectionToPublic();
       },
       onCancel() {
         console.log("Cancel");
@@ -392,7 +387,7 @@ class Scroller extends Component {
         <Menu.Item>
           {user ? (
             <div onClick={() => this.logOut()}>
-              <Icon type="logout" /> Log out {userCollections.userName && `(logged in as ${userCollections.userName})`}
+              <Icon type="logout" /> Log out {user.displayName && `(logged in as ${user.displayName})`}
             </div>
           ) : (
             <div
@@ -519,7 +514,9 @@ class Scroller extends Component {
     return (
       <Swipeable
         className={`wrapper`}
-        onKeyDown={!isModalVisible && !showListInput && !isSearchActivated ? this.handleKeyDown : undefined}
+        onKeyDown={
+          !isModalVisible && !isModalVisible && !showListInput && !isSearchActivated ? this.handleKeyDown : undefined
+        }
         onSwipedLeft={this.swipedLeft}
         onSwipedRight={this.swipedRight}
       >

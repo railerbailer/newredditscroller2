@@ -763,7 +763,7 @@ button {
   display: inline;
   fill: white;
   color: white;
-  text-shadow: 1px 1px black;
+  filter: drop-shadow(1px 1px black);
 }
 
 .searchWrapper {
@@ -779,7 +779,7 @@ button {
 .searchWrapper .anticon {
   font-size: 26px;
   color: white;
-  text-shadow: 1px 1px black;
+  filter: drop-shadow(1px 1px black);
 }
 
 .middleWrapper {

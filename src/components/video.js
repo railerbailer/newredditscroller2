@@ -21,15 +21,14 @@ class Video extends Component {
     this.setState({ isDropDownShowing: value });
   };
   menu = () => {
-    const { collections, src, className, poster, ratioClassName } = this.props;
-    console.log(collections);
+    const { collections, src, className, poster, ratioClassName, firebaseId } = this.props;
     const lists = Object.keys(collections).reverse();
     const listMenuItem = lists.map(list => (
       <Menu.Item
         key={list}
         onClick={() => {
           this.props.addMediaToCollection(
-            { [className]: { className: ratioClassName, url: src, image: poster } },
+            { [firebaseId]: { [className]: { className: ratioClassName, url: src, image: poster } } },
             list
           );
           message.info(`Added to collection ${list}`);

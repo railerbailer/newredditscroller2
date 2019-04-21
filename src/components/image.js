@@ -3,7 +3,16 @@ import { Icon, Dropdown, Menu, message } from "antd";
 
 const Image = props => {
   const [isDropDownShowing, setDropDown] = useState(false);
-  const { className, src, toggleFullscreen, index, ratioClassName, toggleIsModalVisible, addMediaToCollection } = props;
+  const {
+    className,
+    src,
+    toggleFullscreen,
+    index,
+    ratioClassName,
+    toggleIsModalVisible,
+    addMediaToCollection,
+    firebaseId
+  } = props;
 
   const menu = () => {
     let collections = props.collections;
@@ -13,7 +22,7 @@ const Image = props => {
       <Menu.Item
         key={list}
         onClick={() => {
-          addMediaToCollection({ [className]: { className: ratioClassName, [srcKey]: src } }, list);
+          addMediaToCollection({ [firebaseId]: { [className]: { className: ratioClassName, [srcKey]: src } } }, list);
           setDropDown(false);
           message.info(`Added to collection ${list}`);
         }}

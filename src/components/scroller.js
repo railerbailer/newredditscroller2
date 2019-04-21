@@ -211,11 +211,9 @@ class Scroller extends Component {
   addMediaToCollection = (fields, collection) => {
     console.log("fields", fields);
     console.log("collection", collection);
-    // const key = Object.keys(fields)[0];
-    // key === "image";
-    // key === "video";
-    // key === "gif";
-    this.state.user ? this.props.firebase.pushDataToCollection({ ...fields }, collection) : this.toggleIsModalVisible();
+    this.state.user
+      ? this.props.firebase.updateDataToCollection({ ...fields }, collection)
+      : this.toggleIsModalVisible();
   };
 
   showShareConfirm = collection => {
@@ -440,7 +438,10 @@ class Scroller extends Component {
       </React.Fragment>
     );
   };
-
+  // "https://external-preview.redd.it/Z8wI-WOarSc53GUpsW5rMHdt2kfIgZSQSAN3K5ky4jU.jpg?width=960&crop=smart&auto=webp&s=478503ca912d695b65a0966c11e936f9b975b2c1";
+  // "https://v.redd.it/hmltx1ydbht21/DASH_240";
+  // "https://v.redd.it/4yor4lw6uit21/DASH_240";
+  // "https://i.redd.it/522xf8pfg9t21.gif";
   toggleIsLoading = state => this.setState({ isLoading: state });
 
   toggleFullscreen = () =>

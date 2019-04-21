@@ -78,6 +78,8 @@ class LoginModal extends Component {
       >
         <Input
           placeholder="Enter your email"
+          value={email}
+          onChange={event => this.setState({ email: event.target.value })}
           prefix={
             <Icon
               type="mail"
@@ -86,8 +88,6 @@ class LoginModal extends Component {
               }}
             />
           }
-          value={email}
-          onChange={event => this.setState({ email: event.target.value })}
           suffix={
             <Tooltip title="Extra information">
               <Icon type="info-circle" style={{ color: "rgba(0,0,0,.25)" }} />

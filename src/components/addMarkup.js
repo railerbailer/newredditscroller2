@@ -74,7 +74,9 @@ const AddMarkup = props => {
       getNextElement();
     }
   };
-
+  const getIdFromUrl = url => {
+    return url.match(/(?<=.[a-z]\/)([^\.].*?)(?=[\.|\/])/g).join("");
+  };
   const swipedDown = (e, deltaY, isFlick) => {
     if (isFlick || deltaY > 50) {
       getPreviousElement();
@@ -101,6 +103,7 @@ const AddMarkup = props => {
         };
         if (image) {
           const source = mobile ? image.low || image.high : image.high || image.low || image.source;
+          const imageId = getIdFromUrl(source);
           return (
             <div
               key={i}
@@ -131,6 +134,7 @@ const AddMarkup = props => {
                 key={i}
               >
                 <Image
+                  firebaseId={imageId}
                   toggleIsModalVisible={props.toggleIsModalVisible}
                   ratioClassName={image.className}
                   index={i}
@@ -147,6 +151,7 @@ const AddMarkup = props => {
           );
         }
         if (video) {
+          const videoId = getIdFromUrl(video.url);
           return (
             <div
               onClick={() => {
@@ -171,6 +176,7 @@ const AddMarkup = props => {
                 key={i}
               >
                 <Video
+                  firebaseId={videoId}
                   toggleIsModalVisible={props.toggleIsModalVisible}
                   className="video"
                   ratioClassName={video.className}
@@ -189,6 +195,7 @@ const AddMarkup = props => {
           );
         }
         if (gif && !mobile) {
+          const gifId = getIdFromUrl(gif.url);
           return (
             <div
               key={i}
@@ -213,6 +220,7 @@ const AddMarkup = props => {
                 key={i}
               >
                 <Image
+                  firebaseId={gifId}
                   toggleIsModalVisible={props.toggleIsModalVisible}
                   ratioClassName={gif.className}
                   index={i}

@@ -180,20 +180,6 @@ class Scroller extends Component {
     this.setState({ isDropDownShowing: false });
   };
 
-  handleSearch = value => {
-    if (!value) {
-      value = "Type your search";
-    }
-    let result = this.dataHandler("search").filter(str => str.toLowerCase().includes(value.toLowerCase()));
-    result = result.reverse();
-    result.push(value);
-    result = result.reverse();
-    this.setAutoCompleteDataSource(result.slice(0, 7));
-  };
-  onSelect = value => {
-    this.getSubreddit(value);
-    this.toggleSearchButton();
-  };
   setAutoCompleteDataSource = value => {
     this.setState({ autoCompleteDataSource: value });
   };

@@ -3,13 +3,15 @@ import Swipeable from "react-swipeable";
 import "antd/dist/antd.css";
 import "../App.css";
 import { throttle } from "lodash";
-import { Transition } from "react-transition-group";
 import AddMarkup from "./addMarkup.js";
+import { Transition } from "react-transition-group";
 import { Modal, Input, Icon, Button, message, Menu, Dropdown, AutoComplete } from "antd";
 import { Link } from "react-router-dom";
 import { subredditArray, straight, artArray, foodArray, animalsArray } from "../subreddits";
 import "../App.css";
 import LoginModal from "./loginModal";
+import SearchComponent from "./search";
+import SwitchCategoryButtons from "./switchCategoryButtons";
 
 let sources = [];
 let goBack = [];
@@ -26,7 +28,7 @@ class Scroller extends Component {
     isOnlyGifsShowing: false,
     isOnlyPicsShowing: false,
     isSearchActivated: false,
-    dataSource: [],
+    autoCompleteDataSource: [],
     subreddit: "",
     after: "",
     category: "",
@@ -186,11 +188,14 @@ class Scroller extends Component {
     result = result.reverse();
     result.push(value);
     result = result.reverse();
-    this.setState({ dataSource: result.slice(0, 7) });
+    this.setAutoCompleteDataSource(result.slice(0, 7));
   };
   onSelect = value => {
     this.getSubreddit(value);
     this.toggleSearchButton();
+  };
+  setAutoCompleteDataSource = value => {
+    this.setState({ autoCompleteDataSource: value });
   };
   logOut = async () => {
     await this.props.firebase.doSignOut();
@@ -259,9 +264,6 @@ class Scroller extends Component {
         deleteCollection();
         message.info(`${collection} has been deleted`);
       }
-      // onCancel() {
-      //   console.log("Cancel");
-      // }
     });
   };
   menu = () => {
@@ -416,33 +418,6 @@ class Scroller extends Component {
     );
   };
 
-  switchCatButtons = () => {
-    const { isSearchActivated, showListInput, isModalVisible } = this.state;
-    const noInputsActivated = !isSearchActivated && !showListInput && !isModalVisible;
-    return (
-      <React.Fragment>
-        <button ref={button => button && noInputsActivated && button.focus()} className={`iconLeft`}>
-          <i onClick={this.goBackToLast} className="material-icons">
-            undo
-          </i>
-        </button>
-
-        <button className={`iconRight`}>
-          <i onClick={this.switchCat} className="material-icons">
-            shuffle
-          </i>
-          <p onClick={this.switchCat}>
-            Shuffle <br />
-            subreddit
-          </p>
-        </button>
-      </React.Fragment>
-    );
-  };
-  // "https://external-preview.redd.it/Z8wI-WOarSc53GUpsW5rMHdt2kfIgZSQSAN3K5ky4jU.jpg?width=960&crop=smart&auto=webp&s=478503ca912d695b65a0966c11e936f9b975b2c1";
-  // "https://v.redd.it/hmltx1ydbht21/DASH_240";
-  // "https://v.redd.it/4yor4lw6uit21/DASH_240";
-  // "https://i.redd.it/522xf8pfg9t21.gif";
   toggleIsLoading = state => this.setState({ isLoading: state });
 
   toggleFullscreen = () =>
@@ -450,7 +425,7 @@ class Scroller extends Component {
 
   toggleIsModalVisible = () => this.setState({ isModalVisible: !this.state.isModalVisible });
 
-  toggleSearchButton = () => this.setState({ isSearchActivated: !this.state.isSearchActivated });
+  toggleSearchButton = value => this.setState({ isSearchActivated: value });
 
   toggleDropDown = () => {
     this.setState({ isDropDownShowing: !this.state.isDropDownShowing });
@@ -510,8 +485,8 @@ class Scroller extends Component {
     const {
       isModalVisible,
       isSearchActivated,
-      dataSource,
       isDropDownShowing,
+      autoCompleteDataSource,
       fullscreenActive,
       isLoading,
       subreddit,
@@ -541,34 +516,14 @@ class Scroller extends Component {
             toggleIsModalVisible={this.toggleIsModalVisible}
             isModalVisible={this.state.isModalVisible}
           />
-
-          <div className="searchWrapper">
-            <Transition in={isSearchActivated} unmountOnExit mountOnEnter timeout={0}>
-              {status => (
-                <AutoComplete
-                  placeholder="Search here"
-                  autoFocus
-                  className={`autocomplete--${status}`}
-                  dataSource={dataSource}
-                  onBlur={() =>
-                    this.setState({
-                      isSearchActivated: false
-                    })
-                  }
-                  onSelect={this.onSelect}
-                  onSearch={this.handleSearch}
-                />
-              )}
-            </Transition>
-
-            <Transition in={!isSearchActivated} unmountOnExit mountOnEnter timeout={0}>
-              {status => (
-                <Button ghost className={`searchButton--${status}`} onClick={() => this.toggleSearchButton()}>
-                  <Icon type="search" />
-                </Button>
-              )}
-            </Transition>
-          </div>
+          <SearchComponent
+            setAutoCompleteDataSource={this.setAutoCompleteDataSource}
+            getSubreddit={this.getSubreddit}
+            dataHandler={this.dataHandler}
+            isSearchActivated={isSearchActivated}
+            autoCompleteDataSource={autoCompleteDataSource}
+            toggleSearchButton={this.toggleSearchButton}
+          />
 
           <Dropdown
             overlayClassName="dropDownMenu"
@@ -589,21 +544,20 @@ class Scroller extends Component {
           {reload > 6 && (
             <div
               onClick={() => this.getSubreddit(this.shuffleArray(this.dataHandler(this.state.category)))}
-              style={{
-                zIndex: 123123,
-                color: "white",
-                fontSize: 18,
-                position: "fixed",
-                left: "calc(50% - 60px)",
-                top: "49%",
-                textAlign: "center"
-              }}
+              className="internetProblemReload"
             >
               <Icon style={{ color: "white", fontSize: 30 }} type="disconnect" />
               <p>Press to reload</p>
             </div>
           )}
-          {this.switchCatButtons()}
+          <SwitchCategoryButtons
+            isSearchActivated={isSearchActivated}
+            showListInput={showListInput}
+            isModalVisible={isModalVisible}
+            goBackToLast={this.goBackToLast}
+            switchCat={this.switchCat}
+          />
+
           {isLoading ? (
             <div className="spinner">
               <div className="centered-text">

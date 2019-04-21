@@ -49,6 +49,16 @@ h2 {
   max-width: 200px;
 }
 
+.internetProblemReload {
+  z-index: 123123;
+  color: white;
+  font-size: 18px;
+  position: fixed;
+  left: calc(50% - 60px);
+  top: 49%;
+  text-align: center;
+}
+
 .fullscreenScroll {
   top: 0;
   left: 0;

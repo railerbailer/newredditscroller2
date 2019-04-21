@@ -99,6 +99,7 @@ class Scroller extends Component {
   }
 
   switchCat = throttle(async () => {
+    window.stop();
     this.state.isDropDownShowing && this.toggleDropDown();
     this.setState({ activeCollection: "" });
     if (goBackIndex >= 0) {

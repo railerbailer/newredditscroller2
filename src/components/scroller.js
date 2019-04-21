@@ -56,18 +56,6 @@ class Scroller extends Component {
         this.setState({ user: null });
       }
     });
-    // this.toggleAuth();
-    // this.props.firebase.auth().onAuthStateChanged(function(user) {
-    //   if (user) {
-    //     console.log("User is signed in."); // User is signed in.
-    //   } else {
-    //     console.log("No user is signed in."); // No user is signed in.
-    //   }
-    // });
-    // this.props.firebase.auth.currentUser &&
-    //   this.props.firebase.db.ref(this.props.firebase.auth.currentUser.uid).on("value", function(snapshot) {
-    //     console.log(snapshot.val());
-    //   });
 
     if (dataHandler("nsfw").includes(this.props.match.params.subreddit)) {
       this.setState({ category: "nsfw" });
@@ -172,202 +160,7 @@ class Scroller extends Component {
       : this.toggleIsModalVisible();
   };
 
-  showShareConfirm = collection => {
-    const { userCollections } = this.state;
-    const collectionData = userCollections.collections[collection];
-    let description = "";
-    const addCollectionToPublic = () =>
-      this.props.firebase.updateCollectionToPublic({
-        [collection]: { data: collectionData, description: description }
-      });
-    const confirm = Modal.confirm;
-    confirm({
-      title: `Share collection "${collection}"`,
-      okText: "Publish",
-      content: (
-        <React.Fragment>
-          <div>Description:</div>
-          <Input onChange={e => (description = e.target.value)} prefix={<Icon type="info-circle" />} />
-        </React.Fragment>
-      ),
-      zIndex: 12313123,
-      onOk() {
-        addCollectionToPublic();
-        message.info(`${collection} has been added to public usercollections`);
-      },
-      onCancel() {
-        console.log("Cancel");
-      }
-    });
-  };
-  showDeleteConfirm = collection => {
-    const deleteCollection = () => this.props.firebase.removeCollection(collection);
-    const confirm = Modal.confirm;
-    confirm({
-      title: `Are you sure delete ${collection}?`,
-      content: "This can not be reversed",
-      okText: "Yes",
-      okType: "danger",
-      cancelText: "No",
-      zIndex: 12313123,
-      onOk() {
-        deleteCollection();
-        message.info(`${collection} has been deleted`);
-      }
-    });
-  };
-
-  menu = () => {
-    const {
-      isOnlyGifsShowing,
-      isOnlyPicsShowing,
-      category,
-      showListInput,
-      newListName,
-      userCollections,
-      activeCollection,
-      user
-    } = this.state;
-    const filledBgGif = isOnlyGifsShowing ? "#1890ff" : "transparent";
-    const filledBgPic = isOnlyPicsShowing ? "#1890ff" : "transparent";
-    const { collections = {} } = userCollections;
-    const lists = Object.keys(collections).reverse();
-    const listMenuItem = lists.map(collection => (
-      <Menu.Item style={{ color: activeCollection === collection ? "#1890ff" : "" }} key={collection}>
-        <span
-          className="collectionNameDropdown"
-          onClick={() => {
-            this.setActiveCollection(collection);
-            sources = Object.values(collections[collection]);
-            message.info(`Showing your collection: ${collection}`);
-            this.props.history.push(`/${collection}`);
-            this.toggleDropDown(false);
-          }}
-        >
-          {collection}
-        </span>
-        {collection !== "Favourites" && (
-          <React.Fragment>
-            <Icon onClick={() => this.showDeleteConfirm(collection)} className="deleteCollectionIcon" type="delete" />
-            <Icon onClick={() => this.showShareConfirm(collection)} className="deleteCollectionIcon" type="share-alt" />
-          </React.Fragment>
-        )}
-      </Menu.Item>
-    ));
-    return (
-      <Menu>
-        <Menu.Item disabled>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <h3 style={{ margin: "auto 0" }}>Sliddit.menu</h3>
-            <span>
-              <Button
-                onClick={this.toggleGifsOnly}
-                style={{ color: "lightgrey", borderRadius: 0, border: 0, backgroundColor: filledBgGif }}
-              >
-                Gifs
-              </Button>
-              <Button
-                onClick={this.togglePicsOnly}
-                style={{ color: "lightgrey", borderRadius: 0, border: 0, backgroundColor: filledBgPic }}
-              >
-                Pics
-              </Button>
-              <Icon
-                onClick={() => this.toggleDropDown(false)}
-                style={{ float: "right", fontSize: 12, margin: 4 }}
-                type="close"
-              />
-            </span>
-          </div>
-        </Menu.Item>
-        <Menu.Divider />
-        <h4 style={{ marginLeft: "4px" }}>
-          <Icon type="global" /> Browse subreddits
-        </h4>
-        <Menu.Item>
-          <div
-            style={{ color: category === "NSFW" ? "#1890ff" : "" }}
-            onClick={e => {
-              this.changeCat(e, "NSFW");
-              this.setActiveCollection("");
-            }}
-          >
-            Nsfw
-          </div>
-        </Menu.Item>
-        <Menu.Item>
-          <div
-            style={{ color: category === "SFWALL" ? "#1890ff" : "" }}
-            onClick={e => {
-              this.changeCat(e, "SFWALL");
-              this.setActiveCollection("");
-            }}
-          >
-            Sfw
-          </div>
-        </Menu.Item>
-        <Menu.Divider />
-        <h4 style={{ marginLeft: "4px" }}>
-          <Link to={`/collections/whatever`}>
-            <Icon type="solution" /> Browse user collections
-          </Link>
-        </h4>
-        <Menu.Divider />
-        <h4 style={{ marginLeft: "4px" }}>
-          <Icon type="bars" /> My collections{!user && " (Log in required)"}
-        </h4>
-        {user && (
-          <Menu.Item>
-            <Icon
-              onClick={() => (newListName.length ? this.addNewList() : this.toggleShowListInput(!showListInput))}
-              type={showListInput ? (newListName.length ? "check" : "close") : "plus-circle"}
-            />
-            {showListInput && (
-              <React.Fragment>
-                <Input
-                  value={newListName}
-                  onChange={event =>
-                    this.setNewListName(
-                      event.target.value
-                        .replace("]", "")
-                        .replace("[", "")
-                        .replace("/", "")
-                        .replace("$", "")
-                        .replace("#", "")
-                        .replace(".", "")
-                    )
-                  }
-                  size="small"
-                  style={{ maxWidth: "70%" }}
-                />
-              </React.Fragment>
-            )}
-          </Menu.Item>
-        )}
-        {user && listMenuItem}
-        <Menu.Divider />
-        <Menu.Item>
-          {user ? (
-            <div onClick={() => this.logOut()}>
-              <Icon type="logout" /> Log out {user.displayName && `(logged in as ${user.displayName})`}
-            </div>
-          ) : (
-            <div
-              onClick={() => {
-                this.toggleIsModalVisible();
-                this.toggleDropDown();
-              }}
-            >
-              <Icon type="login" /> Log in
-            </div>
-          )}
-        </Menu.Item>
-      </Menu>
-    );
-  };
-  setSources = value => {
-    sources = value;
-  };
+  setSources = value => (sources = value);
   setNewListName = listName => this.setState({ newListName: listName });
   toggleShowListInput = bool => this.setState({ showListInput: bool });
   setActiveCollection = collection => this.setState({ activeCollection: collection });
@@ -456,12 +249,6 @@ class Scroller extends Component {
             autoCompleteDataSource={autoCompleteDataSource}
             toggleSearchButton={this.toggleSearchButton}
           />
-
-          {/* <Dropdown
-            overlayClassName="dropDownMenu"
-            visible={isDropDownShowing}
-            onClick={this.toggleDropDown}
-            overlay={ */}
           <MainDropDownMenu
             isDropDownShowing={isDropDownShowing}
             setSources={this.setSources}
@@ -486,16 +273,6 @@ class Scroller extends Component {
             firebase={firebase}
             pushToHistory={this.pushToHistory}
           />
-          {/*}
-          >
-            {/* <div className="iconSetting">
-              <Icon
-                onBlur={() => this.toggleDropDown()}
-                type={isDropDownShowing ? "close" : "setting"}
-                className="chooseCat"
-              />
-            </div>
-          </Dropdown> */}
         </div>
         <div className={`contentZen ${fullscreenActive && "fullscreen"}`}>
           {reload > 6 && (
@@ -568,97 +345,6 @@ class Scroller extends Component {
       </Swipeable>
     );
   }
-  // dataMapper = async (fetchedData, notLoadMore) => {
-  //   if (!notLoadMore) {
-  //     sources = [];
-  //   }
-  //   let convertedSources = [];
-  //   let weGotGifs = false;
-  //   fetchedData.map((item, i) => {
-  //     let mediaData = {};
-  //     const { data } = item;
-  //     const {
-  //       preview,
-  //       post_hint,
-  //       /*  media,
-  //       media_embed, */
-  //       thumbnail_height = 1,
-  //       thumbnail_width = 2,
-  //       thumbnail
-  //     } = data;
-  //     const isGif = data.url.includes(".gif");
-
-  //     if (preview && preview.reddit_video_preview && preview.reddit_video_preview.scrubber_media_url) {
-  //       imageRatioCalculator(preview.reddit_video_preview.height, preview.reddit_video_preview.width);
-  //       mediaData.video = {};
-  //       mediaData.video.url = preview.reddit_video_preview.scrubber_media_url;
-  //       mediaData.video.height = preview.reddit_video_preview.height;
-  //       mediaData.video.width = preview.reddit_video_preview.width;
-  //       mediaData.video.className = imageRatioCalculator(
-  //         preview.reddit_video_preview.height,
-  //         preview.reddit_video_preview.width
-  //       );
-  //       weGotGifs = true;
-  //       let low = "";
-  //       const { resolutions } = preview.images[0];
-  //       low = htmlParser(resolutions[resolutions.length - 1].url || "");
-  //       if (low) {
-  //         mediaData.video.image = low;
-  //       }
-  //       mediaData.video.poster = data.thumbnail;
-  //       mediaData.domain = data.domain || "";
-  //       mediaData.title = data.title;
-  //       mediaData.thumbnail = thumbnail;
-  //     } else if (isGif) {
-  //       mediaData.gif = {};
-  //       mediaData.gif.url = data.url.replace(".gifv", ".gif");
-  //       mediaData.gif.className = imageRatioCalculator(thumbnail_height, thumbnail_width);
-  //       mediaData.domain = data.domain || "";
-  //       mediaData.title = data.title;
-  //       mediaData.thumbnail = thumbnail;
-  //       weGotGifs = true;
-  //     } else if (post_hint === "image") {
-  //       mediaData.image = {};
-  //       let low;
-  //       let high;
-  //       preview &&
-  //         preview.images[0] &&
-  //         preview.images[0].resolutions.map(resolution => {
-  //           let res = resolution.height + resolution.width;
-  //           if (res > 500 && res < 1000) {
-  //             low = htmlParser(resolution.url);
-  //           }
-  //           if (res > 1000 && res < 2000) {
-  //             high = htmlParser(resolution.url);
-  //           }
-
-  //           mediaData.image = {
-  //             source: data.url,
-  //             low: low,
-  //             high: high,
-  //             className: imageRatioCalculator(resolution.height, resolution.width)
-  //           };
-  //           if (this.state.mobile && (!high && !low)) {
-  //             mediaData.image = null;
-  //           }
-  //           return null;
-  //         });
-  //       mediaData.domain = data.domain || "";
-  //       mediaData.title = data.title;
-  //       mediaData.thumbnail = thumbnail;
-  //     }
-
-  //     if (Object.entries(mediaData).length !== 0 && (mediaData.image || mediaData.video || mediaData.gif)) {
-  //       convertedSources.push(mediaData);
-  //     }
-  //     return null;
-  //   });
-  //   if (!sources.length || (this.state.isOnlyGifsShowing && !weGotGifs)) {
-  //     await this.getSubreddit(shuffleArray(dataHandler(this.state.category)));
-  //   }
-
-  //   return;
-  // }; //TABORT
 
   getSubreddit = async (subreddit, notShowLoad) => {
     await this.setState({ subreddit: subreddit, isLoading: !notShowLoad });

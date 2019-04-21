@@ -12,18 +12,16 @@ const AddMarkup = props => {
   const [activeElement, setActiveElement] = useState(0);
 
   useEffect(() => {
-    return () => {
-      this[`gridElement${activeElement}`] &&
-        this[`gridElement${activeElement}`].scrollIntoView({
-          block: "center"
-        });
-    };
-  }, [props.fullscreen]);
+    this[`gridElement${activeElement}`] &&
+      this[`gridElement${activeElement}`].scrollIntoView({
+        block: "center"
+      });
+  }, [!props.fullscreen]);
   const { collections } = props;
 
   const getElementIndex = (index, ref) => {
-    props.toggleFullscreen();
     setActiveElement(index);
+    props.toggleFullscreen();
   };
 
   const getPreviousElement = throttle(() => {

@@ -11,7 +11,8 @@ const Image = props => {
     ratioClassName,
     toggleIsModalVisible,
     addMediaToCollection,
-    firebaseId
+    firebaseId,
+    fullscreen
   } = props;
 
   const menu = () => {

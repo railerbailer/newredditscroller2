@@ -110,7 +110,7 @@ class Scroller extends Component {
     window.stop();
     this.state.isDropDownShowing && this.toggleDropDown();
     this.setActiveCollection("");
-    if (goBackIndex >= 0) {
+    if (goBackIndex >= 1) {
       goBackIndex = goBackIndex - 1;
       if (this.state.subreddit === goBack[goBack.length - 1 - goBackIndex]) {
         !this.state.isLoading && (await this.getSubreddit(goBack[goBack.length - goBackIndex]));

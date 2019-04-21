@@ -3,12 +3,11 @@ import Swipeable from "react-swipeable";
 import "antd/dist/antd.css";
 import "../App.css";
 import { throttle } from "lodash";
-import AddMarkup from "./addMarkup.js";
-import { Transition } from "react-transition-group";
-import { Modal, Input, Icon, Button, message, Menu, Dropdown, AutoComplete } from "antd";
+import AddMarkup from "./addMarkup";
+import { Modal, Input, Icon, Button, message, Menu, Dropdown } from "antd";
 import { Link } from "react-router-dom";
-import { subredditArray, straight, artArray, foodArray, animalsArray } from "../subreddits";
 import "../App.css";
+import { dataHandler, shuffleArray, htmlParser, imageRatioCalculator } from "../utils/atomic";
 import LoginModal from "./loginModal";
 import SearchComponent from "./search";
 import SwitchCategoryButtons from "./switchCategoryButtons";
@@ -69,35 +68,10 @@ class Scroller extends Component {
     //     console.log(snapshot.val());
     //   });
 
-    if (straight.includes(this.props.match.params.subreddit)) {
+    if (dataHandler("nsfw").includes(this.props.match.params.subreddit)) {
       this.setState({ category: "nsfw" });
     }
     this.props.match.params.subreddit && this.getSubreddit(this.props.match.params.subreddit);
-  }
-
-  toggleAuth = () => {
-    this.setState({ isAuth: !!this.props.firebase.auth.currentUser });
-  };
-
-  dataHandler(props) {
-    let lowerCaseCategory = props.toLowerCase();
-    if (lowerCaseCategory === "nsfw") {
-      return straight;
-    } else if (lowerCaseCategory === "sfwall") {
-      return subredditArray.concat(artArray, foodArray, animalsArray);
-    } else if (lowerCaseCategory === "sfw") {
-      return subredditArray;
-    } else if (lowerCaseCategory === "art") {
-      return artArray;
-    } else if (lowerCaseCategory === "food") {
-      return foodArray;
-    } else if (lowerCaseCategory === "animals") {
-      return animalsArray;
-    } else if (lowerCaseCategory === "search") {
-      return subredditArray.concat(artArray, foodArray, animalsArray, straight);
-    } else {
-      return subredditArray.concat(artArray, foodArray, animalsArray);
-    }
   }
 
   switchCat = throttle(async () => {
@@ -110,7 +84,7 @@ class Scroller extends Component {
         !this.state.isLoading && (await this.getSubreddit(goBack[goBack.length - goBackIndex]));
       } else !this.state.isLoading && (await this.getSubreddit(goBack[goBack.length - 1 - goBackIndex]));
     } else {
-      !this.state.isLoading && (await this.getSubreddit(this.shuffleArray(this.dataHandler(this.state.category))));
+      !this.state.isLoading && (await this.getSubreddit(shuffleArray(dataHandler(this.state.category))));
       if (goBackIndex === 0 && goBack[goBack.length - 1] !== this.state.subreddit) {
         goBack.push(this.state.subreddit);
       }
@@ -162,27 +136,13 @@ class Scroller extends Component {
     }
   };
 
-  shuffleArray = array => {
-    let random = Math.floor(Math.random() * array.length);
-    return array[random];
-  };
-
-  categorySet = val => {
-    this.setState({
-      category: val
-    });
-  };
-
   changeCat = (e, cat) => {
     this.categorySet(cat);
-    this.getSubreddit(this.shuffleArray(this.dataHandler(cat)));
+    this.getSubreddit(shuffleArray(dataHandler(cat)));
     message.info(`Category is ${cat}, press or swipe right to shuffle subreddit`);
     this.setState({ isDropDownShowing: false });
   };
 
-  setAutoCompleteDataSource = value => {
-    this.setState({ autoCompleteDataSource: value });
-  };
   logOut = async () => {
     await this.props.firebase.doSignOut();
     message.info(`Logged out`);
@@ -376,8 +336,7 @@ class Scroller extends Component {
                   }
                   size="small"
                   style={{ maxWidth: "70%" }}
-                />{" "}
-                {/* <Icon style={{ fontSize: "22px", color: "#1890ff" }} onClick={this.addNewList} type="check" /> */}
+                />
               </React.Fragment>
             )}
           </Menu.Item>
@@ -405,17 +364,14 @@ class Scroller extends Component {
   };
 
   toggleIsLoading = state => this.setState({ isLoading: state });
-
   toggleFullscreen = () =>
     !this.state.isSearchActivated && this.setState({ fullscreenActive: !this.state.fullscreenActive });
-
   toggleIsModalVisible = () => this.setState({ isModalVisible: !this.state.isModalVisible });
-
   toggleSearchButton = value => this.setState({ isSearchActivated: value });
-
-  toggleDropDown = () => {
-    this.setState({ isDropDownShowing: !this.state.isDropDownShowing });
-  };
+  toggleAuth = () => this.setState({ isAuth: !!this.props.firebase.auth.currentUser });
+  categorySet = val => this.setState({ category: val });
+  setAutoCompleteDataSource = value => this.setState({ autoCompleteDataSource: value });
+  toggleDropDown = () => this.setState({ isDropDownShowing: !this.state.isDropDownShowing });
   toggleGifsOnly = async () => {
     this.setState({
       isOnlyGifsShowing: !this.state.isOnlyGifsShowing
@@ -441,30 +397,6 @@ class Scroller extends Component {
       1500
     );
     this.getSubreddit(this.state.subreddit);
-  };
-
-  htmlParser(string) {
-    let editedString = "";
-    editedString =
-      string &&
-      string
-        .replace(/&gt;/gi, ">")
-        .replace(/&lt;/gi, "<")
-        .replace(/&amp;/gi, "&");
-    return editedString ? editedString : "";
-  }
-
-  imageRatioCalculator = (height, width) => {
-    let ratio = height / width;
-    if (ratio < 0.7) return "superWide";
-
-    if (ratio >= 0.7 && ratio < 0.9) return "veryWide";
-
-    if (ratio >= 0.9 && ratio < 1.2) return "rectangular";
-
-    if (ratio >= 1.2 && ratio < 1.5) return "veryTall";
-
-    if (ratio >= 1.5) return "superTall";
   };
 
   render() {
@@ -505,7 +437,7 @@ class Scroller extends Component {
           <SearchComponent
             setAutoCompleteDataSource={this.setAutoCompleteDataSource}
             getSubreddit={this.getSubreddit}
-            dataHandler={this.dataHandler}
+            dataHandler={dataHandler}
             isSearchActivated={isSearchActivated}
             autoCompleteDataSource={autoCompleteDataSource}
             toggleSearchButton={this.toggleSearchButton}
@@ -529,7 +461,7 @@ class Scroller extends Component {
         <div className={`contentZen ${fullscreenActive && "fullscreen"}`}>
           {reload > 6 && (
             <div
-              onClick={() => this.getSubreddit(this.shuffleArray(this.dataHandler(this.state.category)))}
+              onClick={() => this.getSubreddit(shuffleArray(dataHandler(this.state.category)))}
               className="internetProblemReload"
             >
               <Icon style={{ color: "white", fontSize: 30 }} type="disconnect" />
@@ -617,19 +549,19 @@ class Scroller extends Component {
       const isGif = data.url.includes(".gif");
 
       if (preview && preview.reddit_video_preview && preview.reddit_video_preview.scrubber_media_url) {
-        this.imageRatioCalculator(preview.reddit_video_preview.height, preview.reddit_video_preview.width);
+        imageRatioCalculator(preview.reddit_video_preview.height, preview.reddit_video_preview.width);
         mediaData.video = {};
         mediaData.video.url = preview.reddit_video_preview.scrubber_media_url;
         mediaData.video.height = preview.reddit_video_preview.height;
         mediaData.video.width = preview.reddit_video_preview.width;
-        mediaData.video.className = this.imageRatioCalculator(
+        mediaData.video.className = imageRatioCalculator(
           preview.reddit_video_preview.height,
           preview.reddit_video_preview.width
         );
         weGotGifs = true;
         let low = "";
         const { resolutions } = preview.images[0];
-        low = this.htmlParser(resolutions[resolutions.length - 1].url || "");
+        low = htmlParser(resolutions[resolutions.length - 1].url || "");
         if (low) {
           mediaData.video.image = low;
         }
@@ -640,7 +572,7 @@ class Scroller extends Component {
       } else if (isGif) {
         mediaData.gif = {};
         mediaData.gif.url = data.url.replace(".gifv", ".gif");
-        mediaData.gif.className = this.imageRatioCalculator(thumbnail_height, thumbnail_width);
+        mediaData.gif.className = imageRatioCalculator(thumbnail_height, thumbnail_width);
         mediaData.domain = data.domain || "";
         mediaData.title = data.title;
         mediaData.thumbnail = thumbnail;
@@ -654,17 +586,17 @@ class Scroller extends Component {
           preview.images[0].resolutions.map(resolution => {
             let res = resolution.height + resolution.width;
             if (res > 500 && res < 1000) {
-              low = this.htmlParser(resolution.url);
+              low = htmlParser(resolution.url);
             }
             if (res > 1000 && res < 2000) {
-              high = this.htmlParser(resolution.url);
+              high = htmlParser(resolution.url);
             }
 
             mediaData.image = {
               source: data.url,
               low: low,
               high: high,
-              className: this.imageRatioCalculator(resolution.height, resolution.width)
+              className: imageRatioCalculator(resolution.height, resolution.width)
             };
             if (this.state.mobile && (!high && !low)) {
               mediaData.image = null;
@@ -682,7 +614,7 @@ class Scroller extends Component {
       return null;
     });
     if (!sources.length || (this.state.isOnlyGifsShowing && !weGotGifs)) {
-      await this.getSubreddit(this.shuffleArray(this.dataHandler(this.state.category)));
+      await this.getSubreddit(shuffleArray(dataHandler(this.state.category)));
     }
 
     return;
@@ -708,7 +640,7 @@ class Scroller extends Component {
       .catch(async () => {
         try {
           reload = reload + 1;
-          if (reload < 10) await this.getSubreddit(this.shuffleArray(this.dataHandler(this.state.category)));
+          if (reload < 10) await this.getSubreddit(shuffleArray(dataHandler(this.state.category)));
           else alert("Could not load data, check your internet connection");
         } catch (error) {
           console.log("error", error);

@@ -4,10 +4,9 @@ import "antd/dist/antd.css";
 import "../App.css";
 import { throttle } from "lodash";
 import AddMarkup from "./addMarkup";
-import { Modal, Input, Icon, Button, message, Menu, Dropdown } from "antd";
-import { Link } from "react-router-dom";
+import { Icon, message } from "antd";
 import "../App.css";
-import { dataHandler, shuffleArray, dataMapper, imageRatioCalculator, htmlParser } from "../utils/atomic";
+import { dataHandler, shuffleArray, dataMapper } from "../utils/atomic";
 import LoginModal from "./loginModal";
 import SearchComponent from "./search";
 import SwitchCategoryButtons from "./switchCategoryButtons";
@@ -62,6 +61,49 @@ class Scroller extends Component {
     }
     this.props.match.params.subreddit && this.getSubreddit(this.props.match.params.subreddit);
   }
+
+  setSources = value => (sources = value);
+  setNewListName = listName => this.setState({ newListName: listName });
+  toggleShowListInput = bool => this.setState({ showListInput: bool });
+  setActiveCollection = collection => this.setState({ activeCollection: collection });
+  toggleIsLoading = state => this.setState({ isLoading: state });
+  toggleFullscreen = () =>
+    !this.state.isSearchActivated && this.setState({ fullscreenActive: !this.state.fullscreenActive });
+  toggleIsModalVisible = () => this.setState({ isModalVisible: !this.state.isModalVisible });
+  toggleSearchButton = value => this.setState({ isSearchActivated: value });
+  toggleAuth = () => this.setState({ isAuth: !!this.props.firebase.auth.currentUser });
+  categorySet = val => this.setState({ category: val });
+  setAutoCompleteDataSource = value => this.setState({ autoCompleteDataSource: value });
+  toggleDropDown = () => this.setState({ isDropDownShowing: !this.state.isDropDownShowing });
+  toggleGifsOnly = async () => {
+    this.setState({
+      isOnlyGifsShowing: !this.state.isOnlyGifsShowing
+    });
+    setTimeout(
+      () =>
+        this.setState({
+          isDropDownShowing: false
+        }),
+      1500
+    );
+    await this.getSubreddit(this.state.subreddit);
+  };
+  togglePicsOnly = () => {
+    this.setState({
+      isOnlyPicsShowing: !this.state.isOnlyPicsShowing
+    });
+    setTimeout(
+      () =>
+        this.setState({
+          isDropDownShowing: false
+        }),
+      1500
+    );
+    this.getSubreddit(this.state.subreddit);
+  };
+  pushToHistory = route => {
+    this.props.history.push(route);
+  };
 
   switchCat = throttle(async () => {
     window.stop();
@@ -160,48 +202,6 @@ class Scroller extends Component {
       : this.toggleIsModalVisible();
   };
 
-  setSources = value => (sources = value);
-  setNewListName = listName => this.setState({ newListName: listName });
-  toggleShowListInput = bool => this.setState({ showListInput: bool });
-  setActiveCollection = collection => this.setState({ activeCollection: collection });
-  toggleIsLoading = state => this.setState({ isLoading: state });
-  toggleFullscreen = () =>
-    !this.state.isSearchActivated && this.setState({ fullscreenActive: !this.state.fullscreenActive });
-  toggleIsModalVisible = () => this.setState({ isModalVisible: !this.state.isModalVisible });
-  toggleSearchButton = value => this.setState({ isSearchActivated: value });
-  toggleAuth = () => this.setState({ isAuth: !!this.props.firebase.auth.currentUser });
-  categorySet = val => this.setState({ category: val });
-  setAutoCompleteDataSource = value => this.setState({ autoCompleteDataSource: value });
-  toggleDropDown = () => this.setState({ isDropDownShowing: !this.state.isDropDownShowing });
-  toggleGifsOnly = async () => {
-    this.setState({
-      isOnlyGifsShowing: !this.state.isOnlyGifsShowing
-    });
-    setTimeout(
-      () =>
-        this.setState({
-          isDropDownShowing: false
-        }),
-      1500
-    );
-    await this.getSubreddit(this.state.subreddit);
-  };
-  togglePicsOnly = () => {
-    this.setState({
-      isOnlyPicsShowing: !this.state.isOnlyPicsShowing
-    });
-    setTimeout(
-      () =>
-        this.setState({
-          isDropDownShowing: false
-        }),
-      1500
-    );
-    this.getSubreddit(this.state.subreddit);
-  };
-  pushToHistory = route => {
-    this.props.history.push(route);
-  };
   render() {
     const {
       isModalVisible,
@@ -222,7 +222,6 @@ class Scroller extends Component {
       newListName,
       user
     } = this.state;
-    // console.log(this.state.userCollections.collections[activeCollection]);
     const { collections = {} } = userCollections;
     const { firebase } = this.props;
 

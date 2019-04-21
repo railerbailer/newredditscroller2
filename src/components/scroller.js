@@ -7,10 +7,11 @@ import AddMarkup from "./addMarkup";
 import { Modal, Input, Icon, Button, message, Menu, Dropdown } from "antd";
 import { Link } from "react-router-dom";
 import "../App.css";
-import { dataHandler, shuffleArray, htmlParser, imageRatioCalculator } from "../utils/atomic";
+import { dataHandler, shuffleArray, dataMapper, imageRatioCalculator, htmlParser } from "../utils/atomic";
 import LoginModal from "./loginModal";
 import SearchComponent from "./search";
 import SwitchCategoryButtons from "./switchCategoryButtons";
+import MainDropDownMenu from "./mainDropDownMenu";
 
 let sources = [];
 let goBack = [];
@@ -77,7 +78,7 @@ class Scroller extends Component {
   switchCat = throttle(async () => {
     window.stop();
     this.state.isDropDownShowing && this.toggleDropDown();
-    this.setState({ activeCollection: "" });
+    this.setActiveCollection("");
     if (goBackIndex >= 0) {
       goBackIndex = goBackIndex - 1;
       if (this.state.subreddit === goBack[goBack.length - 1 - goBackIndex]) {
@@ -149,6 +150,8 @@ class Scroller extends Component {
     this.toggleAuth();
     this.toggleDropDown();
   };
+  setNewListName = listName => this.setState({ newListName: listName });
+  toggleShowListInput = bool => this.setState({ showListInput: bool });
   addNewList = () => {
     const { newListName, userCollections } = this.state;
     const { collections = { none: "none" } } = userCollections;
@@ -158,7 +161,8 @@ class Scroller extends Component {
       return;
     }
     this.props.firebase.updateDataOnUser("collections", { [newListName]: Date.now() });
-    this.setState({ showListInput: false, newListName: "" });
+    this.toggleShowListInput(false);
+    this.setNewListName("");
   };
   addMediaToCollection = (fields, collection) => {
     console.log("fields", fields);
@@ -212,6 +216,7 @@ class Scroller extends Component {
       }
     });
   };
+
   menu = () => {
     const {
       isOnlyGifsShowing,
@@ -232,7 +237,7 @@ class Scroller extends Component {
         <span
           className="collectionNameDropdown"
           onClick={() => {
-            this.setState({ activeCollection: collection });
+            this.setActiveCollection(collection);
             sources = Object.values(collections[collection]);
             message.info(`Showing your collection: ${collection}`);
             this.props.history.push(`/${collection}`);
@@ -284,7 +289,7 @@ class Scroller extends Component {
             style={{ color: category === "NSFW" ? "#1890ff" : "" }}
             onClick={e => {
               this.changeCat(e, "NSFW");
-              this.setState({ activeCollection: "" });
+              this.setActiveCollection("");
             }}
           >
             Nsfw
@@ -295,7 +300,7 @@ class Scroller extends Component {
             style={{ color: category === "SFWALL" ? "#1890ff" : "" }}
             onClick={e => {
               this.changeCat(e, "SFWALL");
-              this.setState({ activeCollection: "" });
+              this.setActiveCollection("");
             }}
           >
             Sfw
@@ -314,9 +319,7 @@ class Scroller extends Component {
         {user && (
           <Menu.Item>
             <Icon
-              onClick={() =>
-                newListName.length ? this.addNewList() : this.setState({ showListInput: !showListInput })
-              }
+              onClick={() => (newListName.length ? this.addNewList() : this.toggleShowListInput(!showListInput))}
               type={showListInput ? (newListName.length ? "check" : "close") : "plus-circle"}
             />
             {showListInput && (
@@ -324,15 +327,15 @@ class Scroller extends Component {
                 <Input
                   value={newListName}
                   onChange={event =>
-                    this.setState({
-                      newListName: event.target.value
+                    this.setNewListName(
+                      event.target.value
                         .replace("]", "")
                         .replace("[", "")
                         .replace("/", "")
                         .replace("$", "")
                         .replace("#", "")
                         .replace(".", "")
-                    })
+                    )
                   }
                   size="small"
                   style={{ maxWidth: "70%" }}
@@ -362,7 +365,12 @@ class Scroller extends Component {
       </Menu>
     );
   };
-
+  setSources = value => {
+    sources = value;
+  };
+  setNewListName = listName => this.setState({ newListName: listName });
+  toggleShowListInput = bool => this.setState({ showListInput: bool });
+  setActiveCollection = collection => this.setState({ activeCollection: collection });
   toggleIsLoading = state => this.setState({ isLoading: state });
   toggleFullscreen = () =>
     !this.state.isSearchActivated && this.setState({ fullscreenActive: !this.state.fullscreenActive });
@@ -398,7 +406,9 @@ class Scroller extends Component {
     );
     this.getSubreddit(this.state.subreddit);
   };
-
+  pushToHistory = route => {
+    this.props.history.push(route);
+  };
   render() {
     const {
       isModalVisible,
@@ -414,11 +424,15 @@ class Scroller extends Component {
       isLoadingMore,
       showListInput,
       userCollections,
-      activeCollection
+      activeCollection,
+      category,
+      newListName,
+      user
     } = this.state;
     // console.log(this.state.userCollections.collections[activeCollection]);
     const { collections = {} } = userCollections;
     const { firebase } = this.props;
+
     return (
       <Swipeable
         className={`wrapper`}
@@ -443,20 +457,45 @@ class Scroller extends Component {
             toggleSearchButton={this.toggleSearchButton}
           />
 
-          <Dropdown
+          {/* <Dropdown
             overlayClassName="dropDownMenu"
             visible={isDropDownShowing}
-            overlay={this.menu()}
             onClick={this.toggleDropDown}
+            overlay={ */}
+          <MainDropDownMenu
+            isDropDownShowing={isDropDownShowing}
+            setSources={this.setSources}
+            isOnlyGifsShowing={isOnlyGifsShowing}
+            isOnlyPicsShowing={isOnlyPicsShowing}
+            category={category}
+            showListInput={showListInput}
+            newListName={newListName}
+            userCollections={userCollections}
+            activeCollection={activeCollection}
+            user={user}
+            toggleDropDown={this.toggleDropDown}
+            toggleIsModalVisible={this.toggleIsModalVisible}
+            setActiveCollection={this.setActiveCollection}
+            toggleGifsOnly={this.toggleGifsOnly}
+            togglePicsOnly={this.togglePicsOnly}
+            changeCat={this.changeCat}
+            addNewList={this.addNewList}
+            setNewListName={this.setNewListName}
+            toggleShowListInput={this.toggleShowListInput}
+            logOut={this.logOut}
+            firebase={firebase}
+            pushToHistory={this.pushToHistory}
+          />
+          {/*}
           >
-            <div className="iconSetting">
+            {/* <div className="iconSetting">
               <Icon
                 onBlur={() => this.toggleDropDown()}
                 type={isDropDownShowing ? "close" : "setting"}
                 className="chooseCat"
               />
             </div>
-          </Dropdown>
+          </Dropdown> */}
         </div>
         <div className={`contentZen ${fullscreenActive && "fullscreen"}`}>
           {reload > 6 && (
@@ -529,112 +568,110 @@ class Scroller extends Component {
       </Swipeable>
     );
   }
-  dataMapper = async (fetchedData, notLoadMore) => {
-    if (!notLoadMore) {
-      sources = [];
-    }
-    let weGotGifs = false;
-    fetchedData.map((item, i) => {
-      let mediaData = {};
-      const { data } = item;
-      const {
-        preview,
-        post_hint,
-        /*  media,
-        media_embed, */
-        thumbnail_height = 1,
-        thumbnail_width = 2,
-        thumbnail
-      } = data;
-      const isGif = data.url.includes(".gif");
+  // dataMapper = async (fetchedData, notLoadMore) => {
+  //   if (!notLoadMore) {
+  //     sources = [];
+  //   }
+  //   let convertedSources = [];
+  //   let weGotGifs = false;
+  //   fetchedData.map((item, i) => {
+  //     let mediaData = {};
+  //     const { data } = item;
+  //     const {
+  //       preview,
+  //       post_hint,
+  //       /*  media,
+  //       media_embed, */
+  //       thumbnail_height = 1,
+  //       thumbnail_width = 2,
+  //       thumbnail
+  //     } = data;
+  //     const isGif = data.url.includes(".gif");
 
-      if (preview && preview.reddit_video_preview && preview.reddit_video_preview.scrubber_media_url) {
-        imageRatioCalculator(preview.reddit_video_preview.height, preview.reddit_video_preview.width);
-        mediaData.video = {};
-        mediaData.video.url = preview.reddit_video_preview.scrubber_media_url;
-        mediaData.video.height = preview.reddit_video_preview.height;
-        mediaData.video.width = preview.reddit_video_preview.width;
-        mediaData.video.className = imageRatioCalculator(
-          preview.reddit_video_preview.height,
-          preview.reddit_video_preview.width
-        );
-        weGotGifs = true;
-        let low = "";
-        const { resolutions } = preview.images[0];
-        low = htmlParser(resolutions[resolutions.length - 1].url || "");
-        if (low) {
-          mediaData.video.image = low;
-        }
-        mediaData.video.poster = data.thumbnail;
-        mediaData.domain = data.domain || "";
-        mediaData.title = data.title;
-        mediaData.thumbnail = thumbnail;
-      } else if (isGif) {
-        mediaData.gif = {};
-        mediaData.gif.url = data.url.replace(".gifv", ".gif");
-        mediaData.gif.className = imageRatioCalculator(thumbnail_height, thumbnail_width);
-        mediaData.domain = data.domain || "";
-        mediaData.title = data.title;
-        mediaData.thumbnail = thumbnail;
-        weGotGifs = true;
-      } else if (post_hint === "image") {
-        mediaData.image = {};
-        let low;
-        let high;
-        preview &&
-          preview.images[0] &&
-          preview.images[0].resolutions.map(resolution => {
-            let res = resolution.height + resolution.width;
-            if (res > 500 && res < 1000) {
-              low = htmlParser(resolution.url);
-            }
-            if (res > 1000 && res < 2000) {
-              high = htmlParser(resolution.url);
-            }
+  //     if (preview && preview.reddit_video_preview && preview.reddit_video_preview.scrubber_media_url) {
+  //       imageRatioCalculator(preview.reddit_video_preview.height, preview.reddit_video_preview.width);
+  //       mediaData.video = {};
+  //       mediaData.video.url = preview.reddit_video_preview.scrubber_media_url;
+  //       mediaData.video.height = preview.reddit_video_preview.height;
+  //       mediaData.video.width = preview.reddit_video_preview.width;
+  //       mediaData.video.className = imageRatioCalculator(
+  //         preview.reddit_video_preview.height,
+  //         preview.reddit_video_preview.width
+  //       );
+  //       weGotGifs = true;
+  //       let low = "";
+  //       const { resolutions } = preview.images[0];
+  //       low = htmlParser(resolutions[resolutions.length - 1].url || "");
+  //       if (low) {
+  //         mediaData.video.image = low;
+  //       }
+  //       mediaData.video.poster = data.thumbnail;
+  //       mediaData.domain = data.domain || "";
+  //       mediaData.title = data.title;
+  //       mediaData.thumbnail = thumbnail;
+  //     } else if (isGif) {
+  //       mediaData.gif = {};
+  //       mediaData.gif.url = data.url.replace(".gifv", ".gif");
+  //       mediaData.gif.className = imageRatioCalculator(thumbnail_height, thumbnail_width);
+  //       mediaData.domain = data.domain || "";
+  //       mediaData.title = data.title;
+  //       mediaData.thumbnail = thumbnail;
+  //       weGotGifs = true;
+  //     } else if (post_hint === "image") {
+  //       mediaData.image = {};
+  //       let low;
+  //       let high;
+  //       preview &&
+  //         preview.images[0] &&
+  //         preview.images[0].resolutions.map(resolution => {
+  //           let res = resolution.height + resolution.width;
+  //           if (res > 500 && res < 1000) {
+  //             low = htmlParser(resolution.url);
+  //           }
+  //           if (res > 1000 && res < 2000) {
+  //             high = htmlParser(resolution.url);
+  //           }
 
-            mediaData.image = {
-              source: data.url,
-              low: low,
-              high: high,
-              className: imageRatioCalculator(resolution.height, resolution.width)
-            };
-            if (this.state.mobile && (!high && !low)) {
-              mediaData.image = null;
-            }
-            return null;
-          });
-        mediaData.domain = data.domain || "";
-        mediaData.title = data.title;
-        mediaData.thumbnail = thumbnail;
-      }
+  //           mediaData.image = {
+  //             source: data.url,
+  //             low: low,
+  //             high: high,
+  //             className: imageRatioCalculator(resolution.height, resolution.width)
+  //           };
+  //           if (this.state.mobile && (!high && !low)) {
+  //             mediaData.image = null;
+  //           }
+  //           return null;
+  //         });
+  //       mediaData.domain = data.domain || "";
+  //       mediaData.title = data.title;
+  //       mediaData.thumbnail = thumbnail;
+  //     }
 
-      if (Object.entries(mediaData).length !== 0 && (mediaData.image || mediaData.video || mediaData.gif)) {
-        sources.push(mediaData);
-      }
-      return null;
-    });
-    if (!sources.length || (this.state.isOnlyGifsShowing && !weGotGifs)) {
-      await this.getSubreddit(shuffleArray(dataHandler(this.state.category)));
-    }
+  //     if (Object.entries(mediaData).length !== 0 && (mediaData.image || mediaData.video || mediaData.gif)) {
+  //       convertedSources.push(mediaData);
+  //     }
+  //     return null;
+  //   });
+  //   if (!sources.length || (this.state.isOnlyGifsShowing && !weGotGifs)) {
+  //     await this.getSubreddit(shuffleArray(dataHandler(this.state.category)));
+  //   }
 
-    return;
-  };
+  //   return;
+  // }; //TABORT
 
   getSubreddit = async (subreddit, notShowLoad) => {
-    if (notShowLoad) {
-      await this.setState({ subreddit: subreddit, isLoading: false });
-    } else {
-      await this.setState({ subreddit: subreddit, isLoading: true });
-    }
-
+    await this.setState({ subreddit: subreddit, isLoading: !notShowLoad });
+    sources = [];
     await fetch(`https://www.reddit.com/r/${this.state.subreddit}.json?limit=100`)
       .then(response => response.json())
-      .then(jsonData => {
+      .then(async jsonData => {
         reload = 0;
         this.setState({
           after: jsonData.data.after
         });
-        this.dataMapper(jsonData.data.children);
+        sources = await dataMapper(jsonData.data.children, this.state.mobile);
+        const haveVideoOrGif = sources.length && sources.some(media => media.gif || media.video);
       })
 
       .catch(async () => {
@@ -646,7 +683,7 @@ class Scroller extends Component {
           console.log("error", error);
         }
       });
-    this.props.history.push(`/${this.state.subreddit}`);
+    this.pushToHistory(`/${this.state.subreddit}`);
     this.setState({ isLoading: false });
   };
 
@@ -654,11 +691,13 @@ class Scroller extends Component {
     this.setState({ isLoadingMore: true });
     await fetch(`https://www.reddit.com/r/${this.state.subreddit}.json?after=${this.state.after}&limit=100`)
       .then(response => response.json())
-      .then(jsonData => {
+      .then(async jsonData => {
         this.setState({
           after: jsonData.data.after
         });
-        this.dataMapper(jsonData.data.children, true);
+        let afterData = await dataMapper(jsonData.data.children, this.state.mobile);
+        const haveVideoOrGif = afterData.length && afterData.some(media => media.gif || media.video);
+        sources = sources.concat(afterData);
       })
       .catch(error => {
         console.log("error", error);

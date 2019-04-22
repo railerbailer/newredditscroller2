@@ -44,6 +44,9 @@ class Firebase {
   updateCollectionToPublic = fields => {
     this.db.ref(`public/collections/${this.auth.currentUser.uid}`).update(fields);
   };
+  pushCollectionToPublic = fields => {
+    this.db.ref(`public/collections/${this.auth.currentUser.uid}`).push(fields);
+  };
   pushDataToCollection = (fields, collection) => {
     this.db.ref(`users/${this.auth.currentUser.uid}/collections/${collection}`).push(fields);
   };

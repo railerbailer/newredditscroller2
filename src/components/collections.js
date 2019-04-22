@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Swipeable from "react-swipeable";
 import "antd/dist/antd.css";
 import "../App.css";
-import { throttle } from "lodash";
+import _ from "lodash";
 import AddMarkup from "./addMarkup";
 import { Icon, message } from "antd";
 import "../App.css";
@@ -39,7 +39,7 @@ class CollectionsScroller extends Component {
     userCollections: { Loading: "kek" },
     user: null,
     activeCollection: "",
-    publicCollections: ["test1", "test2"]
+    publicCollections: []
   };
 
   componentWillMount() {
@@ -50,8 +50,16 @@ class CollectionsScroller extends Component {
       if (user) {
         this.setState({ user: user });
         this.props.firebase.db.ref(`users/${user.uid}`).on("value", snapshot => {
-          snapshot.val() && this.setState({ userCollections: snapshot.val() });
+          const collections = _.get(snapshot.val(), "collections", {});
+          snapshot.val() && this.setState({ userCollections: collections });
           // Object.values(snapshot.val().collections).some(collection => this.props.match.params.collection === collection)
+        });
+        this.props.firebase.db.ref(`public`).on("value", snapshot => {
+          const collections = _.get(snapshot.val(), "collections", {});
+          const collectionsArray = _.flatMap(Object.values(collections).map(item => Object.values(item)));
+          this.setState({
+            publicCollections: collectionsArray
+          });
         });
       } else {
         this.setState({ user: null });
@@ -61,11 +69,18 @@ class CollectionsScroller extends Component {
     // if (dataHandler("nsfw").includes(this.props.match.params.collection)) {
     //   this.setState({ category: "nsfw" });
     // }
-    this.props.match.params.collection && this.getCollection(this.props.match.params.collection);
+    this.props.match.params.collection &&
+      setTimeout(() => this.getCollection(this.props.match.params.collection), 2000);
   }
   getCollection = collection => {
-    console.log(collection);
-    return [];
+    this.toggleIsLoading(true);
+    this.setActiveCollection(collection);
+    const { publicCollections } = this.state;
+    console.log(publicCollections);
+    publicCollections.map(item => {
+      if (item.title === collection) sources = Object.values(item.data);
+    });
+    this.toggleIsLoading(false);
   };
   setSources = value => (sources = value);
   setNewListName = listName => this.setState({ newListName: listName });
@@ -110,7 +125,7 @@ class CollectionsScroller extends Component {
     this.props.history.push(route);
   };
 
-  switchCat = throttle(async () => {
+  switchCat = _.throttle(async () => {
     window.stop();
     this.state.isDropDownShowing && this.toggleDropDown();
     this.setActiveCollection("");
@@ -189,8 +204,7 @@ class CollectionsScroller extends Component {
   toggleShowListInput = bool => this.setState({ showListInput: bool });
   addNewList = () => {
     const { newListName, userCollections } = this.state;
-    const { collections = { none: "none" } } = userCollections;
-    const nameExists = Object.keys(collections).some(name => name === newListName);
+    const nameExists = Object.keys(userCollections).some(name => name === newListName);
     if (nameExists) {
       alert("You already have a collection with that name");
       return;
@@ -208,6 +222,7 @@ class CollectionsScroller extends Component {
   };
 
   render() {
+    console.log("SOURCEs", sources);
     const {
       isModalVisible,
       isSearchActivated,
@@ -227,7 +242,6 @@ class CollectionsScroller extends Component {
       newListName,
       user
     } = this.state;
-    const { collections = {} } = userCollections;
     const { firebase } = this.props;
 
     return (
@@ -254,6 +268,7 @@ class CollectionsScroller extends Component {
             toggleSearchButton={this.toggleSearchButton}
           />
           <MainDropDownMenu
+            collectionsMode={true}
             isDropDownShowing={isDropDownShowing}
             setSources={this.setSources}
             isOnlyGifsShowing={isOnlyGifsShowing}
@@ -315,9 +330,10 @@ class CollectionsScroller extends Component {
             <React.Fragment>
               {sources.length && (
                 <AddMarkup
+                  collectionsMode={true}
                   toggleIsModalVisible={this.toggleIsModalVisible}
                   activeCollection={this.state.activeCollection}
-                  collections={collections}
+                  collections={userCollections}
                   addMediaToCollection={this.addMediaToCollection}
                   isSearchActivated={isSearchActivated}
                   toggleFullscreen={this.toggleFullscreen}

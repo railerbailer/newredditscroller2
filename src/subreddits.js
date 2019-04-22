@@ -1,8 +1,3 @@
-export const testArray = [{ name: "asd" }, { name: "2" }, { name: "3" }];
-export const nsfwAll = [
-  "nsfw+gonewild+LegalTeens+RealGirls+ass+Amateur+Celebs+collegesluts+Blowjobs+thick+PetiteGoneWild+rule34+asstastic+nsfw_gifs+GirlsFinishingTheJob+HappyEmbarrassedGirls+TinyTits+LipsThatGrip+BustyPetite+holdthemoan+wifesharing+palegirls+TittyDrop+trashyboners+cosplaygirls"
-];
-
 // =Arrayformula(IF( A1:A="",,"'"&A1:A&"',"))
 export const animalsArray = [
   "Aww",
@@ -18,6 +13,36 @@ export const animalsArray = [
   "NatureIsFuckingLit"
 ];
 
+export const gifsArray = [
+  "gifs",
+  "behindthegifs",
+  "gif",
+  "Cinemagraphs",
+  "WastedGifs",
+  "educationalgifs",
+  "perfectloops",
+  "highqualitygifs",
+  "combinedgifs",
+  "retiredgif",
+  "michaelbaygifs",
+  "gifrecipes",
+  "mechanical_gifs",
+  "bettereveryloop",
+  "gifextra",
+  "slygifs",
+  "gifsthatkeepongiving",
+  "wholesomegifs",
+  "noisygifs",
+  "blackpeoplegifs",
+  "whitepeoplegifs",
+  "reactiongifs",
+  "shittyreactiongifs",
+  "chemicalreactiongifs",
+  "physicsgifs",
+  "babyelephantgifs",
+  "weathergifs"
+];
+
 export const artArray = [
   "Art",
 
@@ -26,8 +51,6 @@ export const artArray = [
   "ArtBattle",
 
   "ArtCrit",
-
-  "ArtPorn",
 
   "ArtHistory",
 
@@ -139,57 +162,29 @@ export const artArray = [
 ];
 export const foodArray = [
   "sousvide",
-  "appetizers",
-  "sousvide",
-  "DessertPorn",
-  "appetizers",
-  "Charcuterie",
   "steak",
   "grilledcheesegonewild",
-  "BBQ",
   "BobsBurgersCreations",
   "KoreanFood",
   "eatsandwiches",
   "DessertPorn",
   "BBQ",
   "grilledcheese",
-  "grilledcheese",
-  "BBQ",
-  "DessertPorn",
-  "smoking",
   "smoking",
   "CulinaryPorn",
   "Pizza",
   "slowcooking",
   "tonightsdinner",
   "FoodPorn",
-  "appetizers",
-  "CulinaryPorn",
-  "food",
-  "burgers",
   "burgers",
   "Charcuterie",
   "appetizers",
   "food",
-  "FoodPorn",
-  "eatwraps",
-  "BobsBurgersCreations",
-  "grilledcheesegonewild",
-  "CulinaryPorn",
-  "appetizers"
+  "eatwraps"
 ];
 export const manmadeArray = [
-  "CityPorn",
   "spaceflightporn",
-  "MachinePorn",
-  "GunPorn",
-  "spaceflightporn",
-  "stadiumporn",
-  "MoviePosterPorn",
-  "AdPorn",
-  "Houseporn",
   "InfrastructurePorn",
-  "ArtefactPorn",
   "OrganizationPorn",
   "VillagePorn",
   "stadiumporn",
@@ -200,13 +195,10 @@ export const manmadeArray = [
   "CityPorn",
   "MoviePosterPorn",
   "MachinePorn",
-  "CabinPorn",
   "RidesPorn",
   "RetroGamePorn",
   "TechnologyPorn",
-  "StarshipPorn",
   "GeekPorn",
-  "AlbumArtPorn",
   "toolporn",
   "ComicBookPorn",
   "CabinPorn",
@@ -3898,36 +3890,6 @@ export const NSFW = [
   "On_Her_Knees"
 ];
 
-export const gifsArray = [
-  "gifs",
-  "behindthegifs",
-  "gif",
-  "Cinemagraphs",
-  "WastedGifs",
-  "educationalgifs",
-  "perfectloops",
-  "highqualitygifs",
-  "combinedgifs",
-  "retiredgif",
-  "michaelbaygifs",
-  "gifrecipes",
-  "mechanical_gifs",
-  "bettereveryloop",
-  "gifextra",
-  "slygifs",
-  "gifsthatkeepongiving",
-  "wholesomegifs",
-  "noisygifs",
-  "blackpeoplegifs",
-  "whitepeoplegifs",
-  "reactiongifs",
-  "shittyreactiongifs",
-  "chemicalreactiongifs",
-  "physicsgifs",
-  "babyelephantgifs",
-  "weathergifs"
-];
-
 export const alternativeNSFW = [
   "suicidegirls",
   "altgonewild",
@@ -4445,7 +4407,6 @@ export const assNSFW = [
   "Buttjobs",
   "Tushy",
   "HungryButtsGW",
-  "Redheadass",
   "cuteAssCuterface",
   "buttstouchingbutts",
   "beautiful_asses",
@@ -5554,6 +5515,7 @@ export const cuckoldNSFW = [
 ];
 export const straight = [
   "AlbumBabes",
+  "Redheadass",
   "GonewildAlbums",
   "rule34_albums",
   "nsfw_sets",
@@ -5564,7 +5526,6 @@ export const straight = [
   "milfalbum",
   "suicidegirls",
   "altgonewild",
-  "bigtiddygothgf",
   "DirtyGaming",
   "bois",
   "SceneGirls",
@@ -6084,7 +6045,6 @@ export const straight = [
   "Tushy",
   "bigblackasses",
   "PhatAssWhiteGirl",
-  "Redheadass",
   "HungryButtsGW",
   "thegoodcrack",
   "thong",
@@ -7943,7 +7903,6 @@ export const straight = [
   "FreckledRedheads",
   "redheadxxx",
   "RedHeadsInYogaPants",
-  "Redheadass",
   "RedheadedGoddesses",
   "GoneWildHairy",
   "HairyPussy",
@@ -8990,7 +8949,6 @@ export const straight = [
   "LorenaG",
   "Lena_Paul",
   "Bella_Thorne_nude",
-  "sally_anon",
   "AppleSoey",
   "Angela_White",
   "Kelsi_Monroe",

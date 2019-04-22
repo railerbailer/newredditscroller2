@@ -1,4 +1,4 @@
-import { subredditArray, straight, artArray, foodArray, animalsArray } from "../subreddits";
+import { gifsArray, subredditArray, straight, artArray, foodArray, animalsArray } from "../subreddits";
 
 export const dataHandler = value => {
   let lowerCaseCategory = value.toLowerCase();
@@ -15,9 +15,9 @@ export const dataHandler = value => {
   } else if (lowerCaseCategory === "animals") {
     return animalsArray;
   } else if (lowerCaseCategory === "search") {
-    return subredditArray.concat(artArray, foodArray, animalsArray, straight);
+    return subredditArray.concat(artArray, foodArray, animalsArray, straight, gifsArray);
   } else {
-    return subredditArray.concat(artArray, foodArray, animalsArray);
+    return subredditArray.concat(artArray, foodArray, animalsArray, gifsArray);
   }
 };
 

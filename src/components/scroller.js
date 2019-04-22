@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Swipeable from "react-swipeable";
 import "antd/dist/antd.css";
 import "../App.css";
-import { throttle } from "lodash";
+import _ from "lodash";
 import AddMarkup from "./addMarkup";
 import { Icon, message } from "antd";
 import "../App.css";
@@ -38,7 +38,8 @@ class Scroller extends Component {
     newListName: "",
     userCollections: { Loading: "kek" },
     user: null,
-    activeCollection: ""
+    activeCollection: "",
+    publicCollections: []
   };
 
   componentWillMount() {
@@ -49,8 +50,13 @@ class Scroller extends Component {
       if (user) {
         this.setState({ user: user });
         this.props.firebase.db.ref(`users/${user.uid}`).on("value", snapshot => {
-          snapshot.val() && this.setState({ userCollections: snapshot.val() });
+          const collections = _.get(snapshot.val(), "collections", {});
+          snapshot.val() && this.setState({ userCollections: collections });
           // Object.values(snapshot.val().collections).some(collection => this.props.match.params.subreddit === collection)
+        });
+        this.props.firebase.db.ref(`public`).on("value", snapshot => {
+          snapshot.val() && this.setState({ publicCollections: _.get(snapshot.val(), "collections", {}) });
+          console.log(_.get(snapshot.val(), "collections", {}));
         });
       } else {
         this.setState({ user: null });
@@ -106,9 +112,9 @@ class Scroller extends Component {
     this.props.history.push(route);
   };
 
-  switchCat = throttle(async () => {
+  switchCat = _.throttle(async () => {
     window.stop();
-    this.state.isDropDownShowing && this.toggleDropDown();
+    //sätt att dropdown stängs etc om isLoading = true
     this.setActiveCollection("");
     if (goBackIndex >= 1) {
       goBackIndex = goBackIndex - 1;
@@ -185,8 +191,7 @@ class Scroller extends Component {
   toggleShowListInput = bool => this.setState({ showListInput: bool });
   addNewList = () => {
     const { newListName, userCollections } = this.state;
-    const { collections = { none: "none" } } = userCollections;
-    const nameExists = Object.keys(collections).some(name => name === newListName);
+    const nameExists = Object.keys(userCollections).some(name => name === newListName);
     if (nameExists) {
       alert("You already have a collection with that name");
       return;
@@ -223,15 +228,12 @@ class Scroller extends Component {
       newListName,
       user
     } = this.state;
-    const { collections = {} } = userCollections;
     const { firebase } = this.props;
 
     return (
       <Swipeable
         className={`wrapper`}
-        onKeyDown={
-          !isModalVisible && !isModalVisible && !showListInput && !isSearchActivated ? this.handleKeyDown : undefined
-        }
+        onKeyDown={!isModalVisible && !showListInput && !isSearchActivated ? this.handleKeyDown : undefined}
         onSwipedLeft={this.swipedLeft}
         onSwipedRight={this.swipedRight}
       >
@@ -313,7 +315,7 @@ class Scroller extends Component {
                 <AddMarkup
                   toggleIsModalVisible={this.toggleIsModalVisible}
                   activeCollection={this.state.activeCollection}
-                  collections={collections}
+                  collections={userCollections}
                   addMediaToCollection={this.addMediaToCollection}
                   isSearchActivated={isSearchActivated}
                   toggleFullscreen={this.toggleFullscreen}

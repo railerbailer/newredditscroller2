@@ -5,6 +5,10 @@ const MainDropDownMenu = props => {
   const {
     isOnlyGifsShowing,
     isOnlyPicsShowing,
+    toggleGifsOnly,
+    togglePicsOnly,
+    toggleIsModalVisible,
+
     category,
     showListInput,
     newListName,
@@ -14,25 +18,30 @@ const MainDropDownMenu = props => {
     isDropDownShowing,
     setSources,
     toggleDropDown,
-    toggleIsModalVisible,
+
     setActiveCollection,
-    toggleGifsOnly,
-    togglePicsOnly,
+
     changeCat,
     addNewList,
     setNewListName,
     toggleShowListInput,
     logOut,
     firebase,
-    pushToHistory
+    pushToHistory,
+    collectionsMode
   } = props;
 
   const showShareConfirm = collection => {
-    const collectionData = userCollections.collections[collection];
+    const collectionData = userCollections[collection];
     let description = "";
     const addCollectionToPublic = () =>
       firebase.updateCollectionToPublic({
-        [collection]: { data: collectionData, description: description }
+        [collection]: {
+          title: collection,
+          data: collectionData,
+          description: description,
+          madeBy: user.displayName || user.email
+        }
       });
     const confirm = Modal.confirm;
     confirm({
@@ -72,17 +81,16 @@ const MainDropDownMenu = props => {
   };
   const filledBgGif = isOnlyGifsShowing ? "#1890ff" : "transparent";
   const filledBgPic = isOnlyPicsShowing ? "#1890ff" : "transparent";
-  const { collections = {} } = userCollections;
-  const lists = Object.keys(collections).reverse();
+  const lists = Object.keys(userCollections).reverse();
   const listMenuItem = lists.map(collection => (
     <Menu.Item style={{ color: activeCollection === collection ? "#1890ff" : "" }} key={collection}>
       <span
         className="collectionNameDropdown"
         onClick={() => {
           setActiveCollection(collection);
-          setSources(Object.values(collections[collection]));
+          setSources(Object.values(userCollections[collection]));
           message.info(`Showing your collection: ${collection}`);
-          pushToHistory(`/${collection}`);
+          pushToHistory(`/${collectionsMode ? `collections/${collection}` : collection}`);
 
           toggleDropDown(false);
         }}

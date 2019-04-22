@@ -45,7 +45,7 @@ const AddMarkup = props => {
     }
     html.length !== activeElement + 1 && setActiveElement(activeElement + 1);
   }, 200);
-
+  console.log(props.dataSource);
   const handleKeyDown = e => {
     if (e.key === "ArrowDown") {
       !props.isSearchActivated && getNextElement();
@@ -101,7 +101,9 @@ const AddMarkup = props => {
           veryWide: 255
         };
         if (image) {
-          const source = mobile ? image.low || image.high : image.high || image.low || image.source;
+          const source = mobile
+            ? image.low || image.high || thumbnail
+            : image.high || image.low || image.source || thumbnail;
           const imageId = getIdFromUrl(source);
           return (
             <div
@@ -274,7 +276,7 @@ const AddMarkup = props => {
       )}
       {!fullscreen && (
         <div className="loadMoreWrapper">
-          {!props.activeCollection.length && !props.isLoading && html.length && (
+          {!props.collectionsMode && !props.activeCollection.length && !props.isLoading && html.length && (
             <Button
               onClick={async () => {
                 try {

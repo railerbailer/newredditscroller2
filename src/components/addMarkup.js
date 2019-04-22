@@ -10,7 +10,7 @@ let html = [];
 const AddMarkup = props => {
   // const [html, setHtml] = useState([]);
   const [activeElement, setActiveElement] = useState(0);
-
+  const { collectionsMode, activeCollection, isLoading } = props;
   useEffect(() => {
     this[`gridElement${activeElement}`] &&
       this[`gridElement${activeElement}`].scrollIntoView({
@@ -28,7 +28,6 @@ const AddMarkup = props => {
     if (!activeElement) return;
     setActiveElement(activeElement - 1);
   }, 100);
-
   const getNextElement = throttle(async () => {
     const haveMoreContent = activeElement + 1 >= html.length;
     if (!props.activeCollection.length && haveMoreContent) {
@@ -45,7 +44,6 @@ const AddMarkup = props => {
     }
     html.length !== activeElement + 1 && setActiveElement(activeElement + 1);
   }, 200);
-  console.log(props.dataSource);
   const handleKeyDown = e => {
     if (e.key === "ArrowDown") {
       !props.isSearchActivated && getNextElement();
@@ -276,7 +274,7 @@ const AddMarkup = props => {
       )}
       {!fullscreen && (
         <div className="loadMoreWrapper">
-          {!props.collectionsMode && !props.activeCollection.length && !props.isLoading && html.length && (
+          {!collectionsMode && !activeCollection.length && !isLoading && html.length && (
             <Button
               onClick={async () => {
                 try {

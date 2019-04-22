@@ -20,7 +20,7 @@ let reload = 0;
 class Scroller extends Component {
   state = {
     mobile: false,
-    load: "not ok",
+    errorMessage: "",
     isLoadingMore: false,
     fullscreenActive: false,
     isDropDownShowing: false,
@@ -33,7 +33,6 @@ class Scroller extends Component {
     after: "",
     category: "",
     isModalVisible: false,
-    isAuth: false,
     showListInput: false,
     newListName: "",
     userCollections: { Loading: "kek" },
@@ -41,6 +40,13 @@ class Scroller extends Component {
     activeCollection: "",
     publicCollections: []
   };
+
+  componentDidUpdate(prevProps, prevState) {
+    if (!this.state.isLoading && prevProps.match.params.subreddit !== this.props.match.params.subreddit) {
+      this.getSubreddit(this.props.match.params.subreddit);
+      this.categorySet(this.props.match.params.subreddit);
+    }
+  }
 
   componentWillMount() {
     if (window.screen.availWidth < 800) this.setState({ mobile: true });
@@ -56,7 +62,6 @@ class Scroller extends Component {
         });
         this.props.firebase.db.ref(`public`).on("value", snapshot => {
           snapshot.val() && this.setState({ publicCollections: _.get(snapshot.val(), "collections", {}) });
-          console.log(_.get(snapshot.val(), "collections", {}));
         });
       } else {
         this.setState({ user: null });
@@ -64,7 +69,7 @@ class Scroller extends Component {
     });
 
     if (dataHandler("nsfw").includes(this.props.match.params.subreddit)) {
-      this.setState({ category: "nsfw" });
+      this.categorySet("nsfw");
     }
     this.props.match.params.subreddit && this.getSubreddit(this.props.match.params.subreddit);
   }
@@ -78,8 +83,10 @@ class Scroller extends Component {
     !this.state.isSearchActivated && this.setState({ fullscreenActive: !this.state.fullscreenActive });
   toggleIsModalVisible = () => this.setState({ isModalVisible: !this.state.isModalVisible });
   toggleSearchButton = value => this.setState({ isSearchActivated: value });
-  toggleAuth = () => this.setState({ isAuth: !!this.props.firebase.auth.currentUser });
   categorySet = val => this.setState({ category: val });
+  setErrorMessage = value => {
+    this.setState({ errorMessage: value });
+  };
   setAutoCompleteDataSource = value => this.setState({ autoCompleteDataSource: value });
   toggleDropDown = () => this.setState({ isDropDownShowing: !this.state.isDropDownShowing });
   toggleGifsOnly = async () => {
@@ -113,6 +120,7 @@ class Scroller extends Component {
   };
 
   switchCat = _.throttle(async () => {
+    this.toggleIsLoading(true);
     window.stop();
     //sätt att dropdown stängs etc om isLoading = true
     this.setActiveCollection("");
@@ -127,6 +135,7 @@ class Scroller extends Component {
         goBack.push(this.state.subreddit);
       }
     }
+    this.toggleIsLoading(false);
   }, 500);
 
   goBackToLast = () => {
@@ -181,28 +190,7 @@ class Scroller extends Component {
     this.setState({ isDropDownShowing: false });
   };
 
-  logOut = async () => {
-    await this.props.firebase.doSignOut();
-    message.info(`Logged out`);
-    this.toggleAuth();
-    this.toggleDropDown();
-  };
-  setNewListName = listName => this.setState({ newListName: listName });
-  toggleShowListInput = bool => this.setState({ showListInput: bool });
-  addNewList = () => {
-    const { newListName, userCollections } = this.state;
-    const nameExists = Object.keys(userCollections).some(name => name === newListName);
-    if (nameExists) {
-      alert("You already have a collection with that name");
-      return;
-    }
-    this.props.firebase.updateDataOnUser("collections", { [newListName]: Date.now() });
-    this.toggleShowListInput(false);
-    this.setNewListName("");
-  };
   addMediaToCollection = (fields, collection) => {
-    console.log("fields", fields);
-    console.log("collection", collection);
     this.state.user
       ? this.props.firebase.updateDataToCollection({ ...fields }, collection)
       : this.toggleIsModalVisible();
@@ -225,8 +213,8 @@ class Scroller extends Component {
       userCollections,
       activeCollection,
       category,
-      newListName,
-      user
+      user,
+      errorMessage
     } = this.state;
     const { firebase } = this.props;
 
@@ -258,7 +246,6 @@ class Scroller extends Component {
             isOnlyPicsShowing={isOnlyPicsShowing}
             category={category}
             showListInput={showListInput}
-            newListName={newListName}
             userCollections={userCollections}
             activeCollection={activeCollection}
             user={user}
@@ -268,10 +255,7 @@ class Scroller extends Component {
             toggleGifsOnly={this.toggleGifsOnly}
             togglePicsOnly={this.togglePicsOnly}
             changeCat={this.changeCat}
-            addNewList={this.addNewList}
-            setNewListName={this.setNewListName}
             toggleShowListInput={this.toggleShowListInput}
-            logOut={this.logOut}
             firebase={firebase}
             pushToHistory={this.pushToHistory}
           />
@@ -298,7 +282,7 @@ class Scroller extends Component {
             <div className="spinner">
               <div className="centered-text">
                 <div className="centered-text">
-                  Loading <strong>{subreddit}</strong>
+                  {errorMessage.length ? errorMessage : "Loading"} <strong>{subreddit}</strong>
                 </div>
               </div>
               <div className="carSpinner">
@@ -343,7 +327,8 @@ class Scroller extends Component {
   }
 
   getSubreddit = async (subreddit, notShowLoad) => {
-    await this.setState({ subreddit: subreddit, isLoading: !notShowLoad });
+    console.log("AGAIN");
+    await this.setState({ errorMessage: "", subreddit: subreddit, isLoading: !notShowLoad });
     sources = [];
     await fetch(`https://www.reddit.com/r/${this.state.subreddit}.json?limit=100`)
       .then(response => response.json())
@@ -352,6 +337,7 @@ class Scroller extends Component {
         this.setState({
           after: jsonData.data.after
         });
+        console.log(jsonData.data.children);
         sources = await dataMapper(jsonData.data.children, this.state.mobile);
         const haveVideoOrGif = sources.length && sources.some(media => media.gif || media.video);
       })
@@ -365,8 +351,13 @@ class Scroller extends Component {
           console.log("error", error);
         }
       });
-    this.pushToHistory(`/${this.state.subreddit}`);
-    this.setState({ isLoading: false });
+    if (!sources.length) {
+      this.setErrorMessage("Sorry! No media in");
+      await this.getSubreddit(shuffleArray(dataHandler(this.state.category)));
+    } else {
+      this.pushToHistory(`/${this.state.subreddit}`);
+      this.setState({ isLoading: false });
+    }
   };
 
   moreSubreddits = async () => {

@@ -757,8 +757,10 @@ button {
   position: fixed !important;
   top: 1px;
   right: 5px;
+  max-width: 100%;
   max-height: 90vh !important;
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 .mediaAddDropdown {
   position: absolute !important;

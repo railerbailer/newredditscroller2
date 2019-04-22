@@ -33,7 +33,6 @@ class CollectionsScroller extends Component {
     after: "",
     category: "",
     isModalVisible: false,
-    isAuth: false,
     showListInput: false,
     newListName: "",
     userCollections: { Loading: "kek" },
@@ -51,7 +50,7 @@ class CollectionsScroller extends Component {
         this.setState({ user: user });
         this.props.firebase.db.ref(`users/${user.uid}`).on("value", snapshot => {
           const collections = _.get(snapshot.val(), "collections", {});
-          snapshot.val() && this.setState({ userCollections: collections });
+          this.setState({ userCollections: collections });
           // Object.values(snapshot.val().collections).some(collection => this.props.match.params.collection === collection)
         });
         this.props.firebase.db.ref(`public`).on("value", snapshot => {
@@ -75,11 +74,17 @@ class CollectionsScroller extends Component {
   getCollection = collection => {
     this.toggleIsLoading(true);
     this.setActiveCollection(collection);
-    const { publicCollections } = this.state;
-    console.log(publicCollections);
-    publicCollections.map(item => {
-      if (item.title === collection) sources = Object.values(item.data);
-    });
+    const { publicCollections, userCollections } = this.state;
+    console.log(!!userCollections[collection]);
+    if (userCollections[collection]) {
+      this.setSources(Object.values(userCollections[collection]));
+      this.toggleIsLoading(false);
+      return;
+    } else
+      publicCollections.map(item => {
+        if (item.title === collection) this.setSources(Object.values(item.data));
+      });
+
     this.toggleIsLoading(false);
   };
   setSources = value => (sources = value);
@@ -91,7 +96,6 @@ class CollectionsScroller extends Component {
     !this.state.isSearchActivated && this.setState({ fullscreenActive: !this.state.fullscreenActive });
   toggleIsModalVisible = () => this.setState({ isModalVisible: !this.state.isModalVisible });
   toggleSearchButton = value => this.setState({ isSearchActivated: value });
-  toggleAuth = () => this.setState({ isAuth: !!this.props.firebase.auth.currentUser });
   categorySet = val => this.setState({ category: val });
   setAutoCompleteDataSource = value => this.setState({ autoCompleteDataSource: value });
   toggleDropDown = () => this.setState({ isDropDownShowing: !this.state.isDropDownShowing });
@@ -193,26 +197,6 @@ class CollectionsScroller extends Component {
     message.info(`Category is ${cat}, press or swipe right to shuffle collection`);
     this.setState({ isDropDownShowing: false });
   };
-
-  logOut = async () => {
-    await this.props.firebase.doSignOut();
-    message.info(`Logged out`);
-    this.toggleAuth();
-    this.toggleDropDown();
-  };
-  setNewListName = listName => this.setState({ newListName: listName });
-  toggleShowListInput = bool => this.setState({ showListInput: bool });
-  addNewList = () => {
-    const { newListName, userCollections } = this.state;
-    const nameExists = Object.keys(userCollections).some(name => name === newListName);
-    if (nameExists) {
-      alert("You already have a collection with that name");
-      return;
-    }
-    this.props.firebase.updateDataOnUser("collections", { [newListName]: Date.now() });
-    this.toggleShowListInput(false);
-    this.setNewListName("");
-  };
   addMediaToCollection = (fields, collection) => {
     console.log("fields", fields);
     console.log("collection", collection);
@@ -222,7 +206,6 @@ class CollectionsScroller extends Component {
   };
 
   render() {
-    console.log("SOURCEs", sources);
     const {
       isModalVisible,
       isSearchActivated,
@@ -239,7 +222,6 @@ class CollectionsScroller extends Component {
       userCollections,
       activeCollection,
       category,
-      newListName,
       user
     } = this.state;
     const { firebase } = this.props;
@@ -275,7 +257,6 @@ class CollectionsScroller extends Component {
             isOnlyPicsShowing={isOnlyPicsShowing}
             category={category}
             showListInput={showListInput}
-            newListName={newListName}
             userCollections={userCollections}
             activeCollection={activeCollection}
             user={user}
@@ -285,10 +266,7 @@ class CollectionsScroller extends Component {
             toggleGifsOnly={this.toggleGifsOnly}
             togglePicsOnly={this.togglePicsOnly}
             changeCat={this.changeCat}
-            addNewList={this.addNewList}
-            setNewListName={this.setNewListName}
             toggleShowListInput={this.toggleShowListInput}
-            logOut={this.logOut}
             firebase={firebase}
             pushToHistory={this.pushToHistory}
           />
@@ -304,13 +282,13 @@ class CollectionsScroller extends Component {
             </div>
           )}
           <SwitchCategoryButtons
+            collectionsMode={true}
             isSearchActivated={isSearchActivated}
             showListInput={showListInput}
             isModalVisible={isModalVisible}
             goBackToLast={this.goBackToLast}
             switchCat={this.switchCat}
           />
-
           {isLoading ? (
             <div className="spinner">
               <div className="centered-text">

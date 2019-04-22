@@ -4,11 +4,13 @@ export const dataHandler = value => {
   let lowerCaseCategory = value.toLowerCase();
   if (lowerCaseCategory === "nsfw") {
     return straight;
-  } else if (lowerCaseCategory === "sfwall") {
-    return subredditArray.concat(artArray, foodArray, animalsArray);
   } else if (lowerCaseCategory === "sfw") {
-    return subredditArray;
-  } else if (lowerCaseCategory === "art") {
+    return subredditArray.concat(artArray, foodArray, animalsArray);
+  }
+  //else if (lowerCaseCategory === "sfw") {
+  //   return subredditArray;
+  // }
+  else if (lowerCaseCategory === "art") {
     return artArray;
   } else if (lowerCaseCategory === "food") {
     return foodArray;

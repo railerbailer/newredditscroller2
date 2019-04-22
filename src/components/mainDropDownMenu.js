@@ -1,36 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import { Menu, Button, Icon, Input, Modal, message, Dropdown } from "antd";
 import { Link } from "react-router-dom";
 const MainDropDownMenu = props => {
+  const [newListName, setNewListName] = useState("");
+
   const {
-    isOnlyGifsShowing,
-    isOnlyPicsShowing,
     toggleGifsOnly,
     togglePicsOnly,
     toggleIsModalVisible,
-
-    category,
+    setSources,
+    setActiveCollection,
+    toggleShowListInput,
+    isOnlyGifsShowing,
+    isOnlyPicsShowing,
     showListInput,
-    newListName,
+    category,
     userCollections,
     activeCollection,
     user,
     isDropDownShowing,
-    setSources,
     toggleDropDown,
-
-    setActiveCollection,
-
-    changeCat,
-    addNewList,
-    setNewListName,
-    toggleShowListInput,
-    logOut,
     firebase,
     pushToHistory,
     collectionsMode
   } = props;
+  const addNewList = () => {
+    const nameExists = Object.keys(userCollections).some(name => name === newListName);
+    if (nameExists) {
+      alert("You already have a collection with that name");
+      return;
+    }
+    firebase.updateDataOnUser("collections", { [newListName]: Date.now() });
+    toggleShowListInput(false);
+    setNewListName("");
+  };
 
+  const logOut = async () => {
+    await firebase.doSignOut();
+    message.info(`Logged out`);
+    toggleDropDown();
+  };
   const showShareConfirm = collection => {
     const collectionData = userCollections[collection];
     let description = "";
@@ -90,7 +99,7 @@ const MainDropDownMenu = props => {
           setActiveCollection(collection);
           setSources(Object.values(userCollections[collection]));
           message.info(`Showing your collection: ${collection}`);
-          pushToHistory(`/${collectionsMode ? `collections/${collection}` : collection}`);
+          pushToHistory(`/collections/${collection}`);
 
           toggleDropDown(false);
         }}
@@ -142,10 +151,10 @@ const MainDropDownMenu = props => {
           </h4>
           <Menu.Item>
             <div
-              style={{ color: category === "NSFW" ? "#1890ff" : "" }}
-              onClick={e => {
-                changeCat(e, "NSFW");
+              style={{ color: category === "nsfw" ? "#1890ff" : "" }}
+              onClick={() => {
                 setActiveCollection("");
+                pushToHistory("/nsfw");
               }}
             >
               Nsfw
@@ -153,9 +162,9 @@ const MainDropDownMenu = props => {
           </Menu.Item>
           <Menu.Item>
             <div
-              style={{ color: category === "SFWALL" ? "#1890ff" : "" }}
-              onClick={e => {
-                changeCat(e, "SFWALL");
+              style={{ color: category === "sfw" ? "#1890ff" : "" }}
+              onClick={() => {
+                pushToHistory("/sfw");
                 setActiveCollection("");
               }}
             >
@@ -164,7 +173,7 @@ const MainDropDownMenu = props => {
           </Menu.Item>
           <Menu.Divider />
           <h4 style={{ marginLeft: "4px" }}>
-            <Link to={`/collections/whatever`}>
+            <Link to={`/collections`}>
               <Icon type="solution" /> Browse user collections
             </Link>
           </h4>

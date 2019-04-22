@@ -1,6 +1,6 @@
 import React from "react";
 const SwitchCategoryButtons = props => {
-  const { isSearchActivated, showListInput, isModalVisible, goBackToLast, switchCat } = props;
+  const { isSearchActivated, collectionsMode, showListInput, isModalVisible, goBackToLast, switchCat } = props;
   const noInputsActivated = !isSearchActivated && !showListInput && !isModalVisible;
   return (
     <React.Fragment>
@@ -16,7 +16,7 @@ const SwitchCategoryButtons = props => {
         </i>
         <p onClick={switchCat}>
           Shuffle <br />
-          subreddit
+          {collectionsMode ? "collections" : "subreddit"}
         </p>
       </button>
     </React.Fragment>

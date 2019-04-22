@@ -40,8 +40,13 @@ const MainDropDownMenu = props => {
     message.info(`Logged out`);
     toggleDropDown();
   };
+  const saveFeedback = input => {
+    firebase.pushFeedback(input);
+  };
   const showShareConfirm = collection => {
-    const collectionData = userCollections[collection];
+    const collectionData =
+      Object.entries(userCollections[collection]).length !== 0 ? userCollections[collection] : null;
+    console.log("collectionsdata", collectionData);
     let description = "";
     const addCollectionToPublic = () =>
       firebase.updateCollectionToPublic({
@@ -72,6 +77,29 @@ const MainDropDownMenu = props => {
       }
     });
   };
+  const showFeedbackModal = () => {
+    const confirm = Modal.confirm;
+    let feedbackInput = "";
+    confirm({
+      title: `Send feedback"`,
+      okText: "Send",
+      content: (
+        <React.Fragment>
+          <div>Description:</div>
+          <Input onChange={e => (feedbackInput = e.target.value)} prefix={<Icon type="info-circle" />} />
+        </React.Fragment>
+      ),
+      zIndex: 12313123,
+      onOk() {
+        saveFeedback(feedbackInput);
+        message.info(`"${feedbackInput}" has been recieved, thank you!`);
+      },
+      onCancel() {
+        console.log("Cancel");
+      }
+    });
+  };
+
   const showDeleteConfirm = collection => {
     const deleteCollection = () => firebase.removeCollection(collection);
     const confirm = Modal.confirm;
@@ -109,13 +137,16 @@ const MainDropDownMenu = props => {
       {collection !== "Favourites" && (
         <React.Fragment>
           <Icon onClick={() => showDeleteConfirm(collection)} className="deleteCollectionIcon" type="delete" />
-          <Icon onClick={() => showShareConfirm(collection)} className="deleteCollectionIcon" type="share-alt" />
+          {Object.entries(userCollections[collection]).length !== 0 && (
+            <Icon onClick={() => showShareConfirm(collection)} className="deleteCollectionIcon" type="share-alt" />
+          )}
         </React.Fragment>
       )}
     </Menu.Item>
   ));
   return (
     <Dropdown
+      //   trigger={["click", "hover", "contextMenu"]}
       overlayClassName="dropDownMenu"
       visible={isDropDownShowing}
       onClick={toggleDropDown}
@@ -154,7 +185,7 @@ const MainDropDownMenu = props => {
               style={{ color: category === "nsfw" ? "#1890ff" : "" }}
               onClick={() => {
                 setActiveCollection("");
-                pushToHistory("/nsfw");
+                pushToHistory("/subreddits/nsfw");
               }}
             >
               Nsfw
@@ -164,7 +195,7 @@ const MainDropDownMenu = props => {
             <div
               style={{ color: category === "sfw" ? "#1890ff" : "" }}
               onClick={() => {
-                pushToHistory("/sfw");
+                pushToHistory("/subreddits/sfw");
                 setActiveCollection("");
               }}
             >
@@ -174,7 +205,7 @@ const MainDropDownMenu = props => {
           <Menu.Divider />
           <h4 style={{ marginLeft: "4px" }}>
             <Link to={`/collections`}>
-              <Icon type="solution" /> Browse user collections
+              <Icon type="solution" /> Browse user collections (click here)
             </Link>
           </h4>
           <Menu.Divider />
@@ -210,6 +241,11 @@ const MainDropDownMenu = props => {
             </Menu.Item>
           )}
           {user && listMenuItem}
+          <Menu.Divider />
+          <Menu.Item onClick={showFeedbackModal}>
+            <Icon type="bulb" />
+            Feedback
+          </Menu.Item>
           <Menu.Divider />
           <Menu.Item>
             {user ? (

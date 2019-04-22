@@ -37,7 +37,9 @@ class Firebase {
       this.db.ref(this.auth.currentUser.uid).set({ ...fields });
     }
   };
-
+  pushFeedback = string => {
+    this.db.ref(`feedback/messages`).push(string);
+  };
   setDataToCollection = (data, collection, uid) => {
     this.db.ref(`users/${uid}/collections/${collection}`).set(data);
   };

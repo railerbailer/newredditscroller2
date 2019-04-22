@@ -22,7 +22,7 @@ class ChooseCategory extends Component {
           </h2>
           <button
             onClick={() => {
-              this.pushHistory("nsfw");
+              this.pushHistory("/subreddits/nsfw");
             }}
             className="item1"
           >
@@ -31,7 +31,7 @@ class ChooseCategory extends Component {
 
           <button
             onClick={() => {
-              this.pushHistory("sfw");
+              this.pushHistory("/subreddits/sfw");
             }}
             className="item2"
           >

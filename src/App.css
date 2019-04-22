@@ -177,12 +177,21 @@ input {
   max-width: 1200px;
   margin: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 2fr));
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
   grid-gap: 0px;
   grid-auto-rows: 65px;
   grid-auto-flow: dense;
 }
 @media (max-width: 625px) {
+  .cardGrid {
+    grid-template-columns: repeat(auto-fit, minmax(100vw, 1fr)) !important;
+  }
+  .ant-card {
+    max-width: 83vw;
+  }
+  .userCollectionContent {
+    width: 100vw !important;
+  }
   .veryWide {
     grid-row: span 6 !important;
   }
@@ -383,7 +392,7 @@ button {
 }
 
 .subredditName {
-  font-size: 1em;
+  font-size: 1.4em;
   text-align: center;
   color: white;
   text-shadow: 1px 1px black;
@@ -592,7 +601,10 @@ button {
 .iconRight {
   padding: 0;
   right: 4px;
-  text-align: right;
+  right: 4px;
+  text-align: center;
+  width: 58px !important;
+  height: 68px;
 }
 .iconRight i {
   font-size: 36px;
@@ -619,8 +631,8 @@ button {
   z-index: 5;
   opacity: 0.7;
   line-height: 1;
-  margin-left: -25px;
-  font-size: 12px;
+  margin-left: -4px;
+  font-size: 14px;
   margin-top: -7px;
 }
 .iconLeft,
@@ -648,6 +660,7 @@ button {
 }
 
 .wrapper {
+  background: rgb(20, 20, 20);
   max-width: 100vw;
   height: 100%;
 }
@@ -753,11 +766,12 @@ button {
 }
 
 .dropDownMenu {
-  width: 30vh;
+  width: 50vh;
   position: fixed !important;
   top: 1px;
   right: 5px;
   max-width: 100%;
+  height: 100%;
   max-height: 90vh !important;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -829,6 +843,30 @@ button {
   background: rgb(20, 20, 20);
   height: 100%;
   min-height: 100vh;
+}
+.userCollectionContent {
+  background: rgb(20, 20, 20);
+  height: 100%;
+}
+.goBackButton {
+  color: white;
+  position: fixed;
+  top: 46px;
+  background: transparent;
+  left: 3px;
+}
+.cardGrid {
+  align-items: center;
+  overflow: hidden;
+  background: rgb(20, 20, 20);
+  height: 100%;
+  min-height: 100vh;
+  max-width: 83vw;
+  margin: 32px auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20vw, 3fr));
+  grid-gap: 4vh;
+  grid-auto-flow: dense;
 }
 
 /* .contentZen h2 {

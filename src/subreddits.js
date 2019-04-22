@@ -132,8 +132,6 @@ export const artArray = [
 
   "photoshopbattles",
 
-  "PhotoShopBattlesNSFW (NSFW)",
-
   "RedditGetsDrawn",
 
   "randomactsofdrawing",
@@ -207,7 +205,6 @@ export const manmadeArray = [
 ];
 export const subredditArray = [
   "pics",
-  "PhotoshopBattles",
   "perfecttiming",
   "itookapicture",
   "Pareidolia",
@@ -223,7 +220,6 @@ export const subredditArray = [
   "beamazed",
   "girlsmirin",
   "gentlemanboners",
-  "PhotoshopBattles",
   "ColorizedHistory",
   "reallifedoodles",
   "HybridAnimals",

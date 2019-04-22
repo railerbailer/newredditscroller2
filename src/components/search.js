@@ -8,13 +8,17 @@ const SearchComponent = props => {
     dataHandler,
     isSearchActivated,
     autoCompleteDataSource,
-    toggleSearchButton
+    toggleSearchButton,
+    collectionMode,
+    publicCollections
   } = props;
   const handleSearch = value => {
     if (!value) {
       value = "Type your search";
     }
-    let result = dataHandler("search").filter(str => str.toLowerCase().includes(value.toLowerCase()));
+    console.log(collectionMode, publicCollections);
+    let searchAbleData = collectionMode ? publicCollections : dataHandler("search");
+    let result = searchAbleData.filter(str => str.toLowerCase().includes(value.toLowerCase()));
     result = result.reverse();
     result.push(value);
     result = result.reverse();

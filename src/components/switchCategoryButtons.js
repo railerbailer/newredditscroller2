@@ -16,7 +16,7 @@ const SwitchCategoryButtons = props => {
         </i>
         <p onClick={switchCat}>
           Shuffle <br />
-          {collectionsMode ? "collections" : "subreddit"}
+          {collectionsMode ? "collection" : "subreddit"}
         </p>
       </button>
     </React.Fragment>

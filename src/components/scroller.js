@@ -12,6 +12,7 @@ import LoginModal from "./loginModal";
 import SearchComponent from "./search";
 import SwitchCategoryButtons from "./switchCategoryButtons";
 import MainDropDownMenu from "./mainDropDownMenu";
+import GoBackButton from "./goBackButton";
 
 let sources = [];
 let goBack = [];
@@ -37,8 +38,8 @@ class Scroller extends Component {
     newListName: "",
     userCollections: { Loading: "kek" },
     user: null,
-    activeCollection: "",
-    publicCollections: []
+    activeCollection: ""
+    // publicCollections: []
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -60,9 +61,13 @@ class Scroller extends Component {
           snapshot.val() && this.setState({ userCollections: collections });
           // Object.values(snapshot.val().collections).some(collection => this.props.match.params.subreddit === collection)
         });
-        this.props.firebase.db.ref(`public`).on("value", snapshot => {
-          snapshot.val() && this.setState({ publicCollections: _.get(snapshot.val(), "collections", {}) });
-        });
+        // this.props.firebase.db.ref(`public`).on("value", snapshot => {
+        //   const collections = _.get(snapshot.val(), "collections", {});
+        //   const collectionsArray = _.flatMap(Object.values(collections).map(item => Object.values(item)));
+        //   this.setState({
+        //     publicCollections: collectionsArray
+        //   });
+        // });
       } else {
         this.setState({ user: null });
       }
@@ -239,6 +244,7 @@ class Scroller extends Component {
             autoCompleteDataSource={autoCompleteDataSource}
             toggleSearchButton={this.toggleSearchButton}
           />
+          <GoBackButton goBackFunc={this.props.history.goBack} />
           <MainDropDownMenu
             isDropDownShowing={isDropDownShowing}
             setSources={this.setSources}
@@ -327,7 +333,6 @@ class Scroller extends Component {
   }
 
   getSubreddit = async (subreddit, notShowLoad) => {
-    console.log("AGAIN");
     await this.setState({ errorMessage: "", subreddit: subreddit, isLoading: !notShowLoad });
     sources = [];
     await fetch(`https://www.reddit.com/r/${this.state.subreddit}.json?limit=100`)
@@ -355,7 +360,7 @@ class Scroller extends Component {
       this.setErrorMessage("Sorry! No media in");
       await this.getSubreddit(shuffleArray(dataHandler(this.state.category)));
     } else {
-      this.pushToHistory(`/${this.state.subreddit}`);
+      this.pushToHistory(`/subreddits/${this.state.subreddit}`);
       this.setState({ isLoading: false });
     }
   };

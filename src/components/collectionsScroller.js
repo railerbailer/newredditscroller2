@@ -6,12 +6,13 @@ import _ from "lodash";
 import AddMarkup from "./addMarkup";
 import { Icon, message } from "antd";
 import "../App.css";
-import { dataHandler, shuffleArray, dataMapper } from "../utils/atomic";
+import { dataHandler, shuffleArray } from "../utils/atomic";
 import { carPath } from "../utils/carPath";
 import LoginModal from "./loginModal";
 import SearchComponent from "./search";
 import SwitchCategoryButtons from "./switchCategoryButtons";
 import MainDropDownMenu from "./mainDropDownMenu";
+import GoBackButton from "./goBackButton";
 
 let sources = [];
 let goBack = [];
@@ -75,7 +76,6 @@ class CollectionsScroller extends Component {
     this.toggleIsLoading(true);
     this.setActiveCollection(collection);
     const { publicCollections, userCollections } = this.state;
-    console.log(!!userCollections[collection]);
     if (userCollections[collection]) {
       this.setSources(Object.values(userCollections[collection]));
       this.toggleIsLoading(false);
@@ -130,6 +130,7 @@ class CollectionsScroller extends Component {
   };
 
   switchCat = _.throttle(async () => {
+    console.log(Object.keys(this.state.publicCollections), this.state.publicCollections);
     window.stop();
     this.state.isDropDownShowing && this.toggleDropDown();
     this.setActiveCollection("");
@@ -139,9 +140,9 @@ class CollectionsScroller extends Component {
         !this.state.isLoading && (await this.getCollection(goBack[goBack.length - goBackIndex]));
       } else !this.state.isLoading && (await this.getCollection(goBack[goBack.length - 1 - goBackIndex]));
     } else {
-      !this.state.isLoading && (await this.getCollection(shuffleArray(this.state.publicCollections)));
-      if (goBackIndex === 0 && goBack[goBack.length - 1] !== this.state.collection) {
-        goBack.push(this.state.collection);
+      !this.state.isLoading && (await this.getCollection(shuffleArray(Object.keys(this.state.publicCollections))));
+      if (goBackIndex === 0 && goBack[goBack.length - 1] !== this.state.activeCollection) {
+        goBack.push(this.state.activeCollection);
       }
     }
   }, 500);
@@ -222,7 +223,8 @@ class CollectionsScroller extends Component {
       userCollections,
       activeCollection,
       category,
-      user
+      user,
+      publicCollections
     } = this.state;
     const { firebase } = this.props;
 
@@ -242,6 +244,8 @@ class CollectionsScroller extends Component {
             isModalVisible={this.state.isModalVisible}
           />
           <SearchComponent
+            collectionMode={true}
+            publicCollections={publicCollections.map(item => item.title)}
             setAutoCompleteDataSource={this.setAutoCompleteDataSource}
             getSubreddit={this.getCollection}
             dataHandler={dataHandler}
@@ -249,6 +253,7 @@ class CollectionsScroller extends Component {
             autoCompleteDataSource={autoCompleteDataSource}
             toggleSearchButton={this.toggleSearchButton}
           />
+          <GoBackButton goBackFunc={this.props.history.goBack} />
           <MainDropDownMenu
             collectionsMode={true}
             isDropDownShowing={isDropDownShowing}

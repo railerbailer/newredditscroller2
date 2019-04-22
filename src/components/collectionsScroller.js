@@ -15,8 +15,6 @@ import MainDropDownMenu from "./mainDropDownMenu";
 import GoBackButton from "./goBackButton";
 
 let sources = [];
-let goBack = [];
-let goBackIndex = 0;
 let reload = 0;
 class CollectionsScroller extends Component {
   state = {
@@ -130,46 +128,22 @@ class CollectionsScroller extends Component {
   };
 
   switchCat = _.throttle(async () => {
-    console.log(Object.keys(this.state.publicCollections), this.state.publicCollections);
     window.stop();
     this.state.isDropDownShowing && this.toggleDropDown();
     this.setActiveCollection("");
-    if (goBackIndex >= 0) {
-      goBackIndex = goBackIndex - 1;
-      if (this.state.collection === goBack[goBack.length - 1 - goBackIndex]) {
-        !this.state.isLoading && (await this.getCollection(goBack[goBack.length - goBackIndex]));
-      } else !this.state.isLoading && (await this.getCollection(goBack[goBack.length - 1 - goBackIndex]));
-    } else {
-      !this.state.isLoading && (await this.getCollection(shuffleArray(Object.keys(this.state.publicCollections))));
-      if (goBackIndex === 0 && goBack[goBack.length - 1] !== this.state.activeCollection) {
-        goBack.push(this.state.activeCollection);
-      }
-    }
+
+    await this.getCollection(shuffleArray(Object.keys(this.state.publicCollections)));
   }, 500);
-
-  goBackToLast = () => {
-    this.setState({ isVideoLoading: true });
-    if (goBack.length > 1 && goBack[0] !== this.state.collection) {
-      if (this.state.collection === goBack[goBack.length - 1 - goBackIndex]) {
-        this.getCollection(goBack[goBack.length - 2 - goBackIndex]);
-      } else this.getCollection(goBack[goBack.length - 1 - goBackIndex]);
-    }
-    goBackIndex < goBack.length ? (goBackIndex = goBackIndex + 1) : console.log("doing nothin...");
-
-    if (!goBack.includes(this.state.collection)) {
-      goBack.push(this.state.collection);
-    }
-  };
 
   handleKeyDown = e => {
     if (e.key === "ArrowLeft") {
-      this.goBackToLast();
+      this.props.history.goBack();
     }
     if (e.key === "Escape") {
       this.setState({ fullscreenActive: false });
     }
     if (e.key === "a") {
-      this.goBackToLast();
+      this.props.history.goBack();
     }
 
     if (e.key === "ArrowRight") {
@@ -188,7 +162,7 @@ class CollectionsScroller extends Component {
 
   swipedRight = (e, absX, isFlick) => {
     if (isFlick || absX > 30) {
-      this.goBackToLast();
+      this.props.history.goBack();
     }
   };
 
@@ -291,7 +265,6 @@ class CollectionsScroller extends Component {
             isSearchActivated={isSearchActivated}
             showListInput={showListInput}
             isModalVisible={isModalVisible}
-            goBackToLast={this.goBackToLast}
             switchCat={this.switchCat}
           />
           {isLoading ? (

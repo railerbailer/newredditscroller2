@@ -15,8 +15,6 @@ import MainDropDownMenu from "./mainDropDownMenu";
 import GoBackButton from "./goBackButton";
 
 let sources = [];
-let goBack = [];
-let goBackIndex = 0;
 let reload = 0;
 class Scroller extends Component {
   state = {
@@ -129,43 +127,21 @@ class Scroller extends Component {
     window.stop();
     //sätt att dropdown stängs etc om isLoading = true
     this.setActiveCollection("");
-    if (goBackIndex >= 1) {
-      goBackIndex = goBackIndex - 1;
-      if (this.state.subreddit === goBack[goBack.length - 1 - goBackIndex]) {
-        !this.state.isLoading && (await this.getSubreddit(goBack[goBack.length - goBackIndex]));
-      } else !this.state.isLoading && (await this.getSubreddit(goBack[goBack.length - 1 - goBackIndex]));
-    } else {
-      !this.state.isLoading && (await this.getSubreddit(shuffleArray(dataHandler(this.state.category))));
-      if (goBackIndex === 0 && goBack[goBack.length - 1] !== this.state.subreddit) {
-        goBack.push(this.state.subreddit);
-      }
-    }
+
+    !this.state.isLoading && (await this.getSubreddit(shuffleArray(dataHandler(this.state.category))));
+
     this.toggleIsLoading(false);
   }, 500);
 
-  goBackToLast = () => {
-    this.setState({ isVideoLoading: true });
-    if (goBack.length > 1 && goBack[0] !== this.state.subreddit) {
-      if (this.state.subreddit === goBack[goBack.length - 1 - goBackIndex]) {
-        this.getSubreddit(goBack[goBack.length - 2 - goBackIndex]);
-      } else this.getSubreddit(goBack[goBack.length - 1 - goBackIndex]);
-    }
-    goBackIndex < goBack.length ? (goBackIndex = goBackIndex + 1) : console.log("doing nothin...");
-
-    if (!goBack.includes(this.state.subreddit)) {
-      goBack.push(this.state.subreddit);
-    }
-  };
-
   handleKeyDown = e => {
     if (e.key === "ArrowLeft") {
-      this.goBackToLast();
+      this.props.history.goBack();
     }
     if (e.key === "Escape") {
       this.setState({ fullscreenActive: false });
     }
     if (e.key === "a") {
-      this.goBackToLast();
+      this.props.history.goBack();
     }
 
     if (e.key === "ArrowRight") {
@@ -184,7 +160,7 @@ class Scroller extends Component {
 
   swipedRight = (e, absX, isFlick) => {
     if (isFlick || absX > 30) {
-      this.goBackToLast();
+      this.props.history.goBack();
     }
   };
 
@@ -280,7 +256,6 @@ class Scroller extends Component {
             isSearchActivated={isSearchActivated}
             showListInput={showListInput}
             isModalVisible={isModalVisible}
-            goBackToLast={this.goBackToLast}
             switchCat={this.switchCat}
           />
 

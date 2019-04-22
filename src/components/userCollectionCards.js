@@ -14,9 +14,6 @@ import CardComponent from "./cardComponent";
 import GoBackButton from "./goBackButton";
 
 let sources = [];
-let goBack = [];
-let goBackIndex = 0;
-// let reload = 0;
 class UserCollectionCards extends Component {
   state = {
     mobile: false,
@@ -128,32 +125,8 @@ class UserCollectionCards extends Component {
     window.stop();
     this.state.isDropDownShowing && this.toggleDropDown();
     this.setActiveCollection("");
-    if (goBackIndex >= 0) {
-      goBackIndex = goBackIndex - 1;
-      if (this.state.collection === goBack[goBack.length - 1 - goBackIndex]) {
-        !this.state.isLoading && (await this.getCollection(goBack[goBack.length - goBackIndex]));
-      } else !this.state.isLoading && (await this.getCollection(goBack[goBack.length - 1 - goBackIndex]));
-    } else {
-      !this.state.isLoading && (await this.getCollection(shuffleArray(this.state.publicCollections)));
-      if (goBackIndex === 0 && goBack[goBack.length - 1] !== this.state.collection) {
-        goBack.push(this.state.collection);
-      }
-    }
+    await this.getCollection(shuffleArray(this.state.publicCollections));
   }, 500);
-
-  goBackToLast = () => {
-    this.setState({ isVideoLoading: true });
-    if (goBack.length > 1 && goBack[0] !== this.state.collection) {
-      if (this.state.collection === goBack[goBack.length - 1 - goBackIndex]) {
-        this.getCollection(goBack[goBack.length - 2 - goBackIndex]);
-      } else this.getCollection(goBack[goBack.length - 1 - goBackIndex]);
-    }
-    goBackIndex < goBack.length ? (goBackIndex = goBackIndex + 1) : console.log("doing nothin...");
-
-    if (!goBack.includes(this.state.collection)) {
-      goBack.push(this.state.collection);
-    }
-  };
 
   changeCat = (e, cat) => {
     this.categorySet(cat);

@@ -153,9 +153,9 @@ const AddMarkup = props => {
           const videoId = getIdFromUrl(video.url);
           return (
             <div
-              onClick={() => {
-                fullscreen && getElementIndex(i, this[`gridElement${i}`]);
-              }}
+              // onClick={() => {
+              //   !fullscreen && getElementIndex(i, this[`gridElement${i}`]);
+              // }}
               key={i}
               ref={el => (this[`gridElement${i}`] = el)}
               className={`gridElement gifs ${video.className}`}

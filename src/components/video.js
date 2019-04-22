@@ -67,7 +67,7 @@ class Video extends Component {
           ref={el => (this.videoPlayer = el)}
           onClick={() => {
             toggleFullscreen(index);
-            this.togglePlaying();
+            this.state.isPlaying && fullscreen && this.togglePlaying();
           }}
           autoPlay={!mobile && fullscreen}
           poster={mobile ? poster : undefined}

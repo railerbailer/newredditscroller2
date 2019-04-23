@@ -187,6 +187,7 @@ const MainDropDownMenu = props => {
               style={{ color: category === "nsfw" ? "#1890ff" : "" }}
               onClick={() => {
                 setActiveCollection("");
+                toggleDropDown(false);
                 pushToHistory("/subreddits/nsfw");
               }}
             >
@@ -198,6 +199,7 @@ const MainDropDownMenu = props => {
               style={{ color: category === "sfw" ? "#1890ff" : "" }}
               onClick={() => {
                 pushToHistory("/subreddits/sfw");
+                toggleDropDown(false);
                 setActiveCollection("");
               }}
             >

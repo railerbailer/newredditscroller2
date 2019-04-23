@@ -84,7 +84,7 @@ class Firebase {
   doCreateUserWithEmailAndPassword = async (email, password, userName) => {
     await this.auth.createUserWithEmailAndPassword(email, password);
     userName && this.auth.currentUser.updateProfile({ displayName: userName });
-    this.db.ref(`users/${this.auth.currentUser.uid}/collections/${["Favourites"]}`).set("set at creation");
+    this.db.ref(`users/${this.auth.currentUser.uid}/collections/${["Favorites"]}`).set("set at creation");
   };
   // sign in with user
   doSignInWithEmailAndPassword = (email, password) => this.auth.signInWithEmailAndPassword(email, password);

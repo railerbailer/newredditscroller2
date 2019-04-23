@@ -108,9 +108,9 @@ const AddMarkup = props => {
               key={i}
               ref={el => (this[`gridElement${i}`] = el)}
               className={`gridElement pics ${image.className}`}
-              onClick={() => {
-                fullscreen && getElementIndex(i, this[`gridElement${i}`]);
-              }}
+              // onClick={() => {
+              //   !fullscreen && getElementIndex(i, this[`gridElement${i}`]);
+              // }}
             >
               <LazyLoad
                 unmountIfInvisible={true}
@@ -200,9 +200,9 @@ const AddMarkup = props => {
               key={i}
               ref={el => (this[`gridElement${i}`] = el)}
               className={`gridElement gifs ${gif.className}`}
-              onClick={() => {
-                fullscreen && getElementIndex(i, this[`gridElement${i}`]);
-              }}
+              // onClick={() => {
+              //   !fullscreen && getElementIndex(i, this[`gridElement${i}`]);
+              // }}
             >
               <LazyLoad
                 unmountIfInvisible={true}

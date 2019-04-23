@@ -811,7 +811,7 @@ export const NSFW = [
   "TSonFM",
   "happygaps",
   "cougars",
-  "CumshotSelfies",
+
   "Facials",
   "Stoyaxxx",
   "SexiestPetites",
@@ -5110,7 +5110,7 @@ export const cumNSFW = [
   "bodyshots",
   "after_the_shot",
   "cumshots",
-  "CumshotSelfies",
+
   "prematurecumshots",
   "cumshot",
   "cumshotgifs",
@@ -5839,7 +5839,7 @@ export const straight = [
   "NSFWBarista",
   "PremiumSnapchat",
   "Milfie",
-  "CumshotSelfies",
+
   "Nude_Selfie",
   "GirlsWithiPhones",
   "slutsofsnapchat",

@@ -27,7 +27,7 @@ class ChooseCategory extends Component {
               }}
               className="item1"
             >
-              Not safe for work (18+)
+              NSFW (18+)
             </button>
 
             <button
@@ -38,6 +38,19 @@ class ChooseCategory extends Component {
             >
               Safe for work
             </button>
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              margin: "auto",
+              display: "block",
+              bottom: 10,
+              width: "100%",
+              textAlign: "center",
+              color: "white"
+            }}
+          >
+            <h3>Save your favorites in collections and share!</h3>
           </div>
         </div>
       )

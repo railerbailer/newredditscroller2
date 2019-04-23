@@ -144,10 +144,9 @@ i {
 .addNewMediaIcon {
   padding: 20px 20px 0 0;
   position: absolute;
-  z-index: 2;
   bottom: 5px;
   left: 5px;
-  font-size: 22px;
+  font-size: 24px;
   opacity: 0.8;
   color: white !important;
   filter: drop-shadow(1px 1px black);
@@ -775,6 +774,7 @@ button {
   overflow-x: hidden;
 }
 .mediaAddDropdown {
+  z-index: 19231023901923 !important;
   position: absolute !important;
   margin-top: 50px;
 }

@@ -26,7 +26,7 @@ class App extends Component {
           <Route path="/collections" exact component={trackerHoc(userCollectionCards)} />
           <Route path="/collections/:collection" exact component={trackerHoc(Collections)} />
           <Route path="/" exact component={trackerHoc(ChooseCategory)} />
-          <Route component={trackerHoc(ChooseCategory)} />
+          <Route path="/:whatever" exact component={trackerHoc(ChooseCategory)} />
           <Route path="/subreddits/:subreddit" exact component={trackerHoc(Scroller)} />
         </Suspense>
       </BrowserRouter>

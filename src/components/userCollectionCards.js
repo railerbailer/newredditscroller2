@@ -41,19 +41,19 @@ class UserCollectionCards extends Component {
   }
   componentDidMount() {
     this.props.firebase.auth.onAuthStateChanged(user => {
+      this.props.firebase.db.ref(`public`).on("value", snapshot => {
+        const collections = _.get(snapshot.val(), "collections", {});
+        const collectionsArray = _.flatMap(Object.values(collections).map(item => Object.values(item)));
+        this.setState({
+          publicCollections: collectionsArray
+        });
+      });
       if (user) {
         this.setState({ user: user });
         this.props.firebase.db.ref(`users/${user.uid}`).on("value", snapshot => {
           const collections = _.get(snapshot.val(), "collections", {});
           this.setState({ userCollections: collections });
           // Object.values(snapshot.val().collections).some(collection => this.props.match.params.collection === collection)
-        });
-        this.props.firebase.db.ref(`public`).on("value", snapshot => {
-          const collections = _.get(snapshot.val(), "collections", {});
-          const collectionsArray = _.flatMap(Object.values(collections).map(item => Object.values(item)));
-          this.setState({
-            publicCollections: collectionsArray
-          });
         });
       } else {
         this.setState({ user: null });

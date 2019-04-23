@@ -1,11 +1,12 @@
 import { gifsArray, subredditArray, straight, artArray, foodArray, animalsArray } from "../subreddits";
+import _ from "lodash";
 
 export const dataHandler = value => {
   let lowerCaseCategory = value.toLowerCase();
   if (lowerCaseCategory === "nsfw") {
-    return straight;
+    return _.uniq(straight);
   } else if (lowerCaseCategory === "sfw") {
-    return subredditArray.concat(artArray, foodArray, animalsArray);
+    return _.uniq(subredditArray.concat(artArray, foodArray, animalsArray));
   }
   //else if (lowerCaseCategory === "sfw") {
   //   return subredditArray;
@@ -17,9 +18,9 @@ export const dataHandler = value => {
   } else if (lowerCaseCategory === "animals") {
     return animalsArray;
   } else if (lowerCaseCategory === "search") {
-    return subredditArray.concat(artArray, foodArray, animalsArray, straight, gifsArray);
+    return _.uniq(subredditArray.concat(artArray, foodArray, animalsArray, straight, gifsArray));
   } else {
-    return subredditArray.concat(artArray, foodArray, animalsArray, gifsArray);
+    return _.uniq(subredditArray.concat(artArray, foodArray, animalsArray, gifsArray));
   }
 };
 

@@ -11,8 +11,8 @@ const Image = props => {
     ratioClassName,
     toggleIsModalVisible,
     addMediaToCollection,
-    firebaseId
-    // fullscreen
+    firebaseId,
+    fullscreen
   } = props;
 
   const menu = () => {
@@ -35,7 +35,7 @@ const Image = props => {
       <Menu>
         <h4 style={{ marginLeft: "4px" }}>
           <Icon type="bars" /> Add to collection
-          <Icon onClick={() => setDropDown(false)} style={{ float: "right", fontSize: 12, margin: 4 }} type="close" />
+          <Icon onClick={() => setDropDown(false)} type="close" />
         </h4>
 
         {!lists.length && (
@@ -62,13 +62,24 @@ const Image = props => {
         src={src}
       />
 
-      <Dropdown overlayClassName="mediaAddDropdown" placement="topRight" visible={isDropDownShowing} overlay={menu()}>
+      <Dropdown
+        overlayStyle={{ zIndex: fullscreen ? 1231231231231231 : 2 }}
+        overlayClassName="mediaAddDropdown"
+        placement="topRight"
+        visible={isDropDownShowing}
+        overlay={menu()}
+      >
         <div
+          style={{ zIndex: fullscreen ? 1231231231231231 : 2 }}
           onClick={() => setDropDown(!isDropDownShowing)}
           className="addNewMediaIcon"
           onBlur={() => setDropDown(false)}
         >
-          <Icon className="addNewMediaIcon" type={isDropDownShowing ? "up" : "plus"} />
+          <Icon
+            style={{ zIndex: fullscreen ? 1231231231231231 : 2 }}
+            className="addNewMediaIcon"
+            type={isDropDownShowing ? "up" : "plus"}
+          />
         </div>
       </Dropdown>
     </React.Fragment>

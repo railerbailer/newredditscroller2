@@ -42,6 +42,7 @@ class Video extends Component {
       <Menu>
         <h4 style={{ marginLeft: "4px" }}>
           <Icon type="bars" /> Add to collection
+          <Icon onClick={() => this.setState({ isDropDownShowing: false })} type="close" />
         </h4>
         {listMenuItem}
       </Menu>
@@ -67,8 +68,13 @@ class Video extends Component {
           ref={el => (this.videoPlayer = el)}
           onClick={() => {
             toggleFullscreen(index);
+            if (fullscreen) {
+              this.setState({ isPlaying: false }, () => this.videoPlayer.pause());
+            } else if (!fullscreen) {
+              this.setState({ isPlaying: true }, () => this.videoPlayer.play());
+            }
+            // (this.state.isPlaying && fullscreen) || (!this.state.isPlaying && !fullscreen && this.togglePlaying());
             this.toggleIsDropDownShowing(false);
-            (!this.state.isPlaying && fullscreen) || (this.state.isPlaying && !fullscreen && this.togglePlaying());
           }}
           autoPlay={!mobile && fullscreen}
           poster={mobile ? poster : undefined}
@@ -91,6 +97,7 @@ class Video extends Component {
           Sorry, your browser doesn't support embedded videos.
         </video>
         <Dropdown
+          overlayStyle={{ zIndex: fullscreen ? 1231231231231231 : 2 }}
           onBlur={() => setTimeout((() => this.toggleIsDropDownShowing(false), 500))}
           overlayClassName="mediaAddDropdown"
           placement="topRight"
@@ -98,11 +105,16 @@ class Video extends Component {
           overlay={this.menu()}
         >
           <div
+            style={{ zIndex: fullscreen ? 1231231231231231 : 2 }}
             onClick={() => this.toggleIsDropDownShowing(!this.state.isDropDownShowing)}
             className="addNewMediaIcon"
             onBlur={() => this.toggleIsDropDownShowing(false)}
           >
-            <Icon className="addNewMediaIcon" type={this.state.isDropDownShowing ? "up" : "plus"} />
+            <Icon
+              style={{ zIndex: fullscreen ? 1231231231231231 : 2 }}
+              className="addNewMediaIcon"
+              type={this.state.isDropDownShowing ? "up" : "plus"}
+            />
           </div>
         </Dropdown>
         {!this.state.isPlaying ? (

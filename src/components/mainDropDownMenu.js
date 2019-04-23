@@ -54,7 +54,7 @@ const MainDropDownMenu = props => {
           title: collection,
           data: collectionData,
           description: description,
-          madeBy: user.displayName || user.email
+          madeBy: user.displayName || "anonymous"
         }
       });
     const confirm = Modal.confirm;
@@ -136,7 +136,7 @@ const MainDropDownMenu = props => {
       >
         {collection}
       </span>
-      {collection !== "Favourites" && (
+      {collection !== "Favorites" && (
         <React.Fragment>
           <Icon onClick={() => showDeleteConfirm(collection)} className="deleteCollectionIcon" type="delete" />
           {Object.entries(userCollections[collection]).length !== 0 && (
@@ -260,7 +260,7 @@ const MainDropDownMenu = props => {
                   toggleIsModalVisible();
                 }}
               >
-                <Icon type="login" /> Log in
+                <Icon onClick={() => toggleDropDown(false)} type="login" /> Log in or register
               </div>
             )}
           </Menu.Item>

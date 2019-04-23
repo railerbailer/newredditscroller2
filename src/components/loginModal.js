@@ -19,10 +19,15 @@ class LoginModal extends Component {
     this.setState({
       errorMessagePassword: "",
       errorMessageEmail: "",
-      errorMessageMatchingPassword: ""
+      errorMessageMatchingPassword: "",
+      errorMessageUserName: ""
     });
     if (registerMode && secondPassword !== password) {
       this.setState({ errorMessageMatchingPassword: "Passwords not matching" });
+      return;
+    }
+    if (registerMode && !userName.length) {
+      this.setState({ errorMessageUserName: "User name required" });
       return;
     }
     try {
@@ -63,7 +68,8 @@ class LoginModal extends Component {
       password,
       registerMode,
       secondPassword,
-      errorMessageMatchingPassword
+      errorMessageMatchingPassword,
+      errorMessageUserName
     } = this.state;
     return (
       <Modal
@@ -116,6 +122,7 @@ class LoginModal extends Component {
             }
           />
         )}
+        {errorMessageUserName}
         <Input.Password
           value={password}
           prefix={
@@ -160,7 +167,15 @@ class LoginModal extends Component {
         {!registerMode && (
           <Button
             style={{ position: "absolute", bottom: "10px", left: "10px" }}
-            onClick={() => this.setState({ registerMode: true })}
+            onClick={() =>
+              this.setState({
+                registerMode: true,
+                errorMessagePassword: "",
+                errorMessageEmail: "",
+                errorMessageMatchingPassword: "",
+                errorMessageUserName: ""
+              })
+            }
           >
             Register
           </Button>
@@ -169,12 +184,4 @@ class LoginModal extends Component {
     );
   }
 }
-
-// firebase.doSignInWithEmailAndPassword("sumsar@live.com", "whatever");
-// firebase.readDataOnUser();
-
-// firebase.updateDataOnUser({
-//   whatever: "trueNOT",
-//   image: ["first image", "secondImage", "third", "fouasdasdrtgh", "fith"]
-// });
 export default LoginModal;

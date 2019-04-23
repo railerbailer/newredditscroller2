@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Card } from "antd";
 
 const CardComponent = props => {
-  const { imageSource, VideoSource, title, madeBy, description, data, pushToHistory } = props;
+  const { title, madeBy, description, data, pushToHistory } = props;
   const { Meta } = Card;
-  const [media, setMedia] = useState([]);
   const mediaSource = () => {
     if (data && Object.entries(data).length !== 0) {
       const theData = Object.entries(data);

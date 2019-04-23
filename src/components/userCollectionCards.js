@@ -13,7 +13,6 @@ import MainDropDownMenu from "./mainDropDownMenu";
 import CardComponent from "./cardComponent";
 import GoBackButton from "./goBackButton";
 
-let sources = [];
 class UserCollectionCards extends Component {
   state = {
     mobile: false,
@@ -60,26 +59,23 @@ class UserCollectionCards extends Component {
         this.setState({ user: null });
       }
     });
-    this.setSources([]);
-    this.props.match.params.collection &&
+
+    if (this.props.match.params.collection) {
       setTimeout(() => this.getCollection(this.props.match.params.collection), 1000);
+    }
   }
   getCollection = collection => {
     this.toggleIsLoading(true);
     this.setActiveCollection(collection);
-    const { publicCollections, userCollections } = this.state;
+    const { userCollections } = this.state;
     if (userCollections[collection]) {
-      this.setSources(Object.values(userCollections[collection]));
       this.toggleIsLoading(false);
       return;
-    } else
-      publicCollections.map(item => {
-        if (item.title === collection) this.setSources(Object.values(item.data));
-      });
+    }
 
     this.toggleIsLoading(false);
+    return;
   };
-  setSources = value => (sources = value);
   setNewListName = listName => this.setState({ newListName: listName });
   toggleShowListInput = bool => this.setState({ showListInput: bool });
   setActiveCollection = collection => this.setState({ activeCollection: collection });
@@ -90,7 +86,7 @@ class UserCollectionCards extends Component {
   toggleSearchButton = value => this.setState({ isSearchActivated: value });
   categorySet = val => this.setState({ category: val });
   setAutoCompleteDataSource = value => this.setState({ autoCompleteDataSource: value });
-  toggleDropDown = () => this.setState({ isDropDownShowing: !this.state.isDropDownShowing });
+  toggleDropDown = value => this.setState({ isDropDownShowing: value });
   toggleGifsOnly = async () => {
     this.setState({
       isOnlyGifsShowing: !this.state.isOnlyGifsShowing
@@ -123,7 +119,7 @@ class UserCollectionCards extends Component {
 
   switchCat = _.throttle(async () => {
     window.stop();
-    this.state.isDropDownShowing && this.toggleDropDown();
+    this.toggleDropDown(false);
     this.setActiveCollection("");
     await this.getCollection(shuffleArray(this.state.publicCollections));
   }, 500);
@@ -135,8 +131,6 @@ class UserCollectionCards extends Component {
     this.setState({ isDropDownShowing: false });
   };
   addMediaToCollection = (fields, collection) => {
-    console.log("fields", fields);
-    console.log("collection", collection);
     this.state.user
       ? this.props.firebase.updateDataToCollection({ ...fields }, collection)
       : this.toggleIsModalVisible();
@@ -144,7 +138,7 @@ class UserCollectionCards extends Component {
 
   render() {
     const {
-      isModalVisible,
+      // isModalVisible,
       isSearchActivated,
       isDropDownShowing,
       autoCompleteDataSource,
@@ -153,7 +147,7 @@ class UserCollectionCards extends Component {
       collection,
       isOnlyGifsShowing,
       isOnlyPicsShowing,
-      mobile,
+      // mobile,
       showListInput,
       userCollections,
       activeCollection,
@@ -177,7 +171,6 @@ class UserCollectionCards extends Component {
           />
         );
       });
-    console.log("publclscs", publicCollections);
     return (
       <Swipeable className={`wrapper`}>
         <div className="topbarZen">
@@ -198,9 +191,9 @@ class UserCollectionCards extends Component {
           />
           <GoBackButton goBackFunc={this.props.history.goBack} />
           <MainDropDownMenu
+            setSources={() => {}}
             collectionsMode={true}
             isDropDownShowing={isDropDownShowing}
-            setSources={this.setSources}
             isOnlyGifsShowing={isOnlyGifsShowing}
             isOnlyPicsShowing={isOnlyPicsShowing}
             category={category}
@@ -219,12 +212,15 @@ class UserCollectionCards extends Component {
             pushToHistory={this.pushToHistory}
           />
         </div>
-        <div className={`userCollectionContent ${fullscreenActive && "fullscreen"}`}>
-          {isLoading ? (
+        <div
+          onClick={() => this.toggleDropDown(false)}
+          className={`userCollectionContent ${fullscreenActive && "fullscreen"}`}
+        >
+          {!data.length ? (
             <div className="spinner">
               <div className="centered-text">
                 <div className="centered-text">
-                  Loading <strong>{collection}</strong>
+                  Loading <strong>collections</strong>
                 </div>
               </div>
               <div className="carSpinner">

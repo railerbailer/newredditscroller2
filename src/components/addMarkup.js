@@ -72,7 +72,7 @@ const AddMarkup = props => {
     }
   };
   const getIdFromUrl = url => {
-    return url.match(/(?<=.[a-z]\/)([^\.].*?)(?=[\.|\/])/g).join("");
+    return url.match(/(?<=.[a-z]\/)([^.].*?)(?=[.|\/])/g).join("");
   };
   const swipedDown = (e, deltaY, isFlick) => {
     if (isFlick || deltaY > 50) {

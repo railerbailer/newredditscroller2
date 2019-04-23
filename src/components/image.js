@@ -11,8 +11,8 @@ const Image = props => {
     ratioClassName,
     toggleIsModalVisible,
     addMediaToCollection,
-    firebaseId,
-    fullscreen
+    firebaseId
+    // fullscreen
   } = props;
 
   const menu = () => {
@@ -52,21 +52,24 @@ const Image = props => {
   return (
     <React.Fragment>
       <img
-        onClick={() => toggleFullscreen(index)}
+        onClick={() => {
+          setDropDown(false);
+          toggleFullscreen(index);
+        }}
         alt="Could not be loaded"
         className={className}
         ref={img => (this.img = img)}
         src={src}
       />
 
-      <Dropdown
-        onBlur={() => setTimeout((() => setDropDown(false), 500))}
-        overlayClassName="mediaAddDropdown"
-        placement="topRight"
-        visible={isDropDownShowing}
-        overlay={menu()}
-      >
-        <Icon onClick={() => setDropDown(!isDropDownShowing)} className="addNewMediaIcon" type="plus" />
+      <Dropdown overlayClassName="mediaAddDropdown" placement="topRight" visible={isDropDownShowing} overlay={menu()}>
+        <div
+          onClick={() => setDropDown(!isDropDownShowing)}
+          className="addNewMediaIcon"
+          onBlur={() => setDropDown(false)}
+        >
+          <Icon className="addNewMediaIcon" type={isDropDownShowing ? "up" : "plus"} />
+        </div>
       </Dropdown>
     </React.Fragment>
   );

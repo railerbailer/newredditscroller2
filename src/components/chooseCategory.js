@@ -11,34 +11,36 @@ class ChooseCategory extends Component {
 
   render() {
     return (
-      <div className="categoryModal">
-        <FloatingBalls />
-        <h1 className="scrollLogo">sliddit.</h1>
-        <div className="grid-container">
-          <h2 className="item0">
-            Scroll more than 1.000.000 of pics and gifs!
-            <br />
-            <p style={{ marginBottom: "-20px", fontSize: ".8em" }}>Pick a domain</p>
-          </h2>
-          <button
-            onClick={() => {
-              this.pushHistory("/subreddits/nsfw");
-            }}
-            className="item1"
-          >
-            Not safe for work (18+)
-          </button>
+      this.props.match.params.whatever !== "collections" && (
+        <div className="categoryModal">
+          <FloatingBalls />
+          <h1 className="scrollLogo">sliddit.</h1>
+          <div className="grid-container">
+            <h2 className="item0">
+              Scroll more than 1.000.000 of pics and gifs!
+              <br />
+              <p style={{ marginBottom: "-20px", fontSize: ".8em" }}>Pick a domain</p>
+            </h2>
+            <button
+              onClick={() => {
+                this.pushHistory("/subreddits/nsfw");
+              }}
+              className="item1"
+            >
+              Not safe for work (18+)
+            </button>
 
-          <button
-            onClick={() => {
-              this.pushHistory("/subreddits/sfw");
-            }}
-            className="item2"
-          >
-            Safe for work
-          </button>
+            <button
+              onClick={() => {
+                this.pushHistory("/subreddits/sfw");
+              }}
+              className="item2"
+            >
+              Safe for work
+            </button>
+          </div>
         </div>
-      </div>
+      )
     );
   }
 }

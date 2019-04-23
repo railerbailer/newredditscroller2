@@ -91,7 +91,7 @@ class Scroller extends Component {
     this.setState({ errorMessage: value });
   };
   setAutoCompleteDataSource = value => this.setState({ autoCompleteDataSource: value });
-  toggleDropDown = () => this.setState({ isDropDownShowing: !this.state.isDropDownShowing });
+  toggleDropDown = value => this.setState({ isDropDownShowing: value });
   toggleGifsOnly = async () => {
     this.setState({
       isOnlyGifsShowing: !this.state.isOnlyGifsShowing
@@ -125,7 +125,7 @@ class Scroller extends Component {
   switchCat = _.throttle(async () => {
     this.toggleIsLoading(true);
     window.stop();
-    //sätt att dropdown stängs etc om isLoading = true
+    this.toggleDropDown(false);
     this.setActiveCollection("");
 
     !this.state.isLoading && (await this.getSubreddit(shuffleArray(dataHandler(this.state.category))));
@@ -242,7 +242,7 @@ class Scroller extends Component {
             pushToHistory={this.pushToHistory}
           />
         </div>
-        <div className={`contentZen ${fullscreenActive && "fullscreen"}`}>
+        <div onClick={() => this.toggleDropDown(false)} className={`contentZen ${fullscreenActive && "fullscreen"}`}>
           {reload > 6 && (
             <div
               onClick={() => this.getSubreddit(shuffleArray(dataHandler(this.state.category)))}
@@ -317,9 +317,8 @@ class Scroller extends Component {
         this.setState({
           after: jsonData.data.after
         });
-        console.log(jsonData.data.children);
         sources = await dataMapper(jsonData.data.children, this.state.mobile);
-        const haveVideoOrGif = sources.length && sources.some(media => media.gif || media.video);
+        // const haveVideoOrGif = sources.length && sources.some(media => media.gif || media.video);
       })
 
       .catch(async () => {
@@ -349,7 +348,7 @@ class Scroller extends Component {
           after: jsonData.data.after
         });
         let afterData = await dataMapper(jsonData.data.children, this.state.mobile);
-        const haveVideoOrGif = afterData.length && afterData.some(media => media.gif || media.video);
+        // const haveVideoOrGif = afterData.length && afterData.some(media => media.gif || media.video);
         sources = sources.concat(afterData);
       })
       .catch(error => {

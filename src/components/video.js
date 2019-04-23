@@ -67,7 +67,8 @@ class Video extends Component {
           ref={el => (this.videoPlayer = el)}
           onClick={() => {
             toggleFullscreen(index);
-            this.state.isPlaying && fullscreen && this.togglePlaying();
+            this.toggleIsDropDownShowing(false);
+            (!this.state.isPlaying && fullscreen) || (this.state.isPlaying && !fullscreen && this.togglePlaying());
           }}
           autoPlay={!mobile && fullscreen}
           poster={mobile ? poster : undefined}
@@ -85,7 +86,7 @@ class Video extends Component {
           loop={true}
           preload={"metadata"}
         >
-          {!mobile && <source src={`${src}#t=0.1`} type="video/mp4" />}
+          {/* {!mobile && <source src={`${src}#t=0.1`} type="video/mp4" />} */}
           <source src={src} type="video/mp4" />
           Sorry, your browser doesn't support embedded videos.
         </video>
@@ -96,11 +97,13 @@ class Video extends Component {
           visible={this.state.isDropDownShowing}
           overlay={this.menu()}
         >
-          <Icon
+          <div
             onClick={() => this.toggleIsDropDownShowing(!this.state.isDropDownShowing)}
             className="addNewMediaIcon"
-            type="plus"
-          />
+            onBlur={() => this.toggleIsDropDownShowing(false)}
+          >
+            <Icon className="addNewMediaIcon" type={this.state.isDropDownShowing ? "up" : "plus"} />
+          </div>
         </Dropdown>
         {!this.state.isPlaying ? (
           <Icon className="playButton" type={"youtube"} onClick={() => this.togglePlaying()} />

@@ -2,7 +2,6 @@ html {
   background: rgb(20, 20, 20);
 }
 body {
-  background: rgb(20, 20, 20);
   font-family: "Varela Round", sans-serif !important;
   /* font-family: "Roboto", sans-serif; */
   margin: 0;
@@ -148,7 +147,7 @@ i {
   z-index: 2;
   bottom: 5px;
   left: 5px;
-  font-size: 20px;
+  font-size: 22px;
   opacity: 0.8;
   color: white !important;
   filter: drop-shadow(1px 1px black);
@@ -771,13 +770,13 @@ button {
   top: 1px;
   right: 5px;
   max-width: 100%;
-  height: 100%;
   max-height: 90vh !important;
   overflow-y: scroll;
   overflow-x: hidden;
 }
 .mediaAddDropdown {
   position: absolute !important;
+  margin-top: 50px;
 }
 .loginButton {
   font-size: 28px;

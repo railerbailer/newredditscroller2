@@ -16,7 +16,6 @@ const SearchComponent = props => {
     if (!value) {
       value = "Type your search";
     }
-    console.log(collectionMode, publicCollections);
     let searchAbleData = collectionMode ? publicCollections : dataHandler("search");
     let result = searchAbleData.filter(str => str.toLowerCase().includes(value.toLowerCase()));
     result = result.reverse();

@@ -21,8 +21,8 @@ const MainDropDownMenu = props => {
     isDropDownShowing,
     toggleDropDown,
     firebase,
-    pushToHistory,
-    collectionsMode
+    pushToHistory
+    // collectionsMode
   } = props;
   const addNewList = () => {
     const nameExists = Object.keys(userCollections).some(name => name === newListName);
@@ -38,7 +38,7 @@ const MainDropDownMenu = props => {
   const logOut = async () => {
     await firebase.doSignOut();
     message.info(`Logged out`);
-    toggleDropDown();
+    toggleDropDown(false);
   };
   const saveFeedback = input => {
     firebase.pushFeedback(input);
@@ -70,6 +70,7 @@ const MainDropDownMenu = props => {
       zIndex: 12313123,
       onOk() {
         addCollectionToPublic();
+        toggleDropDown(false);
         message.info(`${collection} has been added to public usercollections`);
       },
       onCancel() {
@@ -92,6 +93,7 @@ const MainDropDownMenu = props => {
       zIndex: 12313123,
       onOk() {
         saveFeedback(feedbackInput);
+        toggleDropDown(false);
         message.info(`"${feedbackInput}" has been recieved, thank you!`);
       },
       onCancel() {
@@ -149,7 +151,7 @@ const MainDropDownMenu = props => {
       //   trigger={["click", "hover", "contextMenu"]}
       overlayClassName="dropDownMenu"
       visible={isDropDownShowing}
-      onClick={toggleDropDown}
+      onClick={() => toggleDropDown(!isDropDownShowing)}
       overlay={
         <Menu>
           <Menu.Item disabled>
@@ -204,7 +206,7 @@ const MainDropDownMenu = props => {
           </Menu.Item>
           <Menu.Divider />
           <h4 style={{ marginLeft: "4px" }}>
-            <Link to={`/collections`}>
+            <Link style={{ color: "mediumvioletred" }} to={`/collections`}>
               <Icon type="solution" /> Browse user collections (click here)
             </Link>
           </h4>
@@ -256,7 +258,6 @@ const MainDropDownMenu = props => {
               <div
                 onClick={() => {
                   toggleIsModalVisible();
-                  toggleDropDown();
                 }}
               >
                 <Icon type="login" /> Log in
@@ -267,7 +268,7 @@ const MainDropDownMenu = props => {
       }
     >
       <div className="iconSetting">
-        <Icon onBlur={() => toggleDropDown()} type={isDropDownShowing ? "close" : "setting"} className="chooseCat" />
+        <Icon type={isDropDownShowing ? "close" : "setting"} className="chooseCat" />
       </div>
     </Dropdown>
   );

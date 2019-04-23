@@ -67,8 +67,10 @@ class CollectionsScroller extends Component {
     // if (dataHandler("nsfw").includes(this.props.match.params.collection)) {
     //   this.setState({ category: "nsfw" });
     // }
-    this.props.match.params.collection &&
+    if (this.props.match.params.collection) {
+      this.toggleIsLoading(true);
       setTimeout(() => this.getCollection(this.props.match.params.collection), 2000);
+    }
   }
   getCollection = collection => {
     this.toggleIsLoading(true);
@@ -80,10 +82,12 @@ class CollectionsScroller extends Component {
       return;
     } else
       publicCollections.map(item => {
-        if (item.title === collection) this.setSources(Object.values(item.data));
+        if (item.title === collection) return this.setSources(Object.values(item.data));
+        else return null;
       });
 
     this.toggleIsLoading(false);
+    return;
   };
   setSources = value => (sources = value);
   setNewListName = listName => this.setState({ newListName: listName });
@@ -96,7 +100,7 @@ class CollectionsScroller extends Component {
   toggleSearchButton = value => this.setState({ isSearchActivated: value });
   categorySet = val => this.setState({ category: val });
   setAutoCompleteDataSource = value => this.setState({ autoCompleteDataSource: value });
-  toggleDropDown = () => this.setState({ isDropDownShowing: !this.state.isDropDownShowing });
+  toggleDropDown = value => this.setState({ isDropDownShowing: value });
   toggleGifsOnly = async () => {
     this.setState({
       isOnlyGifsShowing: !this.state.isOnlyGifsShowing
@@ -129,10 +133,10 @@ class CollectionsScroller extends Component {
 
   switchCat = _.throttle(async () => {
     window.stop();
-    this.state.isDropDownShowing && this.toggleDropDown();
+    this.toggleDropDown(false);
     this.setActiveCollection("");
 
-    await this.getCollection(shuffleArray(Object.keys(this.state.publicCollections)));
+    return await this.getCollection(shuffleArray(Object.keys(this.state.publicCollections)));
   }, 500);
 
   handleKeyDown = e => {

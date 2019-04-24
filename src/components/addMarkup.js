@@ -128,7 +128,7 @@ const AddMarkup = props => {
                 //               </div>
                 //             }
                 height={size[image.className]}
-                offset={mobile ? 800 : 1200}
+                offset={800}
                 throttle={250}
                 key={i}
               >
@@ -171,7 +171,7 @@ const AddMarkup = props => {
                 // }
                 throttle={250}
                 height={size[video.className]}
-                offset={mobile ? 800 : 1400}
+                offset={800}
                 key={i}
               >
                 <Video
@@ -215,7 +215,7 @@ const AddMarkup = props => {
                 // }
                 throttle={250}
                 height={size[gif.className]}
-                offset={mobile ? 800 : 1400}
+                offset={800}
                 key={i}
               >
                 <Image

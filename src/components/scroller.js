@@ -37,7 +37,6 @@ class Scroller extends Component {
     userCollections: { Loading: "kek" },
     user: null,
     activeCollection: ""
-    // publicCollections: []
   };
 
   componentDidUpdate(prevProps, prevState) {

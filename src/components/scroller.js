@@ -206,11 +206,11 @@ class Scroller extends Component {
         onSwipedRight={this.swipedRight}
       >
         <div className="topbarZen">
-          <LoginModal
+          {/* <LoginModal
             firebase={firebase}
             toggleIsModalVisible={this.toggleIsModalVisible}
             isModalVisible={this.state.isModalVisible}
-          />
+          /> */}
           <SearchComponent
             setAutoCompleteDataSource={this.setAutoCompleteDataSource}
             getSubreddit={this.getSubreddit}
@@ -220,7 +220,7 @@ class Scroller extends Component {
             toggleSearchButton={this.toggleSearchButton}
           />
           <GoBackButton goBackFunc={this.props.history.goBack} />
-          <MainDropDownMenu
+          {/* <MainDropDownMenu
             isDropDownShowing={isDropDownShowing}
             setSources={this.setSources}
             isOnlyGifsShowing={isOnlyGifsShowing}
@@ -239,7 +239,7 @@ class Scroller extends Component {
             toggleShowListInput={this.toggleShowListInput}
             firebase={firebase}
             pushToHistory={this.pushToHistory}
-          />
+          /> */}
         </div>
         <div onClick={() => this.toggleDropDown(false)} className={`contentZen ${fullscreenActive && "fullscreen"}`}>
           {reload > 6 && (
@@ -251,12 +251,12 @@ class Scroller extends Component {
               <p>Press to reload</p>
             </div>
           )}
-          <SwitchCategoryButtons
+          {/* <SwitchCategoryButtons
             isSearchActivated={isSearchActivated}
             showListInput={showListInput}
             isModalVisible={isModalVisible}
             switchCat={this.switchCat}
-          />
+          /> */}
 
           {isLoading ? (
             <div className="spinner">

@@ -276,7 +276,7 @@ class Scroller extends Component {
             </div>
           ) : (
             <React.Fragment>
-              {/* {sources.length && (
+              {sources.length && (
                 <AddMarkup
                   toggleIsModalVisible={this.toggleIsModalVisible}
                   activeCollection={this.state.activeCollection}
@@ -294,7 +294,7 @@ class Scroller extends Component {
                   isLoading={isLoading}
                   isLoadingMore={isLoadingMore}
                 />
-              )} */}
+              )}
               <div style={{ opacity: isSearchActivated ? 0.1 : 1 }} className="subredditNameDiv">
                 <h2 className="subredditName">
                   {activeCollection.length ? activeCollection : subreddit} <Icon type="tag-o" />

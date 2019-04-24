@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { Component } from "react";
 import { Icon, Button } from "antd";
 import LazyLoad from "react-lazyload";
 import Image from "./image";
@@ -7,57 +7,67 @@ import { throttle } from "lodash";
 import Swipeable from "react-swipeable";
 import { carPath } from "../utils/carPath";
 let html = [];
-const AddMarkup = props => {
+class AddMarkup extends Component {
   // const [html, setHtml] = useState([]);
-  const [activeElement, setActiveElement] = useState(0);
-  const { collectionsMode, activeCollection, isLoading } = props;
-  useEffect(() => {
-    this[`gridElement${activeElement}`] &&
-      this[`gridElement${activeElement}`].scrollIntoView({
-        block: "center"
-      });
-  }, [!props.fullscreen]);
-  const { collections } = props;
-
-  const getElementIndex = (index, ref) => {
-    setActiveElement(index);
-    props.toggleFullscreen();
+  state = {
+    activeElement: 0
   };
 
-  const getPreviousElement = throttle(() => {
+  componentDidUpdate(prevProps) {
+    const { activeElement } = this.state;
+    if (this.props.fullscreen !== prevProps.fullscreen) {
+      console.log("didupdate");
+      this[`gridElement${activeElement}`] &&
+        this[`gridElement${activeElement}`].scrollIntoView({
+          block: "center"
+        });
+    }
+  }
+  setActiveElement = value => {
+    this.setState({ activeElement: value });
+  };
+
+  getElementIndex = (index, ref) => {
+    this.setActiveElement(index);
+    this.props.toggleFullscreen();
+  };
+
+  getPreviousElement = throttle(() => {
+    const { activeElement } = this.state;
     if (!activeElement) return;
-    setActiveElement(activeElement - 1);
+    this.setActiveElement(activeElement - 1);
   }, 100);
-  const getNextElement = throttle(async () => {
+  getNextElement = throttle(async () => {
+    const { activeElement } = this.state;
     const haveMoreContent = activeElement + 1 >= html.length;
-    if (!props.activeCollection.length && haveMoreContent) {
-      if (!props.isLoadingMore) {
+    if (!this.props.activeCollection.length && haveMoreContent) {
+      if (!this.props.isLoadingMore) {
         try {
-          await props.loadMore();
+          await this.props.loadMore();
         } catch (error) {
           console.log("error", error);
         }
       }
-      setActiveElement(haveMoreContent ? activeElement + 1 : activeElement);
+      this.setActiveElement(haveMoreContent ? activeElement + 1 : activeElement);
 
       return;
     }
-    html.length !== activeElement + 1 && setActiveElement(activeElement + 1);
+    html.length !== activeElement + 1 && this.setActiveElement(activeElement + 1);
   }, 200);
-  const handleKeyDown = e => {
+  handleKeyDown = e => {
     if (e.key === "ArrowDown") {
-      !props.isSearchActivated && getNextElement();
+      !this.props.isSearchActivated && this.getNextElement();
     }
 
     if (e.key === "s") {
-      !props.isSearchActivated && getNextElement();
+      !this.props.isSearchActivated && this.getNextElement();
     }
     if (e.key === "w") {
-      !props.isSearchActivated && getPreviousElement();
+      !this.props.isSearchActivated && this.getPreviousElement();
     }
 
     if (e.key === "ArrowUp") {
-      !props.isSearchActivated && getPreviousElement();
+      !this.props.isSearchActivated && this.getPreviousElement();
     }
     if (e.key === " ") {
       if (this.videoPlayer) {
@@ -66,21 +76,30 @@ const AddMarkup = props => {
     }
   };
 
-  const swipedUp = (e, deltaY, isFlick) => {
+  swipedUp = (e, deltaY, isFlick) => {
     if (isFlick || deltaY > 75) {
-      getNextElement();
+      this.getNextElement();
     }
   };
-  const getIdFromUrl = url => {
+  swipedDown = (e, deltaY, isFlick) => {
+    if (isFlick || deltaY > 50) {
+      this.getPreviousElement();
+    }
+  };
+  getIdFromUrl = url => {
     return url.match(/(?<=.[a-z]\/)([^.].*?)(?=[.|\/])/g).join("");
   };
-  const swipedDown = (e, deltaY, isFlick) => {
-    if (isFlick || deltaY > 50) {
-      getPreviousElement();
-    }
-  };
-  const renderHtml = () => {
-    const { isOnlyPicsShowing, isOnlyGifsShowing, mobile, fullscreen, dataSource } = props;
+
+  renderHtml = () => {
+    const {
+      isOnlyPicsShowing,
+      isOnlyGifsShowing,
+      mobile,
+      fullscreen,
+      dataSource,
+      addMediaToCollection,
+      collections
+    } = this.props;
     let filteredData;
     if (mobile) filteredData = dataSource.filter(item => !item.gif);
     if (isOnlyPicsShowing) filteredData = dataSource.filter(item => !item.video).filter(item => !item.gif);
@@ -102,14 +121,14 @@ const AddMarkup = props => {
           const source = mobile
             ? image.low || image.high || thumbnail
             : image.high || image.low || image.source || thumbnail;
-          const imageId = getIdFromUrl(source);
+          const imageId = this.getIdFromUrl(source);
           return (
             <div
               key={i}
               ref={el => (this[`gridElement${i}`] = el)}
               className={`gridElement pics ${image.className}`}
               // onClick={() => {
-              //   !fullscreen && getElementIndex(i, this[`gridElement${i}`]);
+              //   !fullscreen && this.getElementIndex(i, this[`gridElement${i}`]);
               // }}
             >
               <LazyLoad
@@ -134,11 +153,11 @@ const AddMarkup = props => {
               >
                 <Image
                   firebaseId={imageId}
-                  toggleIsModalVisible={props.toggleIsModalVisible}
+                  toggleIsModalVisible={this.props.toggleIsModalVisible}
                   ratioClassName={image.className}
                   index={i}
-                  toggleFullscreen={getElementIndex}
-                  addMediaToCollection={props.addMediaToCollection}
+                  toggleFullscreen={this.getElementIndex}
+                  addMediaToCollection={addMediaToCollection}
                   collections={collections}
                   className="image"
                   key={`image${i}`}
@@ -150,11 +169,11 @@ const AddMarkup = props => {
           );
         }
         if (video) {
-          const videoId = getIdFromUrl(video.url);
+          const videoId = this.getIdFromUrl(video.url);
           return (
             <div
               // onClick={() => {
-              //   !fullscreen && getElementIndex(i, this[`gridElement${i}`]);
+              //   !fullscreen && this.getElementIndex(i, this[`gridElement${i}`]);
               // }}
               key={i}
               ref={el => (this[`gridElement${i}`] = el)}
@@ -176,12 +195,12 @@ const AddMarkup = props => {
               >
                 <Video
                   firebaseId={videoId}
-                  toggleIsModalVisible={props.toggleIsModalVisible}
+                  toggleIsModalVisible={this.props.toggleIsModalVisible}
                   className="video"
                   ratioClassName={video.className}
                   index={i}
-                  toggleFullscreen={getElementIndex}
-                  addMediaToCollection={props.addMediaToCollection}
+                  toggleFullscreen={this.getElementIndex}
+                  addMediaToCollection={addMediaToCollection}
                   collections={collections}
                   key={`video${i}`}
                   mobile={mobile}
@@ -194,14 +213,14 @@ const AddMarkup = props => {
           );
         }
         if (gif && !mobile) {
-          const gifId = getIdFromUrl(gif.url);
+          const gifId = this.getIdFromUrl(gif.url);
           return (
             <div
               key={i}
               ref={el => (this[`gridElement${i}`] = el)}
               className={`gridElement gifs ${gif.className}`}
               // onClick={() => {
-              //   !fullscreen && getElementIndex(i, this[`gridElement${i}`]);
+              //   !fullscreen && this.getElementIndex(i, this[`gridElement${i}`]);
               // }}
             >
               <LazyLoad
@@ -220,11 +239,11 @@ const AddMarkup = props => {
               >
                 <Image
                   firebaseId={gifId}
-                  toggleIsModalVisible={props.toggleIsModalVisible}
+                  toggleIsModalVisible={this.props.toggleIsModalVisible}
                   ratioClassName={gif.className}
                   index={i}
-                  toggleFullscreen={getElementIndex}
-                  addMediaToCollection={props.addMediaToCollection}
+                  toggleFullscreen={this.getElementIndex}
+                  addMediaToCollection={this.props.addMediaToCollection}
                   collections={collections}
                   className={`gif`}
                   src={gif.url}
@@ -236,65 +255,70 @@ const AddMarkup = props => {
         return null;
       });
   };
-  const { fullscreen, mobile, isLoadingMore } = props;
-  renderHtml();
-  return (
-    <Swipeable
-      onKeyDown={e => handleKeyDown(e)}
-      onSwipedDown={swipedDown}
-      onSwipedUp={swipedUp}
-      style={{ backgroundColor: "rgb(20, 20, 20)" }}
-    >
-      {fullscreen ? (
-        html.length && (
-          <div className="fullscreenScroll">
-            <Icon type="close" className="closeFullScreen" onClick={() => getElementIndex(activeElement)} />
+  render() {
+    const { activeElement } = this.state;
+    const { fullscreen, mobile, isLoadingMore, collectionsMode, activeCollection, isLoading } = this.props;
+    this.renderHtml();
+    return (
+      <Swipeable
+        onKeyDown={e => this.handleKeyDown(e)}
+        onSwipedDown={this.swipedDown}
+        onSwipedUp={this.swipedUp}
+        style={{ backgroundColor: "rgb(20, 20, 20)" }}
+      >
+        {fullscreen ? (
+          html.length && (
+            <div className="fullscreenScroll">
+              <Icon type="close" className="closeFullScreen" onClick={() => this.getElementIndex(activeElement)} />
 
-            <div style={{ zIndex: isLoadingMore ? 10 : fullscreen ? 1 : 0 }} className="loadingMoreSpinner">
-              <svg xmlns="http://www.w3.org/2000/svg">
-                <path fill="#FFF" d={carPath} />
-              </svg>
-            </div>
+              <div style={{ zIndex: isLoadingMore ? 10 : fullscreen ? 1 : 0 }} className="loadingMoreSpinner">
+                <svg xmlns="http://www.w3.org/2000/svg">
+                  <path fill="#FFF" d={carPath} />
+                </svg>
+              </div>
 
-            {html[activeElement]}
-            <div style={{ opacity: 1, height: "1px" }}>
-              {html[activeElement + 1]}
-              {(!mobile || activeElement > 2) && html[activeElement + 2]}
-              {(!mobile || activeElement > 9) && html[activeElement + 3]}
+              {html[activeElement]}
+              <div style={{ opacity: 1, height: "1px" }}>
+                {html[activeElement + 1]}
+                {(!mobile || activeElement > 2) && html[activeElement + 2]}
+                {(!mobile || activeElement > 9) && html[activeElement + 3]}
+              </div>
+              <div className="fullscreenButtonNext">
+                <Icon autoFocus type="up" className="fullscreenButtonNext" onClick={() => this.getNextElement()} />
+                <span>Show more</span>
+              </div>
+              {!this.props.isSearchActivated && (
+                <button className="inputFocus" ref={button => button && button.focus()} />
+              )}
             </div>
-            <div className="fullscreenButtonNext">
-              <Icon autoFocus type="up" className="fullscreenButtonNext" onClick={() => getNextElement()} />
-              <span>Show more</span>
-            </div>
-            {!props.isSearchActivated && <button className="inputFocus" ref={button => button && button.focus()} />}
+          )
+        ) : (
+          <div className="gridMedia">{html}</div>
+        )}
+        {!fullscreen && (
+          <div className="loadMoreWrapper">
+            {!collectionsMode && !activeCollection.length && !isLoading && html.length && (
+              <Button
+                onClick={async () => {
+                  try {
+                    await this.props.loadMore();
+                  } catch (error) {
+                    console.log("error", error);
+                  }
+                  this.renderHtml();
+                }}
+                type="primary"
+                icon={this.props.isLoadingMore ? "loading" : "loading-3-quarters"}
+                className="loadMoreButton"
+              >
+                Load more
+              </Button>
+            )}
           </div>
-        )
-      ) : (
-        <div className="gridMedia">{html}</div>
-      )}
-      {!fullscreen && (
-        <div className="loadMoreWrapper">
-          {!collectionsMode && !activeCollection.length && !isLoading && html.length && (
-            <Button
-              onClick={async () => {
-                try {
-                  await props.loadMore();
-                } catch (error) {
-                  console.log("error", error);
-                }
-                renderHtml();
-              }}
-              type="primary"
-              icon={props.isLoadingMore ? "loading" : "loading-3-quarters"}
-              className="loadMoreButton"
-            >
-              Load more
-            </Button>
-          )}
-        </div>
-      )}
-    </Swipeable>
-  );
-};
+        )}
+      </Swipeable>
+    );
+  }
+}
 
 export default AddMarkup;

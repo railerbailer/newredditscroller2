@@ -58,7 +58,7 @@ const Image = props => {
         }}
         alt="Could not be loaded"
         className={className}
-        ref={img => (this.img = img)}
+        // ref={img => (this.img = img)}
         src={src}
       />
 

@@ -14,7 +14,7 @@
     "react-lazyload": "^2.5.0",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "1.1.1",
+    "react-scripts": "^3.0.0",
     "react-swipeable": "^4.2.0",
     "react-transition-group": "^2.5.0"
   },
@@ -39,5 +39,17 @@
   },
   "devDependencies": {
     "react-snap": "^1.23.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

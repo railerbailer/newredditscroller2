@@ -290,10 +290,11 @@ class AddMarkup extends Component {
               </div>
 
               {html[activeElement]}
-              <div style={{ opacity: 1, height: "1px" }}>
+              <div style={{ opacity: 0.1, height: "1px" }}>
                 {html[activeElement + 1]}
                 {(!mobile || activeElement > 2) && html[activeElement + 2]}
-                {(!mobile || activeElement > 9) && html[activeElement + 3]}
+                {activeElement > 5 && html[activeElement + 3]}
+                {(!mobile || activeElement > 9) && html[activeElement + 4]}
               </div>
               <div className="fullscreenButtonNext">
                 <Icon autoFocus type="up" className="fullscreenButtonNext" onClick={() => this.getNextElement()} />

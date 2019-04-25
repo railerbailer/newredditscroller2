@@ -86,7 +86,8 @@ class AddMarkup extends Component {
     }
   };
   getIdFromUrl = url => {
-    return url.match(/(?<=.[a-z]\/)([^.].*?)(?=.$|\/$)/g).join("");
+    return url;
+    // return url.match(/(?<=.[a-z]\/)([^.].*?)(?=.$|\/$)/g).join("");
   };
 
   renderHtml = () => {

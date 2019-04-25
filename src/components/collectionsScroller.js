@@ -39,7 +39,11 @@ class CollectionsScroller extends Component {
     activeCollection: "",
     publicCollections: []
   };
-
+  componentDidUpdate(prevProps, prevState) {
+    if (!this.state.isLoading && prevProps.match.params.collection !== this.props.match.params.collection) {
+      this.getCollection(this.props.match.params.collection);
+    }
+  }
   componentWillMount() {
     if (window.screen.availWidth < 800) this.setState({ mobile: true });
   }
@@ -78,14 +82,11 @@ class CollectionsScroller extends Component {
     const { publicCollections, userCollections } = this.state;
     if (userCollections[collection]) {
       this.setSources(Object.values(userCollections[collection]));
-      this.toggleIsLoading(false);
-      return;
     } else
       publicCollections.map(item => {
-        if (item.title === collection) return this.setSources(Object.values(item.data));
+        if (item.title === collection) this.setSources(Object.values(item.data));
         else return null;
       });
-
     this.toggleIsLoading(false);
     return;
   };
@@ -134,9 +135,8 @@ class CollectionsScroller extends Component {
   switchCat = _.throttle(async () => {
     window.stop();
     this.toggleDropDown(false);
-    this.setActiveCollection("");
-
-    return await this.getCollection(shuffleArray(Object.keys(this.state.publicCollections)));
+    const collectionsArray = this.state.publicCollections.map(item => item.title);
+    this.pushToHistory(shuffleArray(collectionsArray));
   }, 500);
 
   handleKeyDown = e => {

@@ -87,7 +87,19 @@ class AddMarkup extends Component {
     }
   };
   getIdFromUrl = url => {
-    return url.match(/(?<=.[a-z]\/)([^.].*?)(?=[.|\/])/g).join("");
+    let urlWithoutHttps = url.replace("https://", "").replace("http://", "");
+    const indexOfFirstSlash = urlWithoutHttps.indexOf("/");
+    const stringAfterFirstSlash = urlWithoutHttps.slice(indexOfFirstSlash, urlWithoutHttps.length - 1);
+    const indexOfSecondSlash = stringAfterFirstSlash.indexOf("/");
+    const indexOfNextDot = stringAfterFirstSlash.indexOf(".");
+    const chooseIndex =
+      indexOfNextDot > 4
+        ? indexOfNextDot
+        : indexOfSecondSlash > 4
+        ? indexOfSecondSlash
+        : stringAfterFirstSlash.length - 1;
+    const id = stringAfterFirstSlash.slice(1, chooseIndex);
+    return id;
   };
 
   renderHtml = () => {

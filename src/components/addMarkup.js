@@ -8,7 +8,6 @@ import Swipeable from "react-swipeable";
 import { carPath } from "../utils/carPath";
 let html = [];
 class AddMarkup extends Component {
-  // const [html, setHtml] = useState([]);
   state = {
     activeElement: 0
   };
@@ -87,7 +86,7 @@ class AddMarkup extends Component {
     }
   };
   getIdFromUrl = url => {
-    return url.match(/(?<=.[a-z]\/)([^.].*?)(?=[.|\/])/g).join("");
+    return url.match(/(?<=.[a-z]\/)([^.].*?)(?=.$|\/$)/g).join("");
   };
 
   renderHtml = () => {

@@ -62,6 +62,7 @@ class Video extends Component {
 
   render() {
     const { src, fullscreen, toggleFullscreen, poster, mobile, index, className } = this.props;
+    const srcWithoutDash = src.split("DASH")[0];
     return (
       <React.Fragment>
         <video
@@ -92,7 +93,9 @@ class Video extends Component {
           loop={true}
           preload={"metadata"}
         >
-          {/* {!mobile && <source src={`${src}#t=0.1`} type="video/mp4" />} */}
+          {!mobile && <source src={`${srcWithoutDash}DASH_720`} type="video/mp4" />}
+          {!mobile && <source src={`${srcWithoutDash}DASH_480`} type="video/mp4" />}
+          {!mobile && <source src={`${srcWithoutDash}DASH_360`} type="video/mp4" />}
           <source src={src} type="video/mp4" />
           Sorry, your browser doesn't support embedded videos.
         </video>

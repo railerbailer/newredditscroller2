@@ -73,6 +73,8 @@ export const dataMapper = async (fetchedData, mobile) => {
       imageRatioCalculator(preview.reddit_video_preview.height, preview.reddit_video_preview.width);
       mediaData.video = {};
       mediaData.video.url = preview.reddit_video_preview.scrubber_media_url;
+      if (mediaData.video.url.includes("DASH_96"))
+        mediaData.video.url = mediaData.video.url.replace("DASH_96", "DASH_240");
       mediaData.video.height = preview.reddit_video_preview.height;
       mediaData.video.width = preview.reddit_video_preview.width;
       mediaData.video.className = imageRatioCalculator(

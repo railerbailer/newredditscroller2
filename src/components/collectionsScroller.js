@@ -84,7 +84,7 @@ class CollectionsScroller extends Component {
       this.setSources(Object.values(userCollections[collection]));
     } else
       publicCollections.map(item => {
-        if (item.title === collection) this.setSources(Object.values(item.data));
+        if (item.title === collection) return this.setSources(Object.values(item.data));
         else return null;
       });
     this.toggleIsLoading(false);

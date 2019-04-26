@@ -6,7 +6,7 @@ GoogleAnalytics.initialize("UA-121718818-1");
 
 const trackerHoc = (WrappedComponent, options = {}) => {
   const trackPage = page => {
-    if (process.env.NODE_ENV !== "development") return;
+    if (process.env.NODE_ENV === "development") return;
     GoogleAnalytics.set({
       page,
       ...options

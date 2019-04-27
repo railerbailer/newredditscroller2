@@ -77,7 +77,7 @@ class Video extends Component {
     return (
       <React.Fragment>
         <video
-          onLoadedMetadata={() => setLoadedData(loadedData + 1)}
+          onLoadedMetadata={() => setLoadedData(loadedData + 2)}
           ref={el => (this.videoPlayer = el)}
           onClick={() => {
             toggleFullscreen(index);

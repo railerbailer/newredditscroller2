@@ -4,10 +4,9 @@ import "antd/dist/antd.css";
 import "../App.css";
 import _ from "lodash";
 import AddMarkup from "./addMarkup";
-import { Icon, message } from "antd";
+import { Icon, message, Spin } from "antd";
 import "../App.css";
 import { dataHandler, shuffleArray, dataMapper } from "../utils/atomic";
-import { carPath } from "../utils/carPath";
 import LoginModal from "./loginModal";
 import SearchComponent from "./search";
 import SwitchCategoryButtons from "./switchCategoryButtons";
@@ -73,6 +72,10 @@ class Scroller extends Component {
     if (dataHandler("nsfw").includes(this.props.match.params.subreddit)) {
       this.categorySet("nsfw");
     }
+    if (this.props.match.params.subreddit === "allsubreddits") {
+      return this.changeCat("", "allsubreddits");
+    }
+    console.log("we here?");
     this.props.match.params.subreddit && this.getSubreddit(this.props.match.params.subreddit);
   }
 
@@ -257,49 +260,37 @@ class Scroller extends Component {
             isModalVisible={isModalVisible}
             switchCat={this.switchCat}
           />
+          <React.Fragment>
+            {sources.length ? (
+              <AddMarkup
+                toggleIsModalVisible={this.toggleIsModalVisible}
+                activeCollection={this.state.activeCollection}
+                collections={userCollections}
+                addMediaToCollection={this.addMediaToCollection}
+                isSearchActivated={isSearchActivated}
+                toggleFullscreen={this.toggleFullscreen}
+                toggleIsLoading={this.toggleIsLoading}
+                mobile={mobile}
+                isOnlyGifsShowing={isOnlyGifsShowing}
+                isOnlyPicsShowing={isOnlyPicsShowing}
+                fullscreen={fullscreenActive}
+                dataSource={sources}
+                loadMore={this.moreSubreddits}
+                isLoading={isLoading}
+                isLoadingMore={isLoadingMore}
+              />
+            ) : (
+              <div className="iconSpinner">
+                <Spin size="large" />
+              </div>
+            )}
 
-          {isLoading ? (
-            <div className="spinner">
-              <div className="centered-text">
-                <div className="centered-text">
-                  {errorMessage.length ? errorMessage : "Loading"} <strong>{subreddit}</strong>
-                </div>
-              </div>
-              <div className="carSpinner">
-                <svg xmlns="http://www.w3.org/2000/svg">
-                  <path fill="#FFF" d={carPath} />
-                </svg>
-              </div>
-              <br />
-              <br />
+            <div style={{ opacity: isSearchActivated ? 0.1 : 1 }} className="subredditNameDiv">
+              <h2 className="subredditName">
+                {activeCollection.length ? activeCollection : subreddit} <Icon type="tag-o" />
+              </h2>
             </div>
-          ) : (
-            <React.Fragment>
-              {sources.length && (
-                <AddMarkup
-                  toggleIsModalVisible={this.toggleIsModalVisible}
-                  activeCollection={this.state.activeCollection}
-                  collections={userCollections}
-                  addMediaToCollection={this.addMediaToCollection}
-                  isSearchActivated={isSearchActivated}
-                  toggleFullscreen={this.toggleFullscreen}
-                  toggleIsLoading={this.toggleIsLoading}
-                  mobile={mobile}
-                  isOnlyGifsShowing={isOnlyGifsShowing}
-                  isOnlyPicsShowing={isOnlyPicsShowing}
-                  fullscreen={fullscreenActive}
-                  dataSource={sources}
-                  loadMore={this.moreSubreddits}
-                  isLoading={isLoading}
-                  isLoadingMore={isLoadingMore}
-                />
-              )}
-              <div style={{ opacity: isSearchActivated ? 0.1 : 1 }} className="subredditNameDiv">
-                <h2 className="subredditName">
-                  {activeCollection.length ? activeCollection : subreddit} <Icon type="tag-o" />
-                </h2>
-              </div>
-            </React.Fragment>
+          </React.Fragment>
           )}
         </div>
       </Swipeable>

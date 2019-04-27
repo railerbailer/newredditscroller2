@@ -4,10 +4,9 @@ import "antd/dist/antd.css";
 import "../App.css";
 import _ from "lodash";
 import AddMarkup from "./addMarkup";
-import { Icon, message } from "antd";
+import { Icon, message, Spin } from "antd";
 import "../App.css";
 import { dataHandler, shuffleArray } from "../utils/atomic";
-import { carPath } from "../utils/carPath";
 import LoginModal from "./loginModal";
 import SearchComponent from "./search";
 import SwitchCategoryButtons from "./switchCategoryButtons";
@@ -269,49 +268,37 @@ class CollectionsScroller extends Component {
             isModalVisible={isModalVisible}
             switchCat={this.switchCat}
           />
-          {isLoading ? (
-            <div className="spinner">
-              <div className="centered-text">
-                <div className="centered-text">
-                  Loading <strong>{collection}</strong>
-                </div>
+          <React.Fragment>
+            {sources.length ? (
+              <AddMarkup
+                collectionsMode={true}
+                toggleIsModalVisible={this.toggleIsModalVisible}
+                activeCollection={this.state.activeCollection}
+                collections={userCollections}
+                addMediaToCollection={this.addMediaToCollection}
+                isSearchActivated={isSearchActivated}
+                toggleFullscreen={this.toggleFullscreen}
+                toggleIsLoading={this.toggleIsLoading}
+                mobile={mobile}
+                isOnlyGifsShowing={isOnlyGifsShowing}
+                isOnlyPicsShowing={isOnlyPicsShowing}
+                fullscreen={fullscreenActive}
+                dataSource={sources}
+                loadMore={this.moreSubreddits}
+                isLoading={isLoading}
+                isLoadingMore={isLoadingMore}
+              />
+            ) : (
+              <div className="iconSpinner">
+                <Spin size="large" />
               </div>
-              <div className="carSpinner">
-                <svg xmlns="http://www.w3.org/2000/svg">
-                  <path fill="#FFF" d={carPath} />
-                </svg>
-              </div>
-              <br />
-              <br />
+            )}
+            <div style={{ opacity: isSearchActivated ? 0.1 : 1 }} className="subredditNameDiv">
+              <h2 className="subredditName">
+                {activeCollection.length ? activeCollection : collection} <Icon type="tag-o" />
+              </h2>
             </div>
-          ) : (
-            <React.Fragment>
-              {sources.length && (
-                <AddMarkup
-                  collectionsMode={true}
-                  toggleIsModalVisible={this.toggleIsModalVisible}
-                  activeCollection={this.state.activeCollection}
-                  collections={userCollections}
-                  addMediaToCollection={this.addMediaToCollection}
-                  isSearchActivated={isSearchActivated}
-                  toggleFullscreen={this.toggleFullscreen}
-                  toggleIsLoading={this.toggleIsLoading}
-                  mobile={mobile}
-                  isOnlyGifsShowing={isOnlyGifsShowing}
-                  isOnlyPicsShowing={isOnlyPicsShowing}
-                  fullscreen={fullscreenActive}
-                  dataSource={sources}
-                  loadMore={this.moreSubreddits}
-                  isLoading={isLoading}
-                  isLoadingMore={isLoadingMore}
-                />
-              )}
-              <div style={{ opacity: isSearchActivated ? 0.1 : 1 }} className="subredditNameDiv">
-                <h2 className="subredditName">
-                  {activeCollection.length ? activeCollection : collection} <Icon type="tag-o" />
-                </h2>
-              </div>
-            </React.Fragment>
+          </React.Fragment>
           )}
         </div>
       </Swipeable>

@@ -7,17 +7,15 @@ export const dataHandler = value => {
     return _.uniq(straight);
   } else if (lowerCaseCategory === "sfw") {
     return _.uniq(subredditArray.concat(artArray, foodArray, animalsArray));
-  }
-  //else if (lowerCaseCategory === "sfw") {
-  //   return subredditArray;
-  // }
-  else if (lowerCaseCategory === "art") {
+  } else if (lowerCaseCategory === "sfw") {
+    return subredditArray;
+  } else if (lowerCaseCategory === "art") {
     return artArray;
   } else if (lowerCaseCategory === "food") {
     return foodArray;
   } else if (lowerCaseCategory === "animals") {
     return animalsArray;
-  } else if (lowerCaseCategory === "search") {
+  } else if (lowerCaseCategory === "search" || lowerCaseCategory === "allsubreddits") {
     return _.uniq(subredditArray.concat(artArray, foodArray, animalsArray, straight, gifsArray));
   } else {
     return _.uniq(subredditArray.concat(artArray, foodArray, animalsArray, gifsArray));

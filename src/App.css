@@ -509,6 +509,18 @@ p {
   height: 24px;
 }
 
+.iconSpinner {
+  display: block;
+  text-align: center;
+  margin: auto;
+  top: 45%;
+  position: fixed;
+  width: 100%;
+  color: white;
+  font-size: 60px;
+  z-index: 1239819231923812938;
+}
+
 .spinner {
   display: block;
   text-align: center;
@@ -517,6 +529,10 @@ p {
   position: fixed;
   width: 100%;
   color: white;
+  z-index: 1239819231923812938;
+}
+.spinner i {
+  font-size: 50px;
 }
 .carSpinner {
   padding: 48px;
@@ -883,13 +899,14 @@ button {
   height: 100%;
 }
 .goBackButton {
+  text-align: right;
   color: white;
   position: fixed;
   top: 46px;
   background: transparent;
-  left: 4px;
+  left: -1px;
   /* font-size: 28px; */
-  /* filter: drop-shadow(1px 1px black); */
+  filter: drop-shadow(1px 1px black);
 }
 .cardGrid {
   align-items: center;

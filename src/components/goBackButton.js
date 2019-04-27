@@ -4,7 +4,7 @@ const GoBackButton = props => {
   const { goBackFunc } = props;
   return (
     <button onClick={() => goBackFunc()} className="goBackButton">
-      <i class="material-icons">arrow_back</i>
+      <i className="material-icons">arrow_back</i>
     </button>
   );
 };

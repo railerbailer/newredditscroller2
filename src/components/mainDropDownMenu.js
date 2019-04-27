@@ -235,7 +235,7 @@ const MainDropDownMenu = props => {
         width={300}
       >
         <Menu>
-          <Menu.Item>
+          <Menu.Item onClick={() => pushToHistory("/subreddits/allsubreddits")}>
             <h4>
               <Icon type="global" /> Browse subreddits
             </h4>

@@ -56,7 +56,7 @@ const Image = props => {
     <React.Fragment>
       <img
         onBlur={() => setDropDown(false)}
-        onLoad={() => setLoadedData(loadedData + 1)}
+        onLoad={() => setLoadedData(loadedData + 2)}
         onClick={() => {
           setDropDown(false);
           toggleFullscreen(index);

@@ -89,6 +89,7 @@ class LoginModal extends Component {
       >
         <div className="registerInputField">
           <Input
+            autoFocus
             placeholder={registerMode ? "Pick a user name" : "Enter your username or email"}
             prefix={
               <Icon
@@ -156,7 +157,6 @@ class LoginModal extends Component {
           <React.Fragment>
             <div className="registerInputField">
               <Input.Password
-                autoFocus
                 value={secondPassword}
                 prefix={
                   <Icon

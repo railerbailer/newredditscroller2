@@ -22,7 +22,10 @@ class AddMarkup extends Component {
           block: "center"
         });
     }
-    if (this.props.dataSource !== prevProps.dataSource) this.setState({ activeElement: 0 });
+    if (this.props.dataSource !== prevProps.dataSource) {
+      this.setState({ activeElement: 0 });
+      // document.body.scrollTop(0)
+    }
   }
   setActiveElement = value => {
     this.setState({ activeElement: value });

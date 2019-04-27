@@ -181,6 +181,9 @@ i {
   font-size: 34px;
   margin: 0 0 4px 4px;
 }
+.ant-modal {
+  max-width: 95vw !important;
+}
 .addNewMediaIcon svg {
   /* background: #1890ff; */
   /* border-radius: 100%; */

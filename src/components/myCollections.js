@@ -13,7 +13,7 @@ import MainDropDownMenu from "./mainDropDownMenu";
 import CardComponent from "./cardComponent";
 import GoBackButton from "./goBackButton";
 
-class UserCollectionCards extends Component {
+class MyCollections extends Component {
   state = {
     mobile: false,
     isLoadingMore: false,
@@ -135,7 +135,7 @@ class UserCollectionCards extends Component {
       ? this.props.firebase.updateDataToCollection({ ...fields }, collection)
       : this.toggleIsModalVisible();
   };
-  goBackinHistory = _.throttle(() => this.props.history.goBack(), 500);
+
   render() {
     const {
       // isModalVisible,
@@ -159,18 +159,16 @@ class UserCollectionCards extends Component {
     const data =
       publicCollections &&
       publicCollections.map(collection => {
-        const { data = null, title, description, madeBy, accepted = true } = collection;
+        const { data = null, title, description, madeBy } = collection;
         return (
-          accepted && (
-            <CardComponent
-              key={title + description}
-              title={title}
-              description={description}
-              madeBy={madeBy}
-              data={data}
-              pushToHistory={this.pushToHistory}
-            />
-          )
+          <CardComponent
+            key={title + description}
+            title={title}
+            description={description}
+            madeBy={madeBy}
+            data={data}
+            pushToHistory={this.pushToHistory}
+          />
         );
       });
     return (
@@ -191,7 +189,7 @@ class UserCollectionCards extends Component {
             autoCompleteDataSource={autoCompleteDataSource}
             toggleSearchButton={this.toggleSearchButton}
           />
-          <GoBackButton goBackFunc={this.goBackinHistory} />
+          <GoBackButton goBackFunc={this.props.history.goBack} />
           <MainDropDownMenu
             setSources={() => {}}
             collectionsMode={true}
@@ -240,7 +238,7 @@ class UserCollectionCards extends Component {
         <React.Fragment>
           <div style={{ opacity: isSearchActivated ? 0.1 : 1 }} className="subredditNameDiv">
             <h2 className="subredditName">
-              User Collections
+              My Collections
               {/* {activeCollection.length ? activeCollection : collection} <Icon type="tag-o" /> */}
             </h2>
           </div>
@@ -250,4 +248,4 @@ class UserCollectionCards extends Component {
   }
 }
 
-export default UserCollectionCards;
+export default MyCollections;

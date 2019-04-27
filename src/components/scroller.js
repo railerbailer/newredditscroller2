@@ -18,7 +18,6 @@ let reload = 0;
 class Scroller extends Component {
   state = {
     mobile: false,
-    errorMessage: "",
     isLoadingMore: false,
     fullscreenActive: false,
     isDropDownShowing: false,
@@ -89,9 +88,6 @@ class Scroller extends Component {
   toggleIsModalVisible = () => this.setState({ isModalVisible: !this.state.isModalVisible });
   toggleSearchButton = value => this.setState({ isSearchActivated: value });
   categorySet = val => this.setState({ category: val });
-  setErrorMessage = value => {
-    this.setState({ errorMessage: value });
-  };
   setAutoCompleteDataSource = value => this.setState({ autoCompleteDataSource: value });
   toggleDropDown = value => this.setState({ isDropDownShowing: value });
   toggleGifsOnly = async () => {
@@ -133,17 +129,17 @@ class Scroller extends Component {
     !this.state.isLoading && (await this.getSubreddit(shuffleArray(dataHandler(this.state.category))));
 
     this.toggleIsLoading(false);
-  }, 500);
-
+  }, 250);
+  goBackinHistory = _.throttle(() => this.props.history.goBack(), 250);
   handleKeyDown = e => {
     if (e.key === "ArrowLeft") {
-      this.props.history.goBack();
+      this.goBackinHistory();
     }
     if (e.key === "Escape") {
       this.setState({ fullscreenActive: false });
     }
     if (e.key === "a") {
-      this.props.history.goBack();
+      this.goBackinHistory();
     }
 
     if (e.key === "ArrowRight") {
@@ -162,7 +158,7 @@ class Scroller extends Component {
 
   swipedRight = (e, absX, isFlick) => {
     if (isFlick || absX > 30) {
-      this.props.history.goBack();
+      this.goBackinHistory();
     }
   };
 
@@ -196,8 +192,7 @@ class Scroller extends Component {
       userCollections,
       activeCollection,
       category,
-      user,
-      errorMessage
+      user
     } = this.state;
     const { firebase } = this.props;
 
@@ -222,7 +217,7 @@ class Scroller extends Component {
             autoCompleteDataSource={autoCompleteDataSource}
             toggleSearchButton={this.toggleSearchButton}
           />
-          <GoBackButton goBackFunc={this.props.history.goBack} />
+          <GoBackButton goBackFunc={this.goBackinHistory} />
           <MainDropDownMenu
             isDropDownShowing={isDropDownShowing}
             setSources={this.setSources}
@@ -298,7 +293,7 @@ class Scroller extends Component {
   }
 
   getSubreddit = async (subreddit, notShowLoad) => {
-    await this.setState({ errorMessage: "", subreddit: subreddit, isLoading: !notShowLoad });
+    await this.setState({ subreddit: subreddit, isLoading: !notShowLoad });
     sources = [];
     await fetch(`https://www.reddit.com/r/${this.state.subreddit}.json?limit=100`)
       .then(response => response.json())
@@ -321,7 +316,6 @@ class Scroller extends Component {
         }
       });
     if (!sources.length) {
-      this.setErrorMessage("Sorry! No media in");
       await this.getSubreddit(shuffleArray(dataHandler(this.state.category)));
     } else {
       this.pushToHistory(`/subreddits/${this.state.subreddit}`);

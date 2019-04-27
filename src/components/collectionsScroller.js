@@ -63,7 +63,7 @@ class CollectionsScroller extends Component {
           // Object.values(snapshot.val().collections).some(collection => this.props.match.params.collection === collection)
         });
       } else {
-        this.setState({ user: null });
+        this.setState({ user: "null" });
       }
     });
 
@@ -135,18 +135,18 @@ class CollectionsScroller extends Component {
     window.stop();
     this.toggleDropDown(false);
     const collectionsArray = this.state.publicCollections.map(item => item.title);
-    this.pushToHistory(shuffleArray(collectionsArray));
-  }, 500);
-
+    await this.pushToHistory(shuffleArray(collectionsArray));
+  }, 250);
+  goBackinHistory = _.throttle(() => this.props.history.goBack(), 250);
   handleKeyDown = e => {
     if (e.key === "ArrowLeft") {
-      this.props.history.goBack();
+      this.goBackinHistory();
     }
     if (e.key === "Escape") {
       this.setState({ fullscreenActive: false });
     }
     if (e.key === "a") {
-      this.props.history.goBack();
+      this.goBackinHistory();
     }
 
     if (e.key === "ArrowRight") {
@@ -165,7 +165,7 @@ class CollectionsScroller extends Component {
 
   swipedRight = (e, absX, isFlick) => {
     if (isFlick || absX > 30) {
-      this.props.history.goBack();
+      this.goBackinHistory();
     }
   };
 
@@ -228,7 +228,7 @@ class CollectionsScroller extends Component {
             autoCompleteDataSource={autoCompleteDataSource}
             toggleSearchButton={this.toggleSearchButton}
           />
-          <GoBackButton goBackFunc={this.props.history.goBack} />
+          <GoBackButton goBackFunc={this.goBackinHistory} />
           <MainDropDownMenu
             collectionsMode={true}
             isDropDownShowing={isDropDownShowing}
@@ -239,7 +239,7 @@ class CollectionsScroller extends Component {
             showListInput={showListInput}
             userCollections={userCollections}
             activeCollection={activeCollection}
-            user={user}
+            user={user || ""}
             toggleDropDown={this.toggleDropDown}
             toggleIsModalVisible={this.toggleIsModalVisible}
             setActiveCollection={this.setActiveCollection}

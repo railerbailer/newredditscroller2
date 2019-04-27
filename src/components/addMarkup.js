@@ -13,7 +13,6 @@ class AddMarkup extends Component {
     activeElement: 0,
     loadedData: 3
   };
-
   componentDidUpdate(prevProps) {
     const { activeElement } = this.state;
     if (this.props.fullscreen !== prevProps.fullscreen) {
@@ -23,6 +22,7 @@ class AddMarkup extends Component {
           block: "center"
         });
     }
+    if (this.props.dataSource !== prevProps.dataSource) this.setState({ activeElement: 0 });
   }
   setActiveElement = value => {
     this.setState({ activeElement: value });
@@ -234,7 +234,7 @@ class AddMarkup extends Component {
   };
   render() {
     const { activeElement } = this.state;
-    const { fullscreen, mobile, isLoadingMore, collectionsMode, activeCollection, isLoading } = this.props;
+    const { fullscreen, isLoadingMore, collectionsMode, activeCollection, isLoading } = this.props;
     this.renderHtml();
     return (
       <Swipeable
@@ -243,9 +243,9 @@ class AddMarkup extends Component {
         onSwipedUp={this.swipedUp}
         style={{ backgroundColor: "rgb(20, 20, 20)" }}
       >
-        {fullscreen ? (
-          html.length && (
-            <div className="fullscreenScroll">
+        {html.length &&
+          (fullscreen ? (
+            <div style={{ opacity: isLoading ? 0.1 : 1, transition: "opacity 400ms" }} className="fullscreenScroll">
               <Icon type="close" className="closeFullScreen" onClick={() => this.getElementIndex(activeElement)} />
 
               <div style={{ zIndex: isLoadingMore ? 10 : fullscreen ? 0 : 0 }} className="loadingMoreSpinner">
@@ -255,12 +255,11 @@ class AddMarkup extends Component {
               </div>
 
               {html[activeElement]}
-              <div style={{ opacity: 0.1, height: "1px" }}>
-                {html[activeElement + 1]}
-                {(!mobile || activeElement > 2) && html[activeElement + 2]}
-                {activeElement > 5 && html[activeElement + 3]}
-                {(!mobile || activeElement > 9) && html[activeElement + 4]}
-              </div>
+              {html[activeElement + 1] && html[activeElement + 1]}
+              {/* {(!mobile || activeElement > 2) && html[activeElement + 2]}
+              {activeElement > 5 && html[activeElement + 3]}
+              {(!mobile || activeElement > 9) && html[activeElement + 4]} */}
+
               <div className="fullscreenButtonNext" onClick={() => this.getNextElement()}>
                 <Icon autoFocus type="up" />
                 <span>Show more</span>
@@ -269,12 +268,11 @@ class AddMarkup extends Component {
                 <button className="inputFocus" ref={button => button && button.focus()} />
               )}
             </div>
-          )
-        ) : (
-          <div style={{ opacity: isLoading ? 0.1 : 1 }} className="gridMedia">
-            {html}
-          </div>
-        )}
+          ) : (
+            <div style={{ opacity: isLoading ? 0.1 : 1, transition: "opacity 400ms" }} className="gridMedia">
+              {html}
+            </div>
+          ))}
         {isLoading && (
           <div className="iconSpinner">
             <Spin size="large" />

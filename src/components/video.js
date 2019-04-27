@@ -13,7 +13,7 @@ class Video extends Component {
     };
   }
   componentDidMount() {
-    if (this.props.mobile && this.props.fullscreen) {
+    if (this.props.fullscreen) {
       this.togglePlaying();
     }
   }
@@ -89,7 +89,6 @@ class Video extends Component {
             // (this.state.isPlaying && fullscreen) || (!this.state.isPlaying && !fullscreen && this.togglePlaying());
             this.toggleIsDropDownShowing(false);
           }}
-          autoPlay={!mobile && fullscreen}
           poster={mobile ? poster : undefined}
           allowFullScreen={true}
           onCanPlay={() => this.setState({ videoLoaded: true })}

@@ -5,7 +5,7 @@ const GoBackButton = props => {
   const { goBackFunc } = props;
   return (
     <button className="goBackButton">
-      <Icon type="rollback" onClick={() => goBackFunc()} />
+      <Icon type="arrow-left" onClick={() => goBackFunc()} />
     </button>
   );
 };

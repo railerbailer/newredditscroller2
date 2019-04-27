@@ -35,14 +35,15 @@ class Video extends Component {
           this.setState({ isDropDownShowing: false });
         }}
       >
+        <Icon type="save" />
         {list}
       </Menu.Item>
     ));
     return (
       <Menu>
-        <h4 style={{ marginLeft: "4px" }}>
-          <Icon type="bars" /> Add to collection
-          <Icon onClick={() => this.setState({ isDropDownShowing: false })} type="close" />
+        <h4 className="addToCollectionModal">
+          <Icon type="bank" /> <span>Add to bank</span>
+          <Icon style={{ float: "right" }} onClick={() => this.setState({ isDropDownShowing: false })} type="close" />
         </h4>
         {listMenuItem}
       </Menu>
@@ -61,11 +62,22 @@ class Video extends Component {
   };
 
   render() {
-    const { src, fullscreen, toggleFullscreen, poster, mobile, index, className } = this.props;
+    const {
+      src,
+      fullscreen,
+      toggleFullscreen,
+      poster,
+      mobile,
+      index,
+      className,
+      setLoadedData,
+      loadedData
+    } = this.props;
     const srcWithoutDash = src.split("DASH")[0];
     return (
       <React.Fragment>
         <video
+          onLoadedMetadata={() => setLoadedData(loadedData + 1)}
           ref={el => (this.videoPlayer = el)}
           onClick={() => {
             toggleFullscreen(index);
@@ -94,13 +106,14 @@ class Video extends Component {
           preload={"metadata"}
         >
           {!mobile && <source src={`${srcWithoutDash}DASH_720`} type="video/mp4" />}
+          {!mobile && <source src={`${srcWithoutDash}DASH_600_K`} type="video/mp4" />}
           {!mobile && <source src={`${srcWithoutDash}DASH_480`} type="video/mp4" />}
           {!mobile && <source src={`${srcWithoutDash}DASH_360`} type="video/mp4" />}
           <source src={src} type="video/mp4" />
           Sorry, your browser doesn't support embedded videos.
         </video>
         <Dropdown
-          overlayStyle={{ zIndex: fullscreen ? 1231231231231231 : 2 }}
+          overlayStyle={{ zIndex: fullscreen ? 1231231231231231 : 2, minWidth: "200px" }}
           onBlur={() => setTimeout((() => this.toggleIsDropDownShowing(false), 500))}
           overlayClassName="mediaAddDropdown"
           placement="topRight"
@@ -116,7 +129,7 @@ class Video extends Component {
             <Icon
               style={{ zIndex: fullscreen ? 1231231231231231 : 2 }}
               className="addNewMediaIcon"
-              type={this.state.isDropDownShowing ? "up" : "plus"}
+              type={this.state.isDropDownShowing ? "up" : "bank"}
             />
           </div>
         </Dropdown>

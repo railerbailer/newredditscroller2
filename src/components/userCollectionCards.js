@@ -159,16 +159,18 @@ class UserCollectionCards extends Component {
     const data =
       publicCollections &&
       publicCollections.map(collection => {
-        const { data = null, title, description, madeBy } = collection;
+        const { data = null, title, description, madeBy, accepted = true } = collection;
         return (
-          <CardComponent
-            key={title + description}
-            title={title}
-            description={description}
-            madeBy={madeBy}
-            data={data}
-            pushToHistory={this.pushToHistory}
-          />
+          accepted && (
+            <CardComponent
+              key={title + description}
+              title={title}
+              description={description}
+              madeBy={madeBy}
+              data={data}
+              pushToHistory={this.pushToHistory}
+            />
+          )
         );
       });
     return (

@@ -11,6 +11,17 @@ button {
   outline: 0;
   border: 0;
 }
+.registerInputField {
+  display: flex;
+  flex-direction: row;
+  margin: 12px 0;
+}
+.registerInputField span {
+  color: red;
+}
+.ant-modal p {
+  color: black;
+}
 
 p {
   color: white;
@@ -26,14 +37,17 @@ h2 {
 .contentZen .titleText {
   top: 0vh;
 }
+.collectionNameDropdown {
+  overflow: -webkit-paged-x;
+}
 .collectionNameDropdown:hover {
   color: #1890ff;
 }
 .deleteCollectionIcon {
   padding: 0 8px;
-  float: right;
+
   opacity: 0.8;
-  font-size: 20px;
+  font-size: 20px !important;
   z-index: 5 !important;
 }
 .deleteCollectionIcon:hover {
@@ -56,6 +70,11 @@ h2 {
   left: calc(50% - 60px);
   top: 49%;
   text-align: center;
+}
+
+.privacyLink {
+  background-color: white !important;
+  color: #096dd9 !important;
 }
 
 .fullscreenScroll {
@@ -96,8 +115,13 @@ h2 {
 }
 .fullscreenButtonNext span {
   display: block;
-  margin: 12px;
   opacity: 0.8;
+  text-shadow: 1px 1px black;
+}
+.fullscreenButtonNext i {
+  vertical-align: -0.4em;
+  opacity: 0.8;
+  filter: drop-shadow(1px 1px black);
 }
 .closeFullScreen {
   text-shadow: 1px 1px black;
@@ -130,9 +154,6 @@ h2 {
   z-index: 12390139123;
   color: white;
 }
-.loginModal .ant-modal-body > span {
-  margin: 8px 0;
-}
 i {
   cursor: pointer;
 }
@@ -140,6 +161,12 @@ i {
   height: 0.1px;
   opacity: 0.1;
 }
+.addToCollectionModal {
+  margin-left: 4px;
+  display: "flex";
+  justify-content: space-between;
+}
+
 .addNewMediaIcon {
   padding: 20px 20px 0 0;
   position: absolute;
@@ -149,6 +176,10 @@ i {
   opacity: 0.8;
   color: white !important;
   filter: drop-shadow(1px 1px black);
+}
+.fullscreenScroll .addNewMediaIcon {
+  font-size: 34px;
+  margin: 0 0 4px 4px;
 }
 .addNewMediaIcon svg {
   /* background: #1890ff; */
@@ -417,9 +448,11 @@ p {
   font-weight: 600;
   margin-bottom: 0;
 }
-
+.drawerListIcon {
+  font-size: 8px !important;
+}
 .categoryModal {
-  position: fixed;
+  overflow: hidden;
   background: rgb(20, 20, 20);
   height: 100vh;
   width: 100%;
@@ -762,7 +795,9 @@ button {
     width: 100vw !important;
   }
 }
-
+.ant-drawer-header {
+  padding: 15px 12px !important;
+}
 .dropDownMenu {
   width: 50vh;
   position: fixed !important;
@@ -853,6 +888,8 @@ button {
   top: 46px;
   background: transparent;
   left: 3px;
+  font-size: 32px;
+  filter: drop-shadow(1px 1px black);
 }
 .cardGrid {
   align-items: center;

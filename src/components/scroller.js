@@ -34,7 +34,7 @@ class Scroller extends Component {
     isModalVisible: false,
     showListInput: false,
     newListName: "",
-    userCollections: { Loading: "kek" },
+    userCollections: { "Register to use": "kek" },
     user: null,
     activeCollection: ""
   };

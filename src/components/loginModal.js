@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Modal, Button, Input, Tooltip, Icon, message } from "antd";
+import PrivacyPolicy from "../terms/privacyPolicy";
 
 class LoginModal extends Component {
   state = {
@@ -34,12 +35,13 @@ class LoginModal extends Component {
       this.setState({ isLoading: true });
       registerMode
         ? await firebase.doCreateUserWithEmailAndPassword(email, password, userName)
-        : await firebase.doSignInWithEmailAndPassword(email, password);
+        : await firebase.doSignInWithEmailAndPassword(email, password, userName);
       this.setState({
         errorMessagePassword: "",
-        errorMessageEmail: "",
+        errorMessageUserName: "",
         isLoading: false
       });
+
       this.props.toggleIsModalVisible();
       message.info(`Logged in, you can now add pics and gifs to your collections`);
     } catch (error) {
@@ -47,17 +49,20 @@ class LoginModal extends Component {
       error.code.includes("password")
         ? this.setState({
             errorMessagePassword: "Wrong password",
-            errorMessageEmail: "",
+            errorMessageUserName: "",
             isLoading: false
           })
         : this.setState({
-            errorMessageEmail: error.code.includes("auth/invalid-email") ? "Use your e-mail" : "User email not found",
+            errorMessageUserName: error.code.includes("auth/invalid-email")
+              ? "User "
+              : this.state.registerMode
+              ? "email/username already registered"
+              : "User not found",
             errorMessagePassword: "",
             isLoading: false
           });
     }
   };
-  cancelModal;
   render() {
     const {
       isLoading,
@@ -73,7 +78,7 @@ class LoginModal extends Component {
     } = this.state;
     return (
       <Modal
-        zIndex={123123}
+        zIndex={999999999999}
         confirmLoading={isLoading}
         title={registerMode ? "Register" : "Login"}
         wrapClassName="loginModal"
@@ -82,29 +87,9 @@ class LoginModal extends Component {
         onOk={() => this.submitForm()}
         onCancel={this.props.toggleIsModalVisible}
       >
-        <Input
-          placeholder="Enter your email"
-          value={email}
-          onChange={event => this.setState({ email: event.target.value })}
-          prefix={
-            <Icon
-              type="mail"
-              style={{
-                color: !errorMessageEmail.length ? "rgba(0,0,0,.25)" : "red"
-              }}
-            />
-          }
-          suffix={
-            <Tooltip title="Extra information">
-              <Icon type="info-circle" style={{ color: "rgba(0,0,0,.25)" }} />
-            </Tooltip>
-          }
-        />
-
-        {errorMessageEmail}
-        {this.state.registerMode && (
+        <div className="registerInputField">
           <Input
-            placeholder="Pick a user name (optional)"
+            placeholder={registerMode ? "Pick a user name" : "Enter your username or email"}
             prefix={
               <Icon
                 type="user"
@@ -121,41 +106,72 @@ class LoginModal extends Component {
               </Tooltip>
             }
           />
-        )}
+          {registerMode && <span>*</span>}
+        </div>
         {errorMessageUserName}
-        <Input.Password
-          value={password}
-          prefix={
-            <Icon
-              type="lock"
-              style={{
-                color: !errorMessagePassword.length ? "rgba(0,0,0,.25)" : "red"
-              }}
-            />
-          }
-          onChange={event => this.setState({ password: event.target.value })}
-          placeholder="Password"
-          onPressEnter={() => this.submitForm()}
-        />
-
-        {errorMessagePassword}
-        {this.state.registerMode && (
-          <React.Fragment>
-            <Input.Password
-              autoFocus
-              value={secondPassword}
+        {registerMode && (
+          <div className="registerInputField">
+            <Input
+              placeholder={"Enter your email (optional)"}
+              value={email}
+              onChange={event => this.setState({ email: event.target.value })}
               prefix={
                 <Icon
-                  type={!errorMessageMatchingPassword.length ? "unlock" : "lock"}
+                  type="mail"
                   style={{
-                    color: !errorMessageMatchingPassword.length ? "rgba(0,0,0,.25)" : "red"
+                    color: !errorMessageEmail.length ? "rgba(0,0,0,.25)" : "red"
                   }}
                 />
               }
-              onChange={event => this.setState({ secondPassword: event.target.value })}
-              placeholder="Confirm password"
-              onPressEnter={() => this.submitForm()}
+              suffix={
+                <Tooltip title="Extra information">
+                  <Icon type="info-circle" style={{ color: "rgba(0,0,0,.25)" }} />
+                </Tooltip>
+              }
             />
+            {registerMode && <span style={{ color: "white" }}>*</span>}
+          </div>
+        )}
+        {errorMessageEmail}
+        <div className="registerInputField">
+          <Input.Password
+            value={password}
+            prefix={
+              <Icon
+                type="lock"
+                style={{
+                  color: !errorMessagePassword.length ? "rgba(0,0,0,.25)" : "red"
+                }}
+              />
+            }
+            onChange={event => this.setState({ password: event.target.value })}
+            placeholder="Password"
+            onPressEnter={() => this.submitForm()}
+          />
+          {registerMode && <span>*</span>}
+        </div>
+
+        {errorMessagePassword}
+        {registerMode && (
+          <React.Fragment>
+            <div className="registerInputField">
+              <Input.Password
+                autoFocus
+                value={secondPassword}
+                prefix={
+                  <Icon
+                    type={!errorMessageMatchingPassword.length ? "unlock" : "lock"}
+                    style={{
+                      color: !errorMessageMatchingPassword.length ? "rgba(0,0,0,.25)" : "red"
+                    }}
+                  />
+                }
+                onChange={event => this.setState({ secondPassword: event.target.value })}
+                placeholder="Confirm password"
+                onPressEnter={() => this.submitForm()}
+              />
+              {registerMode && <span>*</span>}
+            </div>
             {errorMessageMatchingPassword}
           </React.Fragment>
         )}
@@ -180,6 +196,7 @@ class LoginModal extends Component {
             Register
           </Button>
         )}
+        {registerMode && <PrivacyPolicy />}
       </Modal>
     );
   }

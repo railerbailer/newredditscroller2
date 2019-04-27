@@ -1,12 +1,11 @@
 import React from "react";
+import { Icon } from "antd";
 
 const GoBackButton = props => {
   const { goBackFunc } = props;
   return (
     <button className="goBackButton">
-      <i onClick={() => goBackFunc()} className="material-icons">
-        undo
-      </i>
+      <Icon type="rollback" onClick={() => goBackFunc()} />
     </button>
   );
 };

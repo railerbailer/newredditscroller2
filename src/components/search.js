@@ -16,7 +16,7 @@ const SearchComponent = props => {
     if (!value) {
       value = "Type your search";
     }
-    let searchAbleData = collectionMode ? publicCollections : dataHandler("search");
+    let searchAbleData = collectionMode ? publicCollections.filter(item => item) : dataHandler("search");
     let result = searchAbleData.filter(str => str.toLowerCase().includes(value.toLowerCase()));
     result = result.reverse();
     result.push(value);
@@ -32,7 +32,7 @@ const SearchComponent = props => {
       <Transition in={isSearchActivated} unmountOnExit mountOnEnter timeout={0}>
         {status => (
           <AutoComplete
-            placeholder="Search here"
+            placeholder={collectionMode ? "Search collection" : "Search subreddit"}
             autoFocus
             className={`autocomplete--${status}`}
             dataSource={autoCompleteDataSource}

@@ -12,7 +12,9 @@ const Image = props => {
     toggleIsModalVisible,
     addMediaToCollection,
     firebaseId,
-    fullscreen
+    fullscreen,
+    setLoadedData,
+    loadedData
   } = props;
 
   const menu = () => {
@@ -28,14 +30,15 @@ const Image = props => {
           message.info(`Added to collection ${list}`);
         }}
       >
+        <Icon type="save" />
         {list}
       </Menu.Item>
     ));
     return (
       <Menu>
-        <h4 style={{ marginLeft: "4px" }}>
-          <Icon type="bars" /> Add to collection
-          <Icon onClick={() => setDropDown(false)} type="close" />
+        <h4 className="addToCollectionModal">
+          <Icon type="bank" /> <span>Add to bank</span>
+          <Icon style={{ float: "right" }} onClick={() => setDropDown(false)} type="close" />
         </h4>
 
         {!lists.length && (
@@ -52,6 +55,8 @@ const Image = props => {
   return (
     <React.Fragment>
       <img
+        onBlur={() => setDropDown(false)}
+        onLoad={() => setLoadedData(loadedData + 1)}
         onClick={() => {
           setDropDown(false);
           toggleFullscreen(index);
@@ -63,22 +68,22 @@ const Image = props => {
       />
 
       <Dropdown
-        overlayStyle={{ zIndex: fullscreen ? 1231231231231231 : 2 }}
+        overlayStyle={{ zIndex: fullscreen ? 999 : 2 }}
         overlayClassName="mediaAddDropdown"
         placement="topRight"
         visible={isDropDownShowing}
         overlay={menu()}
       >
         <div
-          style={{ zIndex: fullscreen ? 1231231231231231 : 2 }}
+          style={{ zIndex: fullscreen ? 999 : 2 }}
           onClick={() => setDropDown(!isDropDownShowing)}
           className="addNewMediaIcon"
           onBlur={() => setDropDown(false)}
         >
           <Icon
-            style={{ zIndex: fullscreen ? 1231231231231231 : 2 }}
+            style={{ zIndex: fullscreen ? 999 : 2 }}
             className="addNewMediaIcon"
-            type={isDropDownShowing ? "up" : "plus"}
+            type={isDropDownShowing ? "up" : "bank"}
           />
         </div>
       </Dropdown>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Menu, Button, Icon, Input, Modal, message, Dropdown } from "antd";
+import { Menu, Button, Icon, Input, Modal, message, Drawer } from "antd";
 import { Link } from "react-router-dom";
 const MainDropDownMenu = props => {
   const [newListName, setNewListName] = useState("");
@@ -24,13 +24,14 @@ const MainDropDownMenu = props => {
     pushToHistory
     // collectionsMode
   } = props;
-  const addNewList = () => {
+  const addNewList = async () => {
     const nameExists = Object.keys(userCollections).some(name => name === newListName);
     if (nameExists) {
       alert("You already have a collection with that name");
       return;
     }
-    firebase.updateDataOnUser("collections", { [newListName]: Date.now() });
+    await firebase.updateDataOnUser("collections", { [newListName]: Date.now() });
+
     toggleShowListInput(false);
     setNewListName("");
   };
@@ -43,14 +44,47 @@ const MainDropDownMenu = props => {
   const saveFeedback = input => {
     firebase.pushFeedback(input);
   };
+  const showLink = async collection => {
+    const collectionData =
+      Object.entries(userCollections[collection]).length !== 0 ? userCollections[collection] : null;
+    await firebase.updateCollectionToPublic({
+      [collection]: {
+        accepted: false,
+        title: collection,
+        data: collectionData,
+        madeBy: user.displayName || "anonymous"
+      }
+    });
+    const urlToCollection = `https://www.sliddit.com/collections/${collection}`;
+    const confirm = Modal.success;
+    confirm({
+      title: `Shareable link to "${collection}"`,
+      content: (
+        <React.Fragment>
+          <a href={urlToCollection}>{urlToCollection}</a>
+        </React.Fragment>
+      ),
+      zIndex: 999999999999
+    });
+  };
   const showShareConfirm = collection => {
     const collectionData =
       Object.entries(userCollections[collection]).length !== 0 ? userCollections[collection] : null;
-    console.log("collectionsdata", collectionData);
     let description = "";
     const addCollectionToPublic = () =>
       firebase.updateCollectionToPublic({
         [collection]: {
+          accepted: true,
+          title: collection,
+          data: collectionData,
+          description: description,
+          madeBy: user.displayName || "anonymous"
+        }
+      });
+    const removeCollectionFromPublic = () =>
+      firebase.updateCollectionToPublic({
+        [collection]: {
+          accepted: false,
           title: collection,
           data: collectionData,
           description: description,
@@ -67,14 +101,15 @@ const MainDropDownMenu = props => {
           <Input onChange={e => (description = e.target.value)} prefix={<Icon type="info-circle" />} />
         </React.Fragment>
       ),
-      zIndex: 12313123,
+      zIndex: 999999999999,
       onOk() {
         addCollectionToPublic();
         toggleDropDown(false);
         message.info(`${collection} has been added to public usercollections`);
       },
+      cancelText: "Unpublish",
       onCancel() {
-        console.log("Cancel");
+        removeCollectionFromPublic();
       }
     });
   };
@@ -90,7 +125,7 @@ const MainDropDownMenu = props => {
           <Input onChange={e => (feedbackInput = e.target.value)} prefix={<Icon type="info-circle" />} />
         </React.Fragment>
       ),
-      zIndex: 12313123,
+      zIndex: 999999999999,
       onOk() {
         saveFeedback(feedbackInput);
         toggleDropDown(false);
@@ -111,7 +146,7 @@ const MainDropDownMenu = props => {
       okText: "Yes",
       okType: "danger",
       cancelText: "No",
-      zIndex: 12313123,
+      zIndex: 999999999999,
       onOk() {
         deleteCollection();
         message.info(`${collection} has been deleted`);
@@ -122,7 +157,14 @@ const MainDropDownMenu = props => {
   const filledBgPic = isOnlyPicsShowing ? "#1890ff" : "transparent";
   const lists = Object.keys(userCollections).reverse();
   const listMenuItem = lists.map(collection => (
-    <Menu.Item style={{ color: activeCollection === collection ? "#1890ff" : "" }} key={collection}>
+    <Menu.Item
+      style={{
+        color: activeCollection === collection ? "#1890ff" : "",
+        display: "flex",
+        justifyContent: "space-between"
+      }}
+      key={collection}
+    >
       <span
         className="collectionNameDropdown"
         onClick={() => {
@@ -134,93 +176,116 @@ const MainDropDownMenu = props => {
           toggleDropDown(false);
         }}
       >
+        <Icon className="drawerListIcon" type="right" />
         {collection}
       </span>
       {collection !== "Favorites" && (
-        <React.Fragment>
-          <Icon onClick={() => showDeleteConfirm(collection)} className="deleteCollectionIcon" type="delete" />
+        <span className="collectionIcons">
           {Object.entries(userCollections[collection]).length !== 0 && (
-            <Icon onClick={() => showShareConfirm(collection)} className="deleteCollectionIcon" type="share-alt" />
+            <React.Fragment>
+              <Icon onClick={() => showLink(collection)} className="deleteCollectionIcon" type="link" />
+              <Icon onClick={() => showShareConfirm(collection)} className="deleteCollectionIcon" type="share-alt" />
+            </React.Fragment>
           )}
-        </React.Fragment>
+          <Icon onClick={() => showDeleteConfirm(collection)} className="deleteCollectionIcon" type="delete" />
+        </span>
       )}
     </Menu.Item>
   ));
   return (
-    <Dropdown
-      //   trigger={["click", "hover", "contextMenu"]}
-      overlayClassName="dropDownMenu"
-      visible={isDropDownShowing}
-      onClick={() => toggleDropDown(!isDropDownShowing)}
-      overlay={
+    <React.Fragment>
+      <div
+        style={{ marginRight: isDropDownShowing ? "300px" : "0" }}
+        className="iconSetting"
+        onClick={() => toggleDropDown(!isDropDownShowing)}
+      >
+        <Icon type={isDropDownShowing ? "menu-unfold" : "menu-fold"} className="chooseCat" />
+      </div>
+      <Drawer
+        zIndex={99999999999}
+        title={
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <h3 style={{ margin: "auto 0" }}>Sliddit.menu</h3>
+            <span>
+              <Button
+                onClick={toggleGifsOnly}
+                style={{ color: "lightgrey", borderRadius: 0, borderRight: 0, backgroundColor: filledBgGif }}
+              >
+                Gifs
+              </Button>
+              <Button
+                onClick={togglePicsOnly}
+                style={{ color: "lightgrey", borderRadius: 0, backgroundColor: filledBgPic }}
+              >
+                Pics
+              </Button>
+              <Icon
+                onClick={() => toggleDropDown(false)}
+                style={{ float: "right", fontSize: 22, margin: "-6px -6px 12px 12px" }}
+                type="close"
+              />
+            </span>
+          </div>
+        }
+        placement={"right"}
+        closable={false}
+        onClose={() => toggleDropDown(!isDropDownShowing)}
+        visible={isDropDownShowing}
+        bodyStyle={{ padding: 0 }}
+        width={300}
+      >
         <Menu>
-          <Menu.Item disabled>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <h3 style={{ margin: "auto 0" }}>Sliddit.menu</h3>
-              <span>
-                <Button
-                  onClick={toggleGifsOnly}
-                  style={{ color: "lightgrey", borderRadius: 0, border: 0, backgroundColor: filledBgGif }}
-                >
-                  Gifs
-                </Button>
-                <Button
-                  onClick={togglePicsOnly}
-                  style={{ color: "lightgrey", borderRadius: 0, border: 0, backgroundColor: filledBgPic }}
-                >
-                  Pics
-                </Button>
-                <Icon
-                  onClick={() => toggleDropDown(false)}
-                  style={{ float: "right", fontSize: 12, margin: 4 }}
-                  type="close"
-                />
-              </span>
-            </div>
-          </Menu.Item>
-          <Menu.Divider />
-          <h4 style={{ marginLeft: "4px" }}>
-            <Icon type="global" /> Browse subreddits
-          </h4>
           <Menu.Item>
-            <div
-              style={{ color: category === "nsfw" ? "#1890ff" : "" }}
-              onClick={() => {
-                setActiveCollection("");
-                toggleDropDown(false);
-                pushToHistory("/subreddits/nsfw");
-              }}
-            >
-              Nsfw
+            <h4>
+              <Icon type="global" /> Browse subreddits
+            </h4>
+          </Menu.Item>
+          <Menu.Item
+            style={{ color: category === "nsfw" ? "#1890ff" : "" }}
+            onClick={() => {
+              setActiveCollection("");
+              toggleDropDown(false);
+              pushToHistory("/subreddits/nsfw");
+            }}
+          >
+            <div>
+              <Icon className="drawerListIcon" type="right" />
+              NSFW
             </div>
           </Menu.Item>
+          <Menu.Item
+            style={{ color: category === "sfw" ? "#1890ff" : "" }}
+            onClick={() => {
+              pushToHistory("/subreddits/sfw");
+              toggleDropDown(false);
+              setActiveCollection("");
+            }}
+          >
+            <div>
+              <Icon className="drawerListIcon" type="right" />
+              SFW
+            </div>
+          </Menu.Item>
+          <Menu.Divider />
           <Menu.Item>
-            <div
-              style={{ color: category === "sfw" ? "#1890ff" : "" }}
-              onClick={() => {
-                pushToHistory("/subreddits/sfw");
-                toggleDropDown(false);
-                setActiveCollection("");
-              }}
-            >
-              Sfw
-            </div>
+            <h4>
+              <Link style={{ color: "mediumvioletred" }} to={`/collections`}>
+                <Icon type="solution" /> Browse user collections (click here)
+              </Link>
+            </h4>
           </Menu.Item>
           <Menu.Divider />
-          <h4 style={{ marginLeft: "4px" }}>
-            <Link style={{ color: "mediumvioletred" }} to={`/collections`}>
-              <Icon type="solution" /> Browse user collections (click here)
-            </Link>
-          </h4>
-          <Menu.Divider />
-          <h4 style={{ marginLeft: "4px" }}>
-            <Icon type="bars" /> My collections{!user && " (Log in required)"}
-          </h4>
+          <Menu.Item>
+            <h4>
+              <Icon type="bars" /> My collections{!user && " (Log in required)"}
+            </h4>
+          </Menu.Item>
           {user && (
             <Menu.Item>
               <Icon
                 onClick={() => (newListName.length ? addNewList() : toggleShowListInput(!showListInput))}
-                type={showListInput ? (newListName.length ? "check" : "close") : "plus-circle"}
+                type={showListInput ? (newListName.length ? "check-circle" : "close-circle") : "plus-circle"}
+                style={{ color: newListName.length ? "green" : "black" }}
               />
               {showListInput && (
                 <React.Fragment>
@@ -235,6 +300,7 @@ const MainDropDownMenu = props => {
                           .replace("$", "")
                           .replace("#", "")
                           .replace(".", "")
+                          .replace(" ", "")
                       )
                     }
                     size="small"
@@ -267,12 +333,8 @@ const MainDropDownMenu = props => {
             )}
           </Menu.Item>
         </Menu>
-      }
-    >
-      <div className="iconSetting">
-        <Icon type={isDropDownShowing ? "close" : "setting"} className="chooseCat" />
-      </div>
-    </Dropdown>
+      </Drawer>
+    </React.Fragment>
   );
 };
 export default MainDropDownMenu;

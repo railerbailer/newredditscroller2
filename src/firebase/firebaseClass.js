@@ -58,13 +58,14 @@ class Firebase {
 
   removeCollection = collection => {
     this.db.ref(`users/${this.auth.currentUser.uid}/collections/${collection}`).remove();
+    this.db.ref(`public/collections/${this.auth.currentUser.uid}/${collection}`).remove();
   };
 
-  updateDataOnUser = (fieldsToUpdate, data) => {
+  updateDataOnUser = async (fieldsToUpdate, data) => {
     if (!this.db.ref(this.auth.currentUser.uid)) {
       this.db.ref().set({ [this.auth.currentUser.uid]: {} });
     } else {
-      this.db.ref(`users/${this.auth.currentUser.uid}/${fieldsToUpdate}`).update({ ...data });
+      await this.db.ref(`users/${this.auth.currentUser.uid}/${fieldsToUpdate}`).update({ ...data });
     }
   };
 
@@ -82,12 +83,15 @@ class Firebase {
   userEmail = () => this.auth.currentUser && this.auth.currentUser.email;
 
   doCreateUserWithEmailAndPassword = async (email, password, userName) => {
-    await this.auth.createUserWithEmailAndPassword(email, password);
+    if (email.includes("@")) await this.auth.createUserWithEmailAndPassword(email, password);
+    else await this.auth.createUserWithEmailAndPassword(`${userName}@sliddit.com`, password);
     userName && this.auth.currentUser.updateProfile({ displayName: userName });
     this.db.ref(`users/${this.auth.currentUser.uid}/collections/${["Favorites"]}`).set("set at creation");
   };
   // sign in with user
-  doSignInWithEmailAndPassword = (email, password) => this.auth.signInWithEmailAndPassword(email, password);
+  doSignInWithEmailAndPassword = async (email, password, userName) => {
+    await this.auth.signInWithEmailAndPassword(userName.includes("@") ? userName : `${userName}@sliddit.com`, password);
+  };
   // sign out with user
   doSignOut = () => this.auth.signOut();
   // send reset password email

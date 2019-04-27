@@ -10,7 +10,8 @@ let html = [];
 class AddMarkup extends Component {
   // const [html, setHtml] = useState([]);
   state = {
-    activeElement: 0
+    activeElement: 0,
+    loadedData: 3
   };
 
   componentDidUpdate(prevProps) {
@@ -26,6 +27,8 @@ class AddMarkup extends Component {
   setActiveElement = value => {
     this.setState({ activeElement: value });
   };
+
+  setLoadedData = value => this.setState({ loadedData: this.state.loadedData + 1 });
 
   getElementIndex = (index, ref) => {
     this.setActiveElement(index);
@@ -89,7 +92,7 @@ class AddMarkup extends Component {
   getIdFromUrl = url => {
     let urlWithoutHttps = url.replace("https://", "").replace("http://", "");
     const indexOfFirstSlash = urlWithoutHttps.indexOf("/");
-    const stringAfterFirstSlash = urlWithoutHttps.slice(indexOfFirstSlash, urlWithoutHttps.length - 1);
+    const stringAfterFirstSlash = urlWithoutHttps.slice(indexOfFirstSlash + 1, urlWithoutHttps.length - 1);
     const indexOfSecondSlash = stringAfterFirstSlash.indexOf("/");
     const indexOfNextDot = stringAfterFirstSlash.indexOf(".");
     const chooseIndex =
@@ -120,6 +123,7 @@ class AddMarkup extends Component {
     else filteredData = dataSource;
     html = filteredData
       .filter(item => Object.entries(item).length !== 0)
+      .slice(0, this.state.loadedData)
       .map((data, i) => {
         const { gif, image, video, thumbnail } = data;
         const size = {
@@ -164,6 +168,8 @@ class AddMarkup extends Component {
                 key={i}
               >
                 <Image
+                  setLoadedData={this.setLoadedData}
+                  loadedData={this.state.loadedData}
                   firebaseId={imageId}
                   toggleIsModalVisible={this.props.toggleIsModalVisible}
                   ratioClassName={image.className}
@@ -206,6 +212,8 @@ class AddMarkup extends Component {
                 key={i}
               >
                 <Video
+                  setLoadedData={this.setLoadedData}
+                  loadedData={this.state.loadedData}
                   firebaseId={videoId}
                   toggleIsModalVisible={this.props.toggleIsModalVisible}
                   className="video"
@@ -283,7 +291,7 @@ class AddMarkup extends Component {
             <div className="fullscreenScroll">
               <Icon type="close" className="closeFullScreen" onClick={() => this.getElementIndex(activeElement)} />
 
-              <div style={{ zIndex: isLoadingMore ? 10 : fullscreen ? 1 : 0 }} className="loadingMoreSpinner">
+              <div style={{ zIndex: isLoadingMore ? 10 : fullscreen ? 0 : 0 }} className="loadingMoreSpinner">
                 <svg xmlns="http://www.w3.org/2000/svg">
                   <path fill="#FFF" d={carPath} />
                 </svg>
@@ -296,8 +304,8 @@ class AddMarkup extends Component {
                 {activeElement > 5 && html[activeElement + 3]}
                 {(!mobile || activeElement > 9) && html[activeElement + 4]}
               </div>
-              <div className="fullscreenButtonNext">
-                <Icon autoFocus type="up" className="fullscreenButtonNext" onClick={() => this.getNextElement()} />
+              <div className="fullscreenButtonNext" onClick={() => this.getNextElement()}>
+                <Icon autoFocus type="up" />
                 <span>Show more</span>
               </div>
               {!this.props.isSearchActivated && (

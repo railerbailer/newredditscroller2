@@ -177,8 +177,6 @@ class CollectionsScroller extends Component {
     this.setState({ isDropDownShowing: false });
   };
   addMediaToCollection = (fields, collection) => {
-    console.log("fields", fields);
-    console.log("collection", collection);
     this.state.user
       ? this.props.firebase.updateDataToCollection({ ...fields }, collection)
       : this.toggleIsModalVisible();

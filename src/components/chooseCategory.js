@@ -1,10 +1,7 @@
 import React, { Component } from "react";
 import FloatingBalls from "./floatingBalls";
-class ChooseCategory extends Component {
-  state = {
-    dataSource: []
-  };
 
+class ChooseCategory extends Component {
   pushHistory = subreddit => {
     this.props.history.push(subreddit);
   };
@@ -21,12 +18,7 @@ class ChooseCategory extends Component {
               <br />
               <p style={{ marginBottom: "-20px", fontSize: ".8em" }}>Pick a domain</p>
             </h2>
-            <button
-              onClick={() => {
-                this.pushHistory("/subreddits/nsfw");
-              }}
-              className="item1"
-            >
+            <button onClick={() => this.pushHistory("/subreddits/nsfw")} className="item1">
               NSFW (18+)
             </button>
 

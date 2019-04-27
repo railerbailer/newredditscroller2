@@ -887,9 +887,9 @@ button {
   position: fixed;
   top: 46px;
   background: transparent;
-  left: 3px;
-  font-size: 32px;
-  filter: drop-shadow(1px 1px black);
+  left: 4px;
+  font-size: 28px;
+  /* filter: drop-shadow(1px 1px black); */
 }
 .cardGrid {
   align-items: center;

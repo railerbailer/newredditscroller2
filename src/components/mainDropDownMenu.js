@@ -61,7 +61,9 @@ const MainDropDownMenu = props => {
       title: `Shareable link to "${collection}"`,
       content: (
         <React.Fragment>
-          <a href={urlToCollection}>{urlToCollection}</a>
+          <a style={{ fontSize: 10 }} href={urlToCollection}>
+            {urlToCollection}
+          </a>
         </React.Fragment>
       ),
       zIndex: 999999999999
@@ -168,12 +170,13 @@ const MainDropDownMenu = props => {
       <span
         className="collectionNameDropdown"
         onClick={() => {
-          setActiveCollection(collection);
-          setSources(Object.values(userCollections[collection]));
-          message.info(`Showing your collection: ${collection}`);
-          pushToHistory(`/collections/${collection}`);
-
-          toggleDropDown(false);
+          if (Object.entries(userCollections[collection]).length !== 0) {
+            setActiveCollection(collection);
+            setSources(Object.values(userCollections[collection]));
+            message.info(`Showing your collection: ${collection}`);
+            pushToHistory(`/collections/${collection}`);
+            toggleDropDown(false);
+          }
         }}
       >
         <Icon className="drawerListIcon" type="right" />
@@ -270,14 +273,14 @@ const MainDropDownMenu = props => {
           <Menu.Item>
             <h4>
               <Link style={{ color: "mediumvioletred" }} to={`/collections`}>
-                <Icon type="solution" /> Browse user collections (click here)
+                <Icon type="solution" /> Browse user banks (click here)
               </Link>
             </h4>
           </Menu.Item>
           <Menu.Divider />
           <Menu.Item>
             <h4>
-              <Icon type="bars" /> My collections{!user && " (Log in required)"}
+              <Icon type="bank" /> My banks{!user && " (Log in required)"}
             </h4>
           </Menu.Item>
           {user && (

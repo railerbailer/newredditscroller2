@@ -238,7 +238,7 @@ class MyCollections extends Component {
         <React.Fragment>
           <div style={{ opacity: isSearchActivated ? 0.1 : 1 }} className="subredditNameDiv">
             <h2 className="subredditName">
-              My Collections
+              My banks
               {/* {activeCollection.length ? activeCollection : collection} <Icon type="tag-o" /> */}
             </h2>
           </div>

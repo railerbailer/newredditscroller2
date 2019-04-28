@@ -222,7 +222,7 @@ class UserCollectionCards extends Component {
             <div className="spinner">
               <div className="centered-text">
                 <div className="centered-text">
-                  Loading <strong>collections</strong>
+                  Loading <strong>public user banks</strong>
                 </div>
               </div>
               <div className="carSpinner">
@@ -240,7 +240,7 @@ class UserCollectionCards extends Component {
         <React.Fragment>
           <div style={{ opacity: isSearchActivated ? 0.1 : 1 }} className="subredditNameDiv">
             <h2 className="subredditName">
-              User Collections
+              User banks
               {/* {activeCollection.length ? activeCollection : collection} <Icon type="tag-o" /> */}
             </h2>
           </div>

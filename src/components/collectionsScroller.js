@@ -63,7 +63,7 @@ class CollectionsScroller extends Component {
           // Object.values(snapshot.val().collections).some(collection => this.props.match.params.collection === collection)
         });
       } else {
-        this.setState({ user: "null" });
+        this.setState({ user: null });
       }
     });
 
@@ -239,7 +239,7 @@ class CollectionsScroller extends Component {
             showListInput={showListInput}
             userCollections={userCollections}
             activeCollection={activeCollection}
-            user={user || ""}
+            user={user}
             toggleDropDown={this.toggleDropDown}
             toggleIsModalVisible={this.toggleIsModalVisible}
             setActiveCollection={this.setActiveCollection}
@@ -299,7 +299,6 @@ class CollectionsScroller extends Component {
               </h2>
             </div>
           </React.Fragment>
-          )}
         </div>
       </Swipeable>
     );

@@ -74,7 +74,6 @@ class Scroller extends Component {
     if (this.props.match.params.subreddit === "allsubreddits") {
       return this.changeCat("", "allsubreddits");
     }
-    console.log("we here?");
     this.props.match.params.subreddit && this.getSubreddit(this.props.match.params.subreddit);
   }
 

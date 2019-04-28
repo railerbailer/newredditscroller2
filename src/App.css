@@ -182,7 +182,7 @@ i {
   margin: 0 0 4px 4px;
 }
 .ant-modal {
-  max-width: 95vw !important;
+  max-width: 80vw !important;
 }
 .addNewMediaIcon svg {
   /* background: #1890ff; */

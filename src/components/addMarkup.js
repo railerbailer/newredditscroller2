@@ -24,7 +24,6 @@ class AddMarkup extends Component {
     }
     if (this.props.dataSource !== prevProps.dataSource) {
       this.setState({ activeElement: 0 });
-      // document.body.scrollTop(0)
     }
   }
   setActiveElement = value => {

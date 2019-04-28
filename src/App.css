@@ -181,8 +181,12 @@ i {
   font-size: 34px;
   margin: 0 0 4px 4px;
 }
+
 .ant-modal {
   max-width: 80vw !important;
+}
+input {
+  font-size: 16px !important;
 }
 .addNewMediaIcon svg {
   /* background: #1890ff; */

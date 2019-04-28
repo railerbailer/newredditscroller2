@@ -12,6 +12,7 @@ import SearchComponent from "./search";
 import SwitchCategoryButtons from "./switchCategoryButtons";
 import MainDropDownMenu from "./mainDropDownMenu";
 import GoBackButton from "./goBackButton";
+import { Helmet } from "react-helmet";
 
 let sources = [];
 let reload = 0;
@@ -194,7 +195,8 @@ class Scroller extends Component {
       user
     } = this.state;
     const { firebase } = this.props;
-
+    const mediaTitlesArr = sources.map(items => items.title);
+    const mediaTitles = mediaTitlesArr.join(", ");
     return (
       <Swipeable
         className={`wrapper`}
@@ -202,6 +204,14 @@ class Scroller extends Component {
         onSwipedLeft={this.swipedLeft}
         onSwipedRight={this.swipedRight}
       >
+        <Helmet>
+          <title>{this.state.subreddit}</title>
+          <meta
+            name="description"
+            content={`Showing images and gifs from subreddit ${this.props.match.params.subreddit}`}
+          />
+          <meta name="keywords" content={mediaTitles} />
+        </Helmet>
         <div className="topbarZen">
           <LoginModal
             firebase={firebase}

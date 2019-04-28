@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import FloatingBalls from "./floatingBalls";
 import ConsentForAge from "./consentForAge";
+import { Helmet } from "react-helmet";
 
 class ChooseCategory extends Component {
   state = {
@@ -15,6 +16,10 @@ class ChooseCategory extends Component {
   render() {
     return (
       <div className="categoryModal">
+        <Helmet>
+          <meta name="description" content="Your site for scrolling pictures and gifs from subreddits." />
+          <meta name="keywords" content="NSFW, NSFW pics,nsfw gifs, nsfw pictures, not safe for work, SFW" />
+        </Helmet>
         <FloatingBalls />
         <h1 className="scrollLogo">sliddit.</h1>
         <ConsentForAge visible={!this.state.accepted} visibilityChange={this.setAccepted} />

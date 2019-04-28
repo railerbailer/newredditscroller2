@@ -11,6 +11,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-ga": "^2.5.7",
+    "react-helmet": "^5.2.0",
     "react-lazyload": "^2.5.0",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",

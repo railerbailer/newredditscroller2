@@ -82,7 +82,7 @@ const FloatingBalls = () => {
       </svg>
       <svg x="0" y="0">
         <circle cx="15" cy="15" r="15" fill="hotpink">
-          <animateMotion dur="30s" repeatCount="indefinite">
+          <animateMotion dur="15s" repeatCount="indefinite">
             <mpath xlinkHref="#verysmallcircle" />
           </animateMotion>
         </circle>

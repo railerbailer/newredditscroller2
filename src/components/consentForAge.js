@@ -33,6 +33,8 @@ const styling = {
     background: "rgb(20,20,20, 0.9)",
     height: "100vh",
     width: "100vw",
+    top: 0,
+    left: 0,
     position: "fixed"
   },
   innerWrapper: {

@@ -2,7 +2,7 @@ import React from "react";
 const ConsentForAge = ({ visible, visibilityChange }) => {
   return (
     visible && (
-      <div style={styling.wrapper}>
+      <div className="webkitTransform" style={styling.wrapper}>
         <div style={styling.innerWrapper}>
           <div style={{ marginTop: "17vh" }}>
             <span style={styling.span}>This site may include adult content.</span>

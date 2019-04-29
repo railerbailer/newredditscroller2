@@ -299,7 +299,11 @@ input {
 .playButton:hover {
   opacity: 1 !important;
 } */
+.webkitTransform {
+  -webkit-transform: translate3d(0, 0, 0);
+}
 .playButton {
+  -webkit-transform: translate3d(0, 0, 0);
   opacity: 0.6;
   font-size: 48px;
   color: white !important;
@@ -317,6 +321,7 @@ input {
   margin-right: -50px;
 }
 .playButton .fullscreen {
+  -webkit-transform: translate3d(0, 0, 0);
   top: 50%;
 }
 

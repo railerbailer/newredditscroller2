@@ -317,7 +317,7 @@ input {
   width: 15%;
   margin-left: 43%;
   text-align: center;
-  z-index: 5;
+  z-index: 6 !important;
   margin-top: -10px;
 
   margin-right: -50px;

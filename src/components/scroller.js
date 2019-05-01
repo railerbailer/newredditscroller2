@@ -319,16 +319,21 @@ class Scroller extends Component {
         try {
           reload = reload + 1;
           if (reload < 10) await this.getSubreddit(shuffleArray(dataHandler(this.state.category)));
-          else alert("Could not load data, check your internet connection");
+          else
+            alert(
+              "Could not load data, check your internet connection. Firefox incognito mode may be causing this issue."
+            );
         } catch (error) {
           console.log("error", error);
         }
       });
-    if (!sources.length) {
-      await this.getSubreddit(shuffleArray(dataHandler(this.state.category)));
-    } else {
-      this.pushToHistory(`/subreddits/${this.state.subreddit}`);
-      this.setState({ isLoading: false });
+    if (reload < 10) {
+      if (!sources.length) {
+        await this.getSubreddit(shuffleArray(dataHandler(this.state.category)));
+      } else {
+        this.pushToHistory(`/subreddits/${this.state.subreddit}`);
+        this.setState({ isLoading: false });
+      }
     }
   };
 

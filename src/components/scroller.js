@@ -41,7 +41,6 @@ class Scroller extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (!this.state.isLoading && prevProps.match.params.subreddit !== this.props.match.params.subreddit) {
       this.getSubreddit(this.props.match.params.subreddit);
-      this.categorySet(this.props.match.params.subreddit);
     }
   }
 

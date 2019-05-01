@@ -127,7 +127,7 @@ class AddMarkup extends Component {
       .filter(item => Object.entries(item).length !== 0)
       .slice(0, this.state.loadedData)
       .map((data, i) => {
-        const { gif, image, video, thumbnail } = data;
+        const { gif, image, video, thumbnail, title } = data;
         const size = {
           superTall: 645,
           veryTall: 645,
@@ -166,6 +166,7 @@ class AddMarkup extends Component {
                   src={source}
                 />
               </LazyLoad>
+              <p className="titleText">{title}</p>
             </div>
           );
         }
@@ -199,6 +200,7 @@ class AddMarkup extends Component {
                   poster={video.image || thumbnail}
                 />
               </LazyLoad>
+              <p className="titleText">{title}</p>
             </div>
           );
         }
@@ -228,6 +230,7 @@ class AddMarkup extends Component {
                   src={gif.url}
                 />
               </LazyLoad>
+              <p className="titleText">{title}</p>d
             </div>
           );
         }

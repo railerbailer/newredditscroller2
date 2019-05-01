@@ -1,4 +1,4 @@
-import { gifsArray, subredditArray, straight, artArray, foodArray, animalsArray } from "../subreddits";
+import { gifsArray, sfwarray, straight, artArray, foodArray, animalsArray } from "../subreddits";
 import _ from "lodash";
 
 export const dataHandler = value => {
@@ -6,9 +6,9 @@ export const dataHandler = value => {
   if (lowerCaseCategory === "nsfw") {
     return _.uniq(straight);
   } else if (lowerCaseCategory === "sfw") {
-    return _.uniq(subredditArray.concat(artArray, foodArray, animalsArray));
+    return _.uniq(sfwarray.concat(artArray, foodArray, animalsArray));
   } else if (lowerCaseCategory === "sfw") {
-    return subredditArray;
+    return sfwarray;
   } else if (lowerCaseCategory === "art") {
     return artArray;
   } else if (lowerCaseCategory === "food") {
@@ -16,9 +16,9 @@ export const dataHandler = value => {
   } else if (lowerCaseCategory === "animals") {
     return animalsArray;
   } else if (lowerCaseCategory === "search" || lowerCaseCategory === "allsubreddits") {
-    return _.uniq(subredditArray.concat(artArray, foodArray, animalsArray, straight, gifsArray));
+    return _.uniq(sfwarray.concat(artArray, foodArray, animalsArray, straight, gifsArray));
   } else {
-    return _.uniq(subredditArray.concat(artArray, foodArray, animalsArray, gifsArray));
+    return _.uniq(sfwarray.concat(artArray, foodArray, animalsArray, gifsArray));
   }
 };
 
@@ -96,7 +96,7 @@ export const dataMapper = async (fetchedData, mobile) => {
       mediaData.domain = data.domain || "";
       mediaData.title = data.title;
       mediaData.thumbnail = thumbnail;
-    } else if (post_hint === "image") {
+    } else if (post_hint === "image" || post_hint === "link") {
       mediaData.image = {};
       let low;
       let high;

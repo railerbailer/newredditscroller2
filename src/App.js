@@ -9,6 +9,7 @@ const Scroller = lazy(() => import("./components/scroller"));
 const CollectionsScroller = lazy(() => import("./components/collectionsScroller"));
 const ChooseCategory = lazy(() => import("./components/chooseCategory"));
 const UserCollectionCards = lazy(() => import("./components/userCollectionCards"));
+const SubredditsList = lazy(() => import("./components/subredditsList"));
 class App extends Component {
   render() {
     return (
@@ -25,6 +26,7 @@ class App extends Component {
               </div>
             }
           >
+            <Route path="/subreddits" exact component={trackerHoc(SubredditsList)} />
             <Route path="/collections" exact component={trackerHoc(UserCollectionCards)} />
             <Route path="/collections/:collection" exact component={trackerHoc(CollectionsScroller)} />
             <Route path="/" exact component={trackerHoc(ChooseCategory)} />

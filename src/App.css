@@ -59,7 +59,7 @@ h2 {
   bottom: 0px;
   z-index: 4;
   font-size: 16px;
-  opacity: 0.75;
+  opacity: 0.6;
   color: white !important;
   text-shadow: 1px 1px black;
   text-overflow: ellipsis;
@@ -188,7 +188,7 @@ i {
   bottom: 5px;
   left: 5px;
   font-size: 24px;
-  opacity: 0.9;
+  opacity: 0.8;
 
   color: white !important;
   filter: drop-shadow(1px 1px black);
@@ -895,4 +895,32 @@ button {
 .chooseCat {
   fill: white;
   color: white;
+}
+
+.subredditsList {
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+}
+.subredditsList h2,
+h1 {
+  color: white;
+}
+.subredditsListWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  color: white;
+}
+.showMoreButton {
+  background-color: #1890ff;
+  color: white;
+  margin-top: 20px;
+  height: 30px;
+  border-radius: 5px;
+}
+.subredditsList a:link {
+  color: #1890ff;
+}
+.subredditsList a:visited {
+  color: hotpink;
 }

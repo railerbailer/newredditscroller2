@@ -238,9 +238,9 @@ const MainDropDownMenu = props => {
         width={300}
       >
         <Menu>
-          <Menu.Item onClick={() => pushToHistory("/subreddits/allsubreddits")}>
+          <Menu.Item onClick={() => pushToHistory("/subreddits")}>
             <h4>
-              <Icon type="global" /> Browse subreddits
+              <Icon type="global" /> Browse all subreddits
             </h4>
           </Menu.Item>
           <Menu.Item
@@ -252,8 +252,8 @@ const MainDropDownMenu = props => {
             }}
           >
             <div>
-              <Icon className="drawerListIcon" type="right" />
-              NSFW
+              <Icon type="star" />
+              Browse NSFW
             </div>
           </Menu.Item>
           <Menu.Item
@@ -265,15 +265,15 @@ const MainDropDownMenu = props => {
             }}
           >
             <div>
-              <Icon className="drawerListIcon" type="right" />
-              SFW
+              <Icon type="heart" />
+              Browse SFW
             </div>
           </Menu.Item>
           <Menu.Divider />
           <Menu.Item>
             <h4>
-              <Link style={{ color: "mediumvioletred" }} to={`/collections`}>
-                <Icon type="solution" /> Browse user banks (click here)
+              <Link style={{ color: "rgba(0, 0, 0, 0.85)" }} to={`/collections`}>
+                <Icon type="solution" /> Browse user banks
               </Link>
             </h4>
           </Menu.Item>

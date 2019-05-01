@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Icon, Button, Spin } from "antd";
+import { Icon, Button, Spin, Tooltip } from "antd";
 import LazyLoad from "react-lazyload";
 import Image from "./image";
 import Video from "./video";
@@ -166,7 +166,9 @@ class AddMarkup extends Component {
                   src={source}
                 />
               </LazyLoad>
-              <p className="titleText">{title}</p>
+              <Tooltip placement="top" title={title}>
+                <p className="titleText">{title}</p>
+              </Tooltip>
             </div>
           );
         }
@@ -200,7 +202,9 @@ class AddMarkup extends Component {
                   poster={video.image || thumbnail}
                 />
               </LazyLoad>
-              <p className="titleText">{title}</p>
+              <Tooltip placement="top" title={title}>
+                <p className="titleText">{title}</p>
+              </Tooltip>
             </div>
           );
         }
@@ -230,7 +234,9 @@ class AddMarkup extends Component {
                   src={gif.url}
                 />
               </LazyLoad>
-              <p className="titleText">{title}</p>d
+              <Tooltip placement="top" title={title}>
+                <p className="titleText">{title}</p>
+              </Tooltip>
             </div>
           );
         }
@@ -300,7 +306,7 @@ class AddMarkup extends Component {
                 icon={this.props.isLoadingMore ? "loading" : "loading-3-quarters"}
                 className="loadMoreButton"
               >
-                Load more
+                Show more
               </Button>
             )}
           </div>

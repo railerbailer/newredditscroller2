@@ -203,7 +203,7 @@ export const manmadeArray = [
   "StarshipPorn",
   "AlbumArtPorn"
 ];
-export const subredditArray = [
+export const sfwarray = [
   "pics",
   "perfecttiming",
   "itookapicture",
@@ -3911,7 +3911,6 @@ export const alternativeNSFW = [
   "metalgirls",
   "GirlWithThePiercings"
 ];
-
 export const tattooNSFW = [
   "Hotchickswithtattoos",
   "tattooed_redheads",
@@ -4035,6 +4034,7 @@ export const collegeNSFW = [
   "CheerleadersGonewild",
   "GamedayGoneWild"
 ];
+
 export const gonewildNSFW = [
   "gonewild",
   "PetiteGoneWild",
@@ -4187,6 +4187,7 @@ export const gonewildNSFW = [
   "EdmontonGoneWild",
   "GirlsGoneDogeCoin"
 ];
+
 export const selfieNSFW = [
   "NSFW_Snapchat",
   "ChangingRooms",
@@ -4252,6 +4253,7 @@ export const selfieNSFW = [
   "assholeselfies",
   "nudesforpizza"
 ];
+
 export const analNSFW = [
   "anal",
   "AnalGW",
@@ -4302,6 +4304,7 @@ export const analNSFW = [
   "assfingering"
 ];
 export const buttplugNSFW = ["buttplug", "tailplug", "Gemplugs", "publicplug", "Foxtails"];
+
 export const assNSFW = [
   "AssholeBehindThong",
   "asshole",
@@ -4439,6 +4442,7 @@ export const assNSFW = [
   "Asscentric",
   "BottomView"
 ];
+
 export const athleticNSFW = [
   "fitgirls",
   "hardbodies",
@@ -5007,6 +5011,7 @@ export const sexyclothingNSFW = [
   "BusinessBabes",
   "SchoolgirlsXXX"
 ];
+
 export const pornnetworksNSFW = [
   "metart",
   "Playboy",
@@ -5041,6 +5046,7 @@ export const pornnetworksNSFW = [
   "americanapparelmodels",
   "Blacked_Network"
 ];
+
 export const cumNSFW = [
   "GirlsFinishingTheJob",
   "cumfetish",

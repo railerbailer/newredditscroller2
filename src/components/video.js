@@ -14,7 +14,7 @@ class Video extends Component {
   }
   componentDidMount() {
     if (this.props.fullscreen) {
-      this.togglePlaying();
+      !this.props.mobile && this.togglePlaying();
     }
   }
   toggleIsDropDownShowing = value => {

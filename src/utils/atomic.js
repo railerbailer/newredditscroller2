@@ -66,7 +66,6 @@ export const dataMapper = async (fetchedData, mobile) => {
       thumbnail
     } = data;
     const isGif = data.url.includes(".gif");
-
     if (preview && preview.reddit_video_preview && preview.reddit_video_preview.scrubber_media_url) {
       imageRatioCalculator(preview.reddit_video_preview.height, preview.reddit_video_preview.width);
       mediaData.video = {};
@@ -110,7 +109,6 @@ export const dataMapper = async (fetchedData, mobile) => {
           if (res > 1000 && res < 2000) {
             high = htmlParser(resolution.url);
           }
-
           mediaData.image = {
             source: data.url,
             low: low,
@@ -118,6 +116,9 @@ export const dataMapper = async (fetchedData, mobile) => {
             className: imageRatioCalculator(resolution.height, resolution.width)
           };
           if (mobile && (!high && !low)) {
+            mediaData.image = null;
+          }
+          if (!low && !high && !data.url.includes("imgur" && post_hint === "link")) {
             mediaData.image = null;
           }
           return null;

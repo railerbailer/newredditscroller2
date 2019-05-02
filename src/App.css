@@ -141,14 +141,14 @@ h2 {
 .closeFullScreen {
   text-shadow: 1px 1px black;
   border: 0;
-  font-size: 20px;
+  font-size: 28px;
   z-index: 8;
   position: absolute;
   color: white !important;
-  top: 55px;
-  right: 11px;
-  height: 30px;
-  width: 30px;
+  top: 50px;
+  right: 7px;
+  height: 35px;
+  width: 35px;
   background-color: transparent;
   opacity: 0.8;
 }
@@ -183,10 +183,10 @@ i {
 }
 
 .addNewMediaIcon {
-  padding: 20px 20px 0 0;
+  padding: 30px 30px 5px 5px;
   position: absolute;
-  bottom: 5px;
-  left: 5px;
+  bottom: 0;
+  left: 0;
   font-size: 24px;
   opacity: 0.8;
 

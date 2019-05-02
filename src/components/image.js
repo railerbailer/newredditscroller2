@@ -38,7 +38,11 @@ const Image = props => {
       <Menu>
         <h4 className="addToCollectionModal">
           <Icon type="bank" /> <span>Add to bank</span>
-          <Icon style={{ float: "right" }} onClick={() => setDropDown(false)} type="close" />
+          <Icon
+            style={{ float: "right", fontSize: 20, padding: "2px 10px 10px 15px" }}
+            onClick={() => setDropDown(false)}
+            type="close"
+          />
         </h4>
 
         {!lists.length && (

@@ -21,7 +21,8 @@ const MainDropDownMenu = props => {
     isDropDownShowing,
     toggleDropDown,
     firebase,
-    pushToHistory
+    pushToHistory,
+    changeCat
     // collectionsMode
   } = props;
   const addNewList = async () => {
@@ -249,6 +250,7 @@ const MainDropDownMenu = props => {
               setActiveCollection("");
               toggleDropDown(false);
               pushToHistory("/subreddits/nsfw");
+              changeCat && changeCat("", "nsfw");
             }}
           >
             <div>
@@ -262,6 +264,7 @@ const MainDropDownMenu = props => {
               pushToHistory("/subreddits/sfw");
               toggleDropDown(false);
               setActiveCollection("");
+              changeCat && changeCat("", "sfw");
             }}
           >
             <div>

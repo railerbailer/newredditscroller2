@@ -23,6 +23,22 @@ button {
   color: black;
 }
 
+.linkToSource {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  padding: 20px;
+  padding-right: 8px;
+  padding-bottom: 0;
+  font-size: 22px;
+}
+.fullscreen .linkToSource {
+  right: 70px;
+  bottom: 8px;
+  padding-right: 20px;
+  font-size: 25px;
+}
+
 p {
   color: white;
 }
@@ -189,7 +205,7 @@ i {
   bottom: 0;
   left: 0;
   font-size: 24px;
-  opacity: 0.8;
+  opacity: 0.9;
 
   color: white !important;
   filter: drop-shadow(1px 1px black);

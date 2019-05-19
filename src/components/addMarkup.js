@@ -94,7 +94,10 @@ class AddMarkup extends Component {
   getIdFromUrl = url => {
     let urlWithoutHttps = url.replace("https://", "").replace("http://", "");
     const indexOfFirstSlash = urlWithoutHttps.indexOf("/");
-    const stringAfterFirstSlash = urlWithoutHttps.slice(indexOfFirstSlash + 1, urlWithoutHttps.length - 1);
+    const stringAfterFirstSlash = urlWithoutHttps.slice(
+      indexOfFirstSlash + 1,
+      urlWithoutHttps.length - 1
+    );
     const indexOfSecondSlash = stringAfterFirstSlash.indexOf("/");
     const indexOfNextDot = stringAfterFirstSlash.indexOf(".");
     const chooseIndex =
@@ -119,7 +122,8 @@ class AddMarkup extends Component {
     } = this.props;
     let filteredData;
     if (mobile) filteredData = dataSource.filter(item => !item.gif);
-    if (isOnlyPicsShowing) filteredData = dataSource.filter(item => !item.video).filter(item => !item.gif);
+    if (isOnlyPicsShowing)
+      filteredData = dataSource.filter(item => !item.video).filter(item => !item.gif);
     else if (isOnlyGifsShowing) filteredData = dataSource.filter(item => !item.image);
     else if (isOnlyPicsShowing && isOnlyGifsShowing) filteredData = dataSource;
     else filteredData = dataSource;
@@ -127,7 +131,7 @@ class AddMarkup extends Component {
       .filter(item => Object.entries(item).length !== 0)
       .slice(0, this.state.loadedData)
       .map((data, i) => {
-        const { gif, image, video, thumbnail, title } = data;
+        const { gif, image, video, thumbnail, title, permalink } = data;
         const size = {
           superTall: 645,
           veryTall: 645,
@@ -141,7 +145,11 @@ class AddMarkup extends Component {
             : image.high || image.low || image.source || thumbnail;
           const imageId = this.getIdFromUrl(source);
           return (
-            <div key={i} ref={el => (this[`gridElement${i}`] = el)} className={`gridElement pics ${image.className}`}>
+            <div
+              key={i}
+              ref={el => (this[`gridElement${i}`] = el)}
+              className={`gridElement pics ${image.className}`}
+            >
               <LazyLoad
                 unmountIfInvisible={true}
                 height={size[image.className]}
@@ -151,6 +159,8 @@ class AddMarkup extends Component {
                 key={i}
               >
                 <Image
+                  permalink={permalink}
+                  title={title}
                   setLoadedData={this.setLoadedData}
                   loadedData={this.state.loadedData}
                   firebaseId={imageId}
@@ -175,7 +185,11 @@ class AddMarkup extends Component {
         if (video) {
           const videoId = this.getIdFromUrl(video.url);
           return (
-            <div key={i} ref={el => (this[`gridElement${i}`] = el)} className={`gridElement gifs ${video.className}`}>
+            <div
+              key={i}
+              ref={el => (this[`gridElement${i}`] = el)}
+              className={`gridElement gifs ${video.className}`}
+            >
               <LazyLoad
                 unmountIfInvisible={true}
                 height={size[video.className]}
@@ -185,6 +199,8 @@ class AddMarkup extends Component {
                 throttle={0}
               >
                 <Video
+                  permalink={permalink}
+                  title={title}
                   setLoadedData={this.setLoadedData}
                   loadedData={this.state.loadedData}
                   firebaseId={videoId}
@@ -211,7 +227,11 @@ class AddMarkup extends Component {
         if (gif && !mobile) {
           const gifId = this.getIdFromUrl(gif.url);
           return (
-            <div key={i} ref={el => (this[`gridElement${i}`] = el)} className={`gridElement gifs ${gif.className}`}>
+            <div
+              key={i}
+              ref={el => (this[`gridElement${i}`] = el)}
+              className={`gridElement gifs ${gif.className}`}
+            >
               <LazyLoad
                 unmountIfInvisible={true}
                 height={size[gif.className]}
@@ -221,6 +241,8 @@ class AddMarkup extends Component {
                 throttle={0}
               >
                 <Image
+                  permalink={permalink}
+                  title={title}
                   setLoadedData={this.setLoadedData}
                   loadedData={this.state.loadedData}
                   firebaseId={gifId}
@@ -256,10 +278,20 @@ class AddMarkup extends Component {
       >
         {html.length &&
           (fullscreen ? (
-            <div style={{ opacity: isLoading ? 0.1 : 1, transition: "opacity 400ms" }} className="fullscreenScroll">
-              <Icon type="close" className="closeFullScreen" onClick={() => this.getElementIndex(activeElement)} />
+            <div
+              style={{ opacity: isLoading ? 0.1 : 1, transition: "opacity 400ms" }}
+              className="fullscreenScroll"
+            >
+              <Icon
+                type="close"
+                className="closeFullScreen"
+                onClick={() => this.getElementIndex(activeElement)}
+              />
 
-              <div style={{ zIndex: isLoadingMore ? 10 : fullscreen ? 0 : 0 }} className="loadingMoreSpinner">
+              <div
+                style={{ zIndex: isLoadingMore ? 10 : fullscreen ? 0 : 0 }}
+                className="loadingMoreSpinner"
+              >
                 <svg xmlns="http://www.w3.org/2000/svg">
                   <path fill="#FFF" d={carPath} />
                 </svg>
@@ -280,7 +312,10 @@ class AddMarkup extends Component {
               )}
             </div>
           ) : (
-            <div style={{ opacity: isLoading ? 0.1 : 1, transition: "opacity 400ms" }} className="gridMedia">
+            <div
+              style={{ opacity: isLoading ? 0.1 : 1, transition: "opacity 400ms" }}
+              className="gridMedia"
+            >
               {html}
             </div>
           ))}

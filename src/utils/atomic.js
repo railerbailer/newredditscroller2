@@ -63,10 +63,16 @@ export const dataMapper = async (fetchedData, mobile) => {
       media_embed, */
       thumbnail_height = 1,
       thumbnail_width = 2,
-      thumbnail
+      thumbnail,
+      permalink = "https://www.reddit.com"
     } = data;
     const isGif = data.url.includes(".gif");
-    if (preview && preview.reddit_video_preview && preview.reddit_video_preview.scrubber_media_url) {
+    const urlToSource = "https://www.reddit.com" + permalink;
+    if (
+      preview &&
+      preview.reddit_video_preview &&
+      preview.reddit_video_preview.scrubber_media_url
+    ) {
       imageRatioCalculator(preview.reddit_video_preview.height, preview.reddit_video_preview.width);
       mediaData.video = {};
       mediaData.video.url = preview.reddit_video_preview.scrubber_media_url;
@@ -88,6 +94,7 @@ export const dataMapper = async (fetchedData, mobile) => {
       mediaData.domain = data.domain || "";
       mediaData.title = data.title;
       mediaData.thumbnail = thumbnail;
+      mediaData.permalink = urlToSource;
     } else if (isGif) {
       mediaData.gif = {};
       mediaData.gif.url = data.url.replace(".gifv", ".gif");
@@ -95,6 +102,7 @@ export const dataMapper = async (fetchedData, mobile) => {
       mediaData.domain = data.domain || "";
       mediaData.title = data.title;
       mediaData.thumbnail = thumbnail;
+      mediaData.permalink = urlToSource;
     } else if (post_hint === "image" || post_hint === "link") {
       mediaData.image = {};
       let low;
@@ -126,8 +134,12 @@ export const dataMapper = async (fetchedData, mobile) => {
       mediaData.domain = data.domain || "";
       mediaData.title = data.title;
       mediaData.thumbnail = thumbnail;
+      mediaData.permalink = urlToSource;
     }
-    if (Object.entries(mediaData).length !== 0 && (mediaData.image || mediaData.video || mediaData.gif)) {
+    if (
+      Object.entries(mediaData).length !== 0 &&
+      (mediaData.image || mediaData.video || mediaData.gif)
+    ) {
       convertedSources.push(mediaData);
     }
     return null;

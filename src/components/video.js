@@ -21,14 +21,33 @@ class Video extends Component {
     this.setState({ isDropDownShowing: value });
   };
   menu = () => {
-    const { collections, src, className, poster, ratioClassName, firebaseId } = this.props;
+    const {
+      collections,
+      src,
+      className,
+      poster,
+      ratioClassName,
+      firebaseId,
+      permalink,
+      title
+    } = this.props;
     const lists = Object.keys(collections).reverse();
     const listMenuItem = lists.map(list => (
       <Menu.Item
         key={list}
         onClick={() => {
           this.props.addMediaToCollection(
-            { [firebaseId]: { [className]: { className: ratioClassName, url: src, image: poster } } },
+            {
+              [firebaseId]: {
+                title: title || null,
+                permalink: permalink || null,
+                [className]: {
+                  className: ratioClassName,
+                  url: src,
+                  image: poster
+                }
+              }
+            },
             list
           );
           message.info(`Added to collection ${list}`);
@@ -75,7 +94,8 @@ class Video extends Component {
       index,
       className,
       setLoadedData,
-      loadedData
+      loadedData,
+      permalink
     } = this.props;
     const srcWithoutDash = src.split("DASH")[0];
     return (
@@ -101,7 +121,9 @@ class Video extends Component {
           onPlay={() =>
             this.setState(
               { isPlaying: true, fadeOut: !this.state.fadeOut },
-              () => !fullscreen && (this.timer = setTimeout(() => this.videoPlayer && this.videoPlayer.pause(), 25000))
+              () =>
+                !fullscreen &&
+                (this.timer = setTimeout(() => this.videoPlayer && this.videoPlayer.pause(), 25000))
             )
           }
           onPause={() => this.setState({ isPlaying: false }, clearTimeout(this.timer))}
@@ -115,6 +137,17 @@ class Video extends Component {
           <source src={src} type="video/mp4" />
           Sorry, your browser doesn't support embedded videos.
         </video>
+        {permalink && (
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href={permalink}
+            style={{ zIndex: fullscreen ? 999 : 5 }}
+            className="linkToSource"
+          >
+            <Icon style={{ zIndex: fullscreen ? 999 : 5 }} type="link" />
+          </a>
+        )}
         <Dropdown
           overlayStyle={{ zIndex: fullscreen ? 1231231231231231 : 2, minWidth: "200px" }}
           onBlur={() => setTimeout((() => this.toggleIsDropDownShowing(false), 500))}

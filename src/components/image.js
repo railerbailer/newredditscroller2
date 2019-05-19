@@ -14,7 +14,9 @@ const Image = props => {
     firebaseId,
     fullscreen,
     setLoadedData,
-    loadedData
+    loadedData,
+    permalink,
+    title
   } = props;
 
   const menu = () => {
@@ -25,7 +27,19 @@ const Image = props => {
       <Menu.Item
         key={list}
         onClick={() => {
-          addMediaToCollection({ [firebaseId]: { [className]: { className: ratioClassName, [srcKey]: src } } }, list);
+          addMediaToCollection(
+            {
+              [firebaseId]: {
+                title: title || null,
+                permalink: permalink || null,
+                [className]: {
+                  className: ratioClassName,
+                  [srcKey]: src
+                }
+              }
+            },
+            list
+          );
           setDropDown(false);
           message.info(`Added to collection ${list}`);
         }}
@@ -70,9 +84,19 @@ const Image = props => {
         // ref={img => (this.img = img)}
         src={src}
       />
-
+      {permalink && (
+        <a
+          rel="noopener noreferrer"
+          target="_blank"
+          href={permalink}
+          style={{ zIndex: fullscreen ? 999 : 5 }}
+          className="linkToSource"
+        >
+          <Icon style={{ zIndex: fullscreen ? 999 : 5 }} type="link" />
+        </a>
+      )}
       <Dropdown
-        overlayStyle={{ zIndex: fullscreen ? 999 : 2 }}
+        overlayStyle={{ zIndex: fullscreen ? 999 : 5 }}
         overlayClassName="mediaAddDropdown"
         placement="topRight"
         visible={isDropDownShowing}

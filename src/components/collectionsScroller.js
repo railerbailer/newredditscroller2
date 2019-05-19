@@ -39,7 +39,10 @@ class CollectionsScroller extends Component {
     publicCollections: []
   };
   componentDidUpdate(prevProps, prevState) {
-    if (!this.state.isLoading && prevProps.match.params.collection !== this.props.match.params.collection) {
+    if (
+      !this.state.isLoading &&
+      prevProps.match.params.collection !== this.props.match.params.collection
+    ) {
       this.getCollection(this.props.match.params.collection);
     }
   }
@@ -50,7 +53,9 @@ class CollectionsScroller extends Component {
     this.props.firebase.auth.onAuthStateChanged(user => {
       this.props.firebase.db.ref(`public`).on("value", snapshot => {
         const collections = _.get(snapshot.val(), "collections", {});
-        const collectionsArray = _.flatMap(Object.values(collections).map(item => Object.values(item)));
+        const collectionsArray = _.flatMap(
+          Object.values(collections).map(item => Object.values(item))
+        );
         this.setState({
           publicCollections: collectionsArray
         });
@@ -95,7 +100,8 @@ class CollectionsScroller extends Component {
   setActiveCollection = collection => this.setState({ activeCollection: collection });
   toggleIsLoading = state => this.setState({ isLoading: state });
   toggleFullscreen = () =>
-    !this.state.isSearchActivated && this.setState({ fullscreenActive: !this.state.fullscreenActive });
+    !this.state.isSearchActivated &&
+    this.setState({ fullscreenActive: !this.state.fullscreenActive });
   toggleIsModalVisible = () => this.setState({ isModalVisible: !this.state.isModalVisible });
   toggleSearchButton = value => this.setState({ isSearchActivated: value });
   categorySet = val => this.setState({ category: val });
@@ -207,7 +213,9 @@ class CollectionsScroller extends Component {
       <Swipeable
         className={`wrapper`}
         onKeyDown={
-          !isModalVisible && !isModalVisible && !showListInput && !isSearchActivated ? this.handleKeyDown : undefined
+          !isModalVisible && !isModalVisible && !showListInput && !isSearchActivated
+            ? this.handleKeyDown
+            : undefined
         }
         onSwipedLeft={this.swipedLeft}
         onSwipedRight={this.swipedRight}

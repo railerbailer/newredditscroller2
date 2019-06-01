@@ -123,9 +123,9 @@ class AddMarkup extends Component {
     let filteredData;
     if (mobile) filteredData = dataSource.filter(item => !item.gif);
     if (!isOnlyGifsShowing && isOnlyPicsShowing)
-      filteredData = dataSource.filter(item => !item.video).filter(item => !item.gif);
+      filteredData = dataSource.filter(item => item.image);
     else if (!isOnlyPicsShowing && isOnlyGifsShowing)
-      filteredData = dataSource.filter(item => !item.image);
+      filteredData = dataSource.filter(item => item.video).filter(item => item.gif || item.video);
     else if (isOnlyPicsShowing && isOnlyGifsShowing) filteredData = dataSource;
     else filteredData = dataSource;
     html = filteredData

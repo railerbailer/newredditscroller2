@@ -113,7 +113,7 @@ class Video extends Component {
             // (this.state.isPlaying && fullscreen) || (!this.state.isPlaying && !fullscreen && this.togglePlaying());
             this.toggleIsDropDownShowing(false);
           }}
-          poster={mobile ? poster : undefined}
+          poster={poster || undefined}
           allowFullScreen={true}
           onCanPlay={() => this.setState({ videoLoaded: true })}
           className={className}
@@ -131,9 +131,9 @@ class Video extends Component {
           preload={"metadata"}
         >
           {!mobile && <source src={`${srcWithoutDash}DASH_720`} type="video/mp4" />}
-          {!mobile && <source src={`${srcWithoutDash}DASH_600_K`} type="video/mp4" />}
-          {!mobile && <source src={`${srcWithoutDash}DASH_480`} type="video/mp4" />}
-          {!mobile && <source src={`${srcWithoutDash}DASH_360`} type="video/mp4" />}
+          {<source src={`${srcWithoutDash}DASH_600_K`} type="video/mp4" />}
+          {<source src={`${srcWithoutDash}DASH_480`} type="video/mp4" />}
+          {<source src={`${srcWithoutDash}DASH_360`} type="video/mp4" />}
           <source src={src} type="video/mp4" />
           Sorry, your browser doesn't support embedded videos.
         </video>

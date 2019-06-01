@@ -39,7 +39,10 @@ class Scroller extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (!this.state.isLoading && prevProps.match.params.subreddit !== this.props.match.params.subreddit) {
+    if (
+      !this.state.isLoading &&
+      prevProps.match.params.subreddit !== this.props.match.params.subreddit
+    ) {
       this.getSubreddit(this.props.match.params.subreddit);
     }
   }
@@ -83,7 +86,8 @@ class Scroller extends Component {
   setActiveCollection = collection => this.setState({ activeCollection: collection });
   toggleIsLoading = state => this.setState({ isLoading: state });
   toggleFullscreen = () =>
-    !this.state.isSearchActivated && this.setState({ fullscreenActive: !this.state.fullscreenActive });
+    !this.state.isSearchActivated &&
+    this.setState({ fullscreenActive: !this.state.fullscreenActive });
   toggleIsModalVisible = () => this.setState({ isModalVisible: !this.state.isModalVisible });
   toggleSearchButton = value => this.setState({ isSearchActivated: value });
   categorySet = val => this.setState({ category: val });
@@ -125,7 +129,8 @@ class Scroller extends Component {
     this.toggleDropDown(false);
     this.setActiveCollection("");
 
-    !this.state.isLoading && (await this.getSubreddit(shuffleArray(dataHandler(this.state.category))));
+    !this.state.isLoading &&
+      (await this.getSubreddit(shuffleArray(dataHandler(this.state.category))));
 
     this.toggleIsLoading(false);
   }, 250);
@@ -199,7 +204,9 @@ class Scroller extends Component {
     return (
       <Swipeable
         className={`wrapper`}
-        onKeyDown={!isModalVisible && !showListInput && !isSearchActivated ? this.handleKeyDown : undefined}
+        onKeyDown={
+          !isModalVisible && !showListInput && !isSearchActivated ? this.handleKeyDown : undefined
+        }
         onSwipedLeft={this.swipedLeft}
         onSwipedRight={this.swipedRight}
       >
@@ -247,7 +254,10 @@ class Scroller extends Component {
             pushToHistory={this.pushToHistory}
           />
         </div>
-        <div onClick={() => this.toggleDropDown(false)} className={`contentZen ${fullscreenActive && "fullscreen"}`}>
+        <div
+          onClick={() => this.toggleDropDown(false)}
+          className={`contentZen ${fullscreenActive && "fullscreen"}`}
+        >
           {reload > 6 && (
             <div
               onClick={() => this.getSubreddit(shuffleArray(dataHandler(this.state.category)))}
@@ -311,6 +321,9 @@ class Scroller extends Component {
           after: jsonData.data.after
         });
         sources = await dataMapper(jsonData.data.children, this.state.mobile);
+        if (sources.length) {
+          this.pushToHistory(`/subreddits/${this.state.subreddit}`);
+        }
         // const haveVideoOrGif = sources.length && sources.some(media => media.gif || media.video);
       })
 
@@ -330,7 +343,6 @@ class Scroller extends Component {
       if (!sources.length) {
         await this.getSubreddit(shuffleArray(dataHandler(this.state.category)));
       } else {
-        this.pushToHistory(`/subreddits/${this.state.subreddit}`);
         this.setState({ isLoading: false });
       }
     }
@@ -338,7 +350,9 @@ class Scroller extends Component {
 
   moreSubreddits = async () => {
     this.setState({ isLoadingMore: true });
-    await fetch(`https://www.reddit.com/r/${this.state.subreddit}.json?after=${this.state.after}&limit=100`)
+    await fetch(
+      `https://www.reddit.com/r/${this.state.subreddit}.json?after=${this.state.after}&limit=100`
+    )
       .then(response => response.json())
       .then(async jsonData => {
         this.setState({

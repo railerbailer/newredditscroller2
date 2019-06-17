@@ -19,6 +19,7 @@ class CollectionsScroller extends Component {
   state = {
     mobile: false,
     load: "not ok",
+    autoPlayVideo: false,
     isLoadingMore: false,
     fullscreenActive: false,
     isDropDownShowing: false,
@@ -50,11 +51,20 @@ class CollectionsScroller extends Component {
     if (window.screen.availWidth < 800) this.setState({ mobile: true });
   }
   componentDidMount() {
+    window.scrollTo(0, 0);
     this.props.firebase.auth.onAuthStateChanged(user => {
-      this.props.firebase.db.ref(`public`).on("value", snapshot => {
-        const collections = _.get(snapshot.val(), "collections", {});
-        const collectionsArray = _.flatMap(
-          Object.values(collections).map(item => Object.values(item))
+      this.props.firebase.db.ref("users").on("value", snapshot => {
+        let collectionsArray = [];
+        const snapshotValues = snapshot.val();
+        Object.entries(snapshotValues).forEach(([id, userCollections]) =>
+          Object.values(userCollections).forEach(userCollectionsDeep =>
+            Object.entries(userCollectionsDeep).forEach(([name, userCollection]) =>
+              collectionsArray.push({
+                title: name + " " + id,
+                data: userCollection
+              })
+            )
+          )
         );
         this.setState({
           publicCollections: collectionsArray
@@ -77,7 +87,7 @@ class CollectionsScroller extends Component {
     // }
     if (this.props.match.params.collection) {
       this.toggleIsLoading(true);
-      setTimeout(() => this.getCollection(this.props.match.params.collection), 2000);
+      setTimeout(() => this.getCollection(this.props.match.params.collection), 4000);
     }
   }
   getCollection = collection => {
@@ -106,6 +116,7 @@ class CollectionsScroller extends Component {
   toggleSearchButton = value => this.setState({ isSearchActivated: value });
   categorySet = val => this.setState({ category: val });
   setAutoCompleteDataSource = value => this.setState({ autoCompleteDataSource: value });
+  toggleAutoPlayVideo = bool => this.setState({ autoPlayVideo: bool });
   toggleDropDown = value => this.setState({ isDropDownShowing: value });
   toggleGifsOnly = async () => {
     this.setState({
@@ -205,7 +216,8 @@ class CollectionsScroller extends Component {
       activeCollection,
       category,
       user,
-      publicCollections
+      publicCollections,
+      autoPlayVideo
     } = this.state;
     const { firebase } = this.props;
 
@@ -238,6 +250,8 @@ class CollectionsScroller extends Component {
           />
           <GoBackButton goBackFunc={this.goBackinHistory} />
           <MainDropDownMenu
+            autoPlayVideo={autoPlayVideo}
+            toggleAutoPlayVideo={this.toggleAutoPlayVideo}
             collectionsMode={true}
             isDropDownShowing={isDropDownShowing}
             setSources={this.setSources}

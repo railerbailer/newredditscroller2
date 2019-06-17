@@ -22,7 +22,9 @@ const MainDropDownMenu = props => {
     toggleDropDown,
     firebase,
     pushToHistory,
-    changeCat
+    changeCat,
+    autoPlayVideo,
+    toggleAutoPlayVideo
     // collectionsMode
   } = props;
   const addNewList = async () => {
@@ -56,7 +58,7 @@ const MainDropDownMenu = props => {
         madeBy: user.displayName || "anonymous"
       }
     });
-    const urlToCollection = `https://www.sliddit.com/collections/${collection}`;
+    const urlToCollection = `https://www.sliddit.com/collections/${collection} ${user.uid}`;
     const confirm = Modal.success;
     confirm({
       title: `Shareable link to "${collection}"`,
@@ -70,52 +72,55 @@ const MainDropDownMenu = props => {
       zIndex: 999999999999
     });
   };
-  const showShareConfirm = collection => {
-    const collectionData =
-      Object.entries(userCollections[collection]).length !== 0 ? userCollections[collection] : null;
-    let description = "";
-    const addCollectionToPublic = () =>
-      firebase.updateCollectionToPublic({
-        [collection]: {
-          accepted: true,
-          title: collection,
-          data: collectionData,
-          description: description,
-          madeBy: user.displayName || "anonymous"
-        }
-      });
-    const removeCollectionFromPublic = () =>
-      firebase.updateCollectionToPublic({
-        [collection]: {
-          accepted: false,
-          title: collection,
-          data: collectionData,
-          description: description,
-          madeBy: user.displayName || "anonymous"
-        }
-      });
-    const confirm = Modal.confirm;
-    confirm({
-      title: `Share collection "${collection}"`,
-      okText: "Publish",
-      content: (
-        <React.Fragment>
-          <div>Description:</div>
-          <Input onChange={e => (description = e.target.value)} prefix={<Icon type="info-circle" />} />
-        </React.Fragment>
-      ),
-      zIndex: 999999999999,
-      onOk() {
-        addCollectionToPublic();
-        toggleDropDown(false);
-        message.info(`${collection} has been added to public usercollections`);
-      },
-      cancelText: "Unpublish",
-      onCancel() {
-        removeCollectionFromPublic();
-      }
-    });
-  };
+  // const showShareConfirm = collection => {
+  //   const collectionData =
+  //     Object.entries(userCollections[collection]).length !== 0 ? userCollections[collection] : null;
+  //   let description = "";
+  //   const addCollectionToPublic = () =>
+  //     firebase.updateCollectionToPublic({
+  //       [collection]: {
+  //         accepted: true,
+  //         title: collection,
+  //         data: collectionData,
+  //         description: description,
+  //         madeBy: user.displayName || "anonymous"
+  //       }
+  //     });
+  //   const removeCollectionFromPublic = () =>
+  //     firebase.updateCollectionToPublic({
+  //       [collection]: {
+  //         accepted: false,
+  //         title: collection,
+  //         data: collectionData,
+  //         description: description,
+  //         madeBy: user.displayName || "anonymous"
+  //       }
+  //     });
+  //   const confirm = Modal.confirm;
+  //   confirm({
+  //     title: `Share collection "${collection}"`,
+  //     okText: "Publish",
+  //     content: (
+  //       <React.Fragment>
+  //         <div>Description:</div>
+  //         <Input
+  //           onChange={e => (description = e.target.value)}
+  //           prefix={<Icon type="info-circle" />}
+  //         />
+  //       </React.Fragment>
+  //     ),
+  //     zIndex: 999999999999,
+  //     onOk() {
+  //       addCollectionToPublic();
+  //       toggleDropDown(false);
+  //       message.info(`${collection} has been added to public usercollections`);
+  //     },
+  //     cancelText: "Unpublish",
+  //     onCancel() {
+  //       removeCollectionFromPublic();
+  //     }
+  //   });
+  // };
   const showFeedbackModal = () => {
     const confirm = Modal.confirm;
     let feedbackInput = "";
@@ -125,7 +130,10 @@ const MainDropDownMenu = props => {
       content: (
         <React.Fragment>
           <div>Description:</div>
-          <Input onChange={e => (feedbackInput = e.target.value)} prefix={<Icon type="info-circle" />} />
+          <Input
+            onChange={e => (feedbackInput = e.target.value)}
+            prefix={<Icon type="info-circle" />}
+          />
         </React.Fragment>
       ),
       zIndex: 999999999999,
@@ -158,6 +166,7 @@ const MainDropDownMenu = props => {
   };
   const filledBgGif = isOnlyGifsShowing ? "#1890ff" : "transparent";
   const filledBgPic = isOnlyPicsShowing ? "#1890ff" : "transparent";
+  const filledBgAutoPlayVideo = autoPlayVideo ? "#1890ff" : "transparent";
   const lists = Object.keys(userCollections).reverse();
   const listMenuItem = lists.map(collection => (
     <Menu.Item
@@ -187,11 +196,23 @@ const MainDropDownMenu = props => {
         <span className="collectionIcons">
           {Object.entries(userCollections[collection]).length !== 0 && (
             <React.Fragment>
-              <Icon onClick={() => showLink(collection)} className="deleteCollectionIcon" type="link" />
-              <Icon onClick={() => showShareConfirm(collection)} className="deleteCollectionIcon" type="share-alt" />
+              <Icon
+                onClick={() => showLink(collection)}
+                className="deleteCollectionIcon"
+                type="link"
+              />
+              {/* <Icon
+                onClick={() => showShareConfirm(collection)}
+                className="deleteCollectionIcon"
+                type="share-alt"
+              /> */}
             </React.Fragment>
           )}
-          <Icon onClick={() => showDeleteConfirm(collection)} className="deleteCollectionIcon" type="delete" />
+          <Icon
+            onClick={() => showDeleteConfirm(collection)}
+            className="deleteCollectionIcon"
+            type="delete"
+          />
         </span>
       )}
     </Menu.Item>
@@ -209,11 +230,16 @@ const MainDropDownMenu = props => {
         zIndex={99999999999}
         title={
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <h3 style={{ margin: "auto 0" }}>Sliddit.menu</h3>
+            <h3 style={{ margin: "auto 12px auto 0px" }}>Sliddit.menu</h3>
             <span>
               <Button
                 onClick={toggleGifsOnly}
-                style={{ color: "lightgrey", borderRadius: 0, borderRight: 0, backgroundColor: filledBgGif }}
+                style={{
+                  color: "lightgrey",
+                  borderRadius: 0,
+                  borderRight: 0,
+                  backgroundColor: filledBgGif
+                }}
               >
                 Gifs
               </Button>
@@ -223,9 +249,28 @@ const MainDropDownMenu = props => {
               >
                 Pics
               </Button>
+              <Button
+                onClick={() => {
+                  toggleAutoPlayVideo(!autoPlayVideo);
+                  toggleDropDown(false);
+                }}
+                style={{
+                  color: "lightgrey",
+                  borderRadius: 0,
+                  backgroundColor: filledBgAutoPlayVideo
+                }}
+              >
+                Autoplay gifs
+              </Button>
               <Icon
                 onClick={() => toggleDropDown(false)}
-                style={{ float: "right", fontSize: 22, margin: "-6px -6px 12px 12px" }}
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  right: 10,
+                  fontSize: 22,
+                  margin: "-6px -6px 12px 12px"
+                }}
                 type="close"
               />
             </span>
@@ -289,8 +334,16 @@ const MainDropDownMenu = props => {
           {user && (
             <Menu.Item>
               <Icon
-                onClick={() => (newListName.length ? addNewList() : toggleShowListInput(!showListInput))}
-                type={showListInput ? (newListName.length ? "check-circle" : "close-circle") : "plus-circle"}
+                onClick={() =>
+                  newListName.length ? addNewList() : toggleShowListInput(!showListInput)
+                }
+                type={
+                  showListInput
+                    ? newListName.length
+                      ? "check-circle"
+                      : "close-circle"
+                    : "plus-circle"
+                }
                 style={{ color: newListName.length ? "green" : "black" }}
               />
               {showListInput && (
@@ -326,7 +379,8 @@ const MainDropDownMenu = props => {
           <Menu.Item>
             {user ? (
               <div onClick={() => logOut()}>
-                <Icon type="logout" /> Log out {user.displayName && `(logged in as ${user.displayName})`}
+                <Icon type="logout" /> Log out{" "}
+                {user.displayName && `(logged in as ${user.displayName})`}
               </div>
             ) : (
               <div

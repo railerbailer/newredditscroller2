@@ -17,6 +17,7 @@ class UserCollectionCards extends Component {
   state = {
     mobile: false,
     isLoadingMore: false,
+    autoPlayVideo: false,
     fullscreenActive: false,
     isDropDownShowing: false,
     isLoading: false,
@@ -33,17 +34,50 @@ class UserCollectionCards extends Component {
     userCollections: { Loading: "kek" },
     user: null,
     activeCollection: "",
-    publicCollections: []
+    publicCollections: [],
+    collectionsToRemake: []
   };
 
   componentWillMount() {
     if (window.screen.availWidth < 800) this.setState({ mobile: true });
   }
   componentDidMount() {
+    // this.props.firebase.auth.onAuthStateChanged(user => {
+    //   this.props.firebase.db.ref(`public`).on("value", snapshot => {
+    //     const collections = _.get(snapshot.val(), "collections", {});
+    //     const collectionsArray = _.flatMap(
+    //       Object.values(collections).map(item => Object.values(item))
+    //     );
+    //     this.setState({
+    //       publicCollections: collectionsArray
+    //     });
+    //   });
+    //   if (user) {
+    //     this.setState({ user: user });
+    //     this.props.firebase.db.ref(`users/${user.uid}`).on("value", snapshot => {
+    //       const collections = _.get(snapshot.val(), "collections", {});
+    //       this.setState({ userCollections: collections });
+    //       // Object.values(snapshot.val().collections).some(collection => this.props.match.params.collection === collection)
+    //     });
+    //   } else {
+    //     this.setState({ user: null });
+    //   }
+    // });
     this.props.firebase.auth.onAuthStateChanged(user => {
-      this.props.firebase.db.ref(`public`).on("value", snapshot => {
-        const collections = _.get(snapshot.val(), "collections", {});
-        const collectionsArray = _.flatMap(Object.values(collections).map(item => Object.values(item)));
+      this.props.firebase.db.ref("users").on("value", snapshot => {
+        let collectionsArray = [];
+        const snapshotValues = snapshot.val();
+        Object.entries(snapshotValues).forEach(([id, userCollections]) =>
+          Object.values(userCollections).forEach(userCollectionsDeep => {
+            userCollectionsDeep.Favorites !== "set at creation" &&
+              Object.entries(userCollectionsDeep).forEach(([name, userCollection]) =>
+                collectionsArray.push({
+                  title: name + " " + id,
+                  data: userCollection
+                })
+              );
+          })
+        );
         this.setState({
           publicCollections: collectionsArray
         });
@@ -61,9 +95,12 @@ class UserCollectionCards extends Component {
     });
 
     if (this.props.match.params.collection) {
-      setTimeout(() => this.getCollection(this.props.match.params.collection), 1000);
+      setTimeout(() => this.getCollection(this.props.match.params.collection), 1500);
     }
   }
+  getRandomInt = max => {
+    return Math.floor(Math.random() * Math.floor(max));
+  };
   getCollection = collection => {
     this.toggleIsLoading(true);
     this.setActiveCollection(collection);
@@ -77,11 +114,13 @@ class UserCollectionCards extends Component {
     return;
   };
   setNewListName = listName => this.setState({ newListName: listName });
+  toggleAutoPlayVideo = bool => this.setState({ autoPlayVideo: bool });
   toggleShowListInput = bool => this.setState({ showListInput: bool });
   setActiveCollection = collection => this.setState({ activeCollection: collection });
   toggleIsLoading = state => this.setState({ isLoading: state });
   toggleFullscreen = () =>
-    !this.state.isSearchActivated && this.setState({ fullscreenActive: !this.state.fullscreenActive });
+    !this.state.isSearchActivated &&
+    this.setState({ fullscreenActive: !this.state.fullscreenActive });
   toggleIsModalVisible = () => this.setState({ isModalVisible: !this.state.isModalVisible });
   toggleSearchButton = value => this.setState({ isSearchActivated: value });
   categorySet = val => this.setState({ category: val });
@@ -153,24 +192,30 @@ class UserCollectionCards extends Component {
       activeCollection,
       category,
       user,
-      publicCollections
+      publicCollections,
+      autoPlayVideo
     } = this.state;
     const { firebase } = this.props;
     const data =
       publicCollections &&
-      publicCollections.map(collection => {
-        const { data = null, title, description, madeBy, accepted = true } = collection;
+      publicCollections.map((collection, i) => {
+        const {
+          data = null,
+          title = "User collection" + this.getRandomInt(1000),
+          description = ""
+          // madeBy = "",
+          // accepted = true
+        } = collection;
+
         return (
-          accepted && (
-            <CardComponent
-              key={title + description}
-              title={title}
-              description={description}
-              madeBy={madeBy}
-              data={data}
-              pushToHistory={this.pushToHistory}
-            />
-          )
+          <CardComponent
+            key={title + i}
+            title={title}
+            description={description}
+            madeBy={"Anonymous"}
+            data={data}
+            pushToHistory={this.pushToHistory}
+          />
         );
       });
     return (
@@ -193,6 +238,8 @@ class UserCollectionCards extends Component {
           />
           <GoBackButton goBackFunc={this.goBackinHistory} />
           <MainDropDownMenu
+            autoPlayVideo={autoPlayVideo}
+            toggleAutoPlayVideo={this.toggleAutoPlayVideo}
             setSources={() => {}}
             collectionsMode={true}
             isDropDownShowing={isDropDownShowing}

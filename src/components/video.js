@@ -8,14 +8,19 @@ class Video extends Component {
       videoLoaded: false,
       isPlaying: false,
       fadeOut: false,
-      autoPlay: false,
       isDropDownShowing: false
     };
   }
   componentDidMount() {
     if (this.props.fullscreen) {
-      !this.props.mobile && this.togglePlaying();
+      if (!this.props.mobile || this.props.autoPlayVideo) {
+        const timeout = this.props.mobile ? 2200 : 500;
+        this.timer = setTimeout(() => this.togglePlaying(), timeout);
+      }
     }
+  }
+  componentWillUnmount() {
+    clearTimeout(this.timer);
   }
   toggleIsDropDownShowing = value => {
     this.setState({ isDropDownShowing: value });
@@ -74,6 +79,7 @@ class Video extends Component {
   };
 
   togglePlaying = () => {
+    console.log("toggle playing");
     if (this.videoPlayer) {
       this.videoPlayer.pause();
       this.setState({ isPlaying: false, fadeOut: false });

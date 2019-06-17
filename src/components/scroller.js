@@ -21,6 +21,7 @@ class Scroller extends Component {
     mobile: false,
     isLoadingMore: false,
     fullscreenActive: false,
+    autoPlayVideo: false,
     isDropDownShowing: false,
     isLoading: false,
     isOnlyGifsShowing: false,
@@ -83,6 +84,7 @@ class Scroller extends Component {
   setSources = value => (sources = value);
   setNewListName = listName => this.setState({ newListName: listName });
   toggleShowListInput = bool => this.setState({ showListInput: bool });
+  toggleAutoPlayVideo = bool => this.setState({ autoPlayVideo: bool });
   setActiveCollection = collection => this.setState({ activeCollection: collection });
   toggleIsLoading = state => this.setState({ isLoading: state });
   toggleFullscreen = () =>
@@ -196,6 +198,7 @@ class Scroller extends Component {
       userCollections,
       activeCollection,
       category,
+      autoPlayVideo,
       user
     } = this.state;
     const { firebase } = this.props;
@@ -234,6 +237,8 @@ class Scroller extends Component {
           />
           <GoBackButton goBackFunc={this.goBackinHistory} />
           <MainDropDownMenu
+            autoPlayVideo={autoPlayVideo}
+            toggleAutoPlayVideo={this.toggleAutoPlayVideo}
             isDropDownShowing={isDropDownShowing}
             setSources={this.setSources}
             isOnlyGifsShowing={isOnlyGifsShowing}
@@ -276,6 +281,7 @@ class Scroller extends Component {
           <React.Fragment>
             {sources.length ? (
               <AddMarkup
+                autoPlayVideo={autoPlayVideo}
                 toggleIsModalVisible={this.toggleIsModalVisible}
                 activeCollection={this.state.activeCollection}
                 collections={userCollections}

@@ -8,7 +8,6 @@ import Swipeable from "react-swipeable";
 import { carPath } from "../utils/carPath";
 let html = [];
 class AddMarkup extends Component {
-  // const [html, setHtml] = useState([]);
   state = {
     activeElement: 0,
     loadedData: 3
@@ -118,7 +117,8 @@ class AddMarkup extends Component {
       fullscreen,
       dataSource,
       addMediaToCollection,
-      collections
+      collections,
+      autoPlayVideo
     } = this.props;
     let filteredData;
     if (mobile) filteredData = dataSource.filter(item => !item.gif);
@@ -200,6 +200,7 @@ class AddMarkup extends Component {
                 throttle={0}
               >
                 <Video
+                  autoPlayVideo={autoPlayVideo}
                   permalink={permalink}
                   title={title}
                   setLoadedData={this.setLoadedData}
@@ -299,7 +300,6 @@ class AddMarkup extends Component {
               </div>
 
               {html[activeElement]}
-              {html[activeElement + 1] && html[activeElement + 1]}
               {/* {(!mobile || activeElement > 2) && html[activeElement + 2]}
               {activeElement > 5 && html[activeElement + 3]}
               {(!mobile || activeElement > 9) && html[activeElement + 4]} */}

@@ -10,7 +10,8 @@ const CardComponent = props => {
       const filteredData = theData.filter(i => i);
       const firstCell = filteredData[0];
       const mediaData = firstCell[1];
-      if (mediaData.image) return ["image", mediaData.image.low];
+      if (mediaData.image)
+        return ["image", mediaData.image.low || mediaData.image.high || mediaData.image.source];
       if (mediaData.video) return ["video", mediaData.video.url];
       if (mediaData.gif) return ["gif", mediaData.gif.url];
       else return ["none", "www.sliddit.com"];
@@ -29,19 +30,25 @@ const CardComponent = props => {
           </video>
         );
       } else {
-        return <div>im a div</div>;
+        return null;
       }
     }
+  };
+  const getRandomInt = max => {
+    return Math.floor(Math.random() * Math.floor(max));
   };
 
   return (
     <Card
       onClick={() => pushToHistory(`/collections/${title}`)}
-      className={`card ${mediaSource()[0]}`}
+      // className={`card ${mediaSource()[0]}`}
       hoverable
       cover={source()}
     >
-      <Meta title={title} description={`${description} Made by: ${madeBy}`} />
+      <Meta
+        title={title.split(" ")[0] + getRandomInt(1000)}
+        description={`${description} Made by: ${madeBy}`}
+      />
     </Card>
   );
 };

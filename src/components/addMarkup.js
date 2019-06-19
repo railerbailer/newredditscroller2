@@ -301,7 +301,7 @@ class AddMarkup extends Component {
               </div>
 
               {html[activeElement]}
-              {setTimeout(() => html[activeElement + 1], 400)}
+              {html[activeElement + 1]}
               {/* {(!mobile || activeElement > 2) && html[activeElement + 2]}
               {activeElement > 5 && html[activeElement + 3]}
               {(!mobile || activeElement > 9) && html[activeElement + 4]} */}

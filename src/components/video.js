@@ -14,14 +14,11 @@ class Video extends Component {
   componentDidMount() {
     if (this.props.fullscreen) {
       if (!this.props.mobile || this.props.autoPlayVideo) {
-        const timeout = this.props.mobile ? 1500 : 500;
-        this.timer = setTimeout(() => this.togglePlaying(), timeout);
+        this.togglePlaying();
       }
     }
   }
-  componentWillUnmount() {
-    clearTimeout(this.timer);
-  }
+
   toggleIsDropDownShowing = value => {
     this.setState({ isDropDownShowing: value });
   };

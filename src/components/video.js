@@ -4,6 +4,7 @@ class Video extends Component {
   constructor() {
     super();
     this.timer = null;
+    this.autoPlayVideoTimer = null;
     this.state = {
       videoLoaded: false,
       isPlaying: false,
@@ -14,11 +15,14 @@ class Video extends Component {
   componentDidMount() {
     if (this.props.fullscreen) {
       if (!this.props.mobile || this.props.autoPlayVideo) {
-        this.togglePlaying();
+        const timeout = this.props.mobile ? 1500 : 500;
+        this.autoPlayVideoTimer = setTimeout(() => this.togglePlaying(), timeout);
       }
     }
   }
-
+  componentWillUnmount() {
+    clearTimeout(this.autoPlayVideoTimer);
+  }
   toggleIsDropDownShowing = value => {
     this.setState({ isDropDownShowing: value });
   };

@@ -4,7 +4,7 @@ const ConsentForAge = ({ pushToHistory, visible, visibilityChange }) => {
     visible && (
       <div className="webkitTransform" style={styling.wrapper}>
         <div style={styling.innerWrapper}>
-          <div style={{ marginTop: "17vh" }}>
+          <div style={{ marginTop: "12vh" }}>
             <span style={styling.span}>This site may include adult content.</span>
             <br />
             <span style={styling.span}>You must be 18+ to enter.</span>
@@ -32,7 +32,7 @@ const styling = {
   },
   wrapper: {
     zIndex: 99999999999999999,
-    background: "rgb(20,20,20, 0.9)",
+    background: "rgb(20,20,20, 0.2)",
     height: "100vh",
     width: "100vw",
     top: 0,
@@ -43,13 +43,14 @@ const styling = {
     fontSize: 20,
     zIndex: 99999999999999999,
     borderRadius: 10,
+    background: "white",
     opacity: 0.95,
-    height: "40vh",
-    top: "10vh",
+    height: "50vh",
+    top: "20vh",
     width: "80vw",
     textAlign: "center",
     position: "fixed",
-    color: "white",
+    color: "black",
     marginLeft: "10vw",
     marginRight: "10vw"
   },

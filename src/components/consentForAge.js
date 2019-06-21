@@ -1,5 +1,5 @@
 import React from "react";
-const ConsentForAge = ({ visible, visibilityChange }) => {
+const ConsentForAge = ({ pushToHistory, visible, visibilityChange }) => {
   return (
     visible && (
       <div className="webkitTransform" style={styling.wrapper}>
@@ -13,8 +13,10 @@ const ConsentForAge = ({ visible, visibilityChange }) => {
             <span>Do you want to continue?</span>
             <br />
             <br />
-            <button style={styling.button}>No</button>
             <button onClick={() => visibilityChange(true)} style={styling.button}>
+              No
+            </button>
+            <button onClick={() => pushToHistory("/subreddits/nsfw")} style={styling.button}>
               Yes
             </button>
           </div>

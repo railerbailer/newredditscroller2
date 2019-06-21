@@ -5,7 +5,7 @@ import { Helmet } from "react-helmet";
 
 class ChooseCategory extends Component {
   state = {
-    accepted: false
+    accepted: true
   };
   pushHistory = subreddit => {
     this.props.history.push(subreddit);
@@ -17,19 +17,29 @@ class ChooseCategory extends Component {
     return (
       <div className="categoryModal">
         <Helmet>
-          <meta name="description" content="Your site for scrolling pictures and gifs from subreddits." />
-          <meta name="keywords" content="NSFW, NSFW pics,nsfw gifs, nsfw pictures, not safe for work, SFW" />
+          <meta
+            name="description"
+            content="Your site for scrolling pictures and gifs from subreddits."
+          />
+          <meta
+            name="keywords"
+            content="NSFW, NSFW pics,nsfw gifs, nsfw pictures, not safe for work, SFW"
+          />
         </Helmet>
         <FloatingBalls />
         <h1 className="scrollLogo">sliddit.</h1>
-        <ConsentForAge visible={!this.state.accepted} visibilityChange={this.setAccepted} />
+        <ConsentForAge
+          pushToHistory={this.pushHistory}
+          visible={!this.state.accepted}
+          visibilityChange={this.setAccepted}
+        />
         <div className="grid-container">
           <h2 className="item0">
             Scroll more than 1.000.000 of pics and gifs!
             <br />
             <p style={{ marginBottom: "-20px", fontSize: ".8em" }}>Pick a domain</p>
           </h2>
-          <button onClick={() => this.pushHistory("/subreddits/nsfw")} className="item1">
+          <button onClick={() => this.setState({ accepted: false })} className="item1">
             NSFW (18+)
           </button>
 

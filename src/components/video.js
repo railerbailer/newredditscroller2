@@ -14,15 +14,23 @@ class Video extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    if (this.props.fullscreen !== prevProps.fullscreen) {
+      !this.props.fullscreen
+        ? this.videoPlayer && this.videoPlayer.pause()
+        : this.videoPlayer && this.videoPlayer.play();
+    }
     if (this.props.activeElement !== prevProps.activeElement) {
       console.log("UPDATING VIDEO");
-      this.togglePlaying();
+      this.videoPlayer && this.videoPlayer.play();
     }
   }
   componentDidMount() {
+    this.props.fullscreen &&
+      this.props.activeElement === 0 &&
+      setTimeout(() => this.videoPlayer && this.videoPlayer.play(), 1000);
     // console.log(this.props.index, this.props.activeElement);
     // console.log(this.props.index === this.props.activeElement);
-    this.props.fullscreen && this.props.index === 0 && this.togglePlaying();
+    // this.props.fullscreen && this.props.index === 0 && this.togglePlaying();
     // this.props.index === this.props.activeElement && this.togglePlaying();
     // if (this.props.fullscreen) {
     //   if (!this.props.mobile || this.props.autoPlayVideo) {
@@ -32,6 +40,7 @@ class Video extends Component {
     // }
   }
   componentWillUnmount() {
+    console.log("unmount");
     window.stop();
   }
   toggleIsDropDownShowing = value => {
@@ -136,8 +145,9 @@ class Video extends Component {
             } else if (!fullscreen) {
               this.setState({ isPlaying: true }, () => this.videoPlayer.play());
             }
-            // (this.state.isPlaying && fullscreen) || (!this.state.isPlaying && !fullscreen && this.togglePlaying());
-            this.toggleIsDropDownShowing(false);
+            // (this.state.isPlaying && fullscreen) ||
+            //   (!this.state.isPlaying && !fullscreen && this.togglePlaying());
+            // this.toggleIsDropDownShowing(false);
           }}
           poster={poster || undefined}
           allowFullScreen={true}

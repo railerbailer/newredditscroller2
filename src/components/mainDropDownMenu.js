@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Menu, Button, Icon, Input, Modal, message, Drawer } from "antd";
-import { Link } from "react-router-dom";
 const MainDropDownMenu = props => {
   const [newListName, setNewListName] = useState("");
 
@@ -318,12 +317,15 @@ const MainDropDownMenu = props => {
             </div>
           </Menu.Item>
           <Menu.Divider />
-          <Menu.Item>
-            <h4>
-              <Link style={{ color: "rgba(0, 0, 0, 0.85)" }} to={`/collections`}>
-                <Icon type="solution" /> Browse user banks
-              </Link>
-            </h4>
+          <Menu.Item
+            onClick={() => {
+              pushToHistory("/collections");
+              toggleDropDown(false);
+            }}
+          >
+            <div>
+              <Icon type="solution" /> Browse user banks
+            </div>
           </Menu.Item>
           <Menu.Divider />
           <Menu.Item>

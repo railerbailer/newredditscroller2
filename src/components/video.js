@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { Icon, Dropdown, Menu, message } from "antd";
+import LazyLoad from "react-lazyload";
 class Video extends Component {
   constructor() {
     super();
     this.timer = null;
-    this.autoPlayVideoTimer = null;
     this.state = {
       videoLoaded: false,
       isPlaying: false,
@@ -12,16 +12,27 @@ class Video extends Component {
       isDropDownShowing: false
     };
   }
-  componentDidMount() {
-    if (this.props.fullscreen) {
-      if (!this.props.mobile || this.props.autoPlayVideo) {
-        const timeout = this.props.mobile ? 1500 : 500;
-        this.autoPlayVideoTimer = setTimeout(() => this.togglePlaying(), timeout);
-      }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.activeElement !== prevProps.activeElement) {
+      console.log("UPDATING VIDEO");
+      this.togglePlaying();
     }
   }
+  componentDidMount() {
+    // console.log(this.props.index, this.props.activeElement);
+    // console.log(this.props.index === this.props.activeElement);
+    this.props.fullscreen && this.props.index === 0 && this.togglePlaying();
+    // this.props.index === this.props.activeElement && this.togglePlaying();
+    // if (this.props.fullscreen) {
+    //   if (!this.props.mobile || this.props.autoPlayVideo) {
+    //     const timeout = this.props.mobile ? 1500 : 500;
+    //     this.autoPlayVideoTimer = setTimeout(() => this.togglePlaying(), timeout);
+    //   }
+    // }
+  }
   componentWillUnmount() {
-    clearTimeout(this.autoPlayVideoTimer);
+    window.stop();
   }
   toggleIsDropDownShowing = value => {
     this.setState({ isDropDownShowing: value });
@@ -102,11 +113,19 @@ class Video extends Component {
       className,
       setLoadedData,
       loadedData,
-      permalink
+      permalink,
+      height
     } = this.props;
     const srcWithoutDash = src.split("DASH")[0];
     return (
-      <React.Fragment>
+      <LazyLoad
+        unmountIfInvisible={true}
+        height={height}
+        offset={1400}
+        key={index}
+        debounce={0}
+        throttle={0}
+      >
         <video
           onLoadedMetadata={() => setLoadedData(loadedData + 2)}
           ref={el => (this.videoPlayer = el)}
@@ -191,7 +210,7 @@ class Video extends Component {
             onClick={() => this.togglePlaying()}
           />
         )}
-      </React.Fragment>
+      </LazyLoad>
     );
   }
 }

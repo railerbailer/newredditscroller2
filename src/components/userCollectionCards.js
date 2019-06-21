@@ -17,7 +17,7 @@ class UserCollectionCards extends Component {
   state = {
     mobile: false,
     isLoadingMore: false,
-    autoPlayVideo: false,
+    autoPlayVideo: true,
     fullscreenActive: false,
     isDropDownShowing: false,
     isLoading: false,

@@ -19,7 +19,7 @@ class CollectionsScroller extends Component {
   state = {
     mobile: false,
     load: "not ok",
-    autoPlayVideo: false,
+    autoPlayVideo: true,
     isLoadingMore: false,
     fullscreenActive: false,
     isDropDownShowing: false,

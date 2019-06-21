@@ -191,36 +191,29 @@ class AddMarkup extends Component {
               ref={el => (this[`gridElement${i}`] = el)}
               className={`gridElement gifs ${video.className}`}
             >
-              <LazyLoad
-                unmountIfInvisible={true}
+              <Video
                 height={size[video.className]}
-                offset={1400}
-                key={i}
-                debounce={0}
-                throttle={0}
-              >
-                <Video
-                  activeElement={this.state.activeElement}
-                  autoPlayVideo={autoPlayVideo}
-                  permalink={permalink}
-                  title={title}
-                  setLoadedData={this.setLoadedData}
-                  loadedData={this.state.loadedData}
-                  firebaseId={videoId}
-                  toggleIsModalVisible={this.props.toggleIsModalVisible}
-                  className="video"
-                  ratioClassName={video.className}
-                  index={i}
-                  toggleFullscreen={this.getElementIndex}
-                  addMediaToCollection={addMediaToCollection}
-                  collections={collections}
-                  key={`video${i}`}
-                  mobile={mobile}
-                  src={video.url}
-                  fullscreen={fullscreen}
-                  poster={video.image || thumbnail}
-                />
-              </LazyLoad>
+                activeElement={this.state.activeElement}
+                autoPlayVideo={autoPlayVideo}
+                permalink={permalink}
+                title={title}
+                setLoadedData={this.setLoadedData}
+                loadedData={this.state.loadedData}
+                firebaseId={videoId}
+                toggleIsModalVisible={this.props.toggleIsModalVisible}
+                className="video"
+                ratioClassName={video.className}
+                index={i}
+                toggleFullscreen={this.getElementIndex}
+                addMediaToCollection={addMediaToCollection}
+                collections={collections}
+                key={`video${i}`}
+                mobile={mobile}
+                src={video.url}
+                fullscreen={fullscreen}
+                poster={video.image || thumbnail}
+              />
+
               <Tooltip placement="top" title={title}>
                 <p className="titleText">{title}</p>
               </Tooltip>
@@ -301,7 +294,8 @@ class AddMarkup extends Component {
               </div>
 
               {html[activeElement]}
-              {html[activeElement + 1]}
+              {html[activeElement + 1] && html[activeElement + 1]}
+              {/* {html[activeElement + 1]} */}
               {/* {(!mobile || activeElement > 2) && html[activeElement + 2]}
               {activeElement > 5 && html[activeElement + 3]}
               {(!mobile || activeElement > 9) && html[activeElement + 4]} */}

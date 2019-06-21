@@ -21,7 +21,7 @@ class Scroller extends Component {
     mobile: false,
     isLoadingMore: false,
     fullscreenActive: false,
-    autoPlayVideo: false,
+    autoPlayVideo: true,
     isDropDownShowing: false,
     isLoading: false,
     isOnlyGifsShowing: false,

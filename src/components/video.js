@@ -136,6 +136,7 @@ class Video extends Component {
         throttle={0}
       >
         <video
+          muted
           onLoadedMetadata={() => setLoadedData(loadedData + 2)}
           ref={el => (this.videoPlayer = el)}
           onClick={() => {

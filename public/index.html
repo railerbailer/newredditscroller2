@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="theme-color" content="#000000" />
     <meta charset="UTF-8" />
+    <script>
+      var host = "www.sliddit.com" || "sliddit.com";
+      if (host == window.location.host && window.location.protocol != "https:") {
+        window.location.protocol = "https";
+      }
+    </script>
     <!-- <meta
       name="description"
       content="Your site for scrolling pictures and gifs."

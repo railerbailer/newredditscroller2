@@ -19,7 +19,7 @@ class Video extends Component {
         ? this.videoPlayer && this.videoPlayer.pause()
         : this.videoPlayer && this.videoPlayer.play();
     }
-    if (this.props.activeElement !== prevProps.activeElement) {
+    if (this.props.fullscreen && this.props.activeElement !== prevProps.activeElement) {
       console.log("UPDATING VIDEO");
       this.videoPlayer && this.videoPlayer.play();
     }

@@ -226,7 +226,7 @@ class AddMarkup extends Component {
             </div>
           );
         }
-        if (gif && !mobile) {
+        if (gif && (!mobile || gif.affiliateLink)) {
           const gifId = this.getIdFromUrl(gif.url);
           return (
             <div
@@ -243,6 +243,7 @@ class AddMarkup extends Component {
                 throttle={0}
               >
                 <Image
+                  affiliateLink={gif.affiliateLink}
                   permalink={permalink}
                   title={title}
                   setLoadedData={this.setLoadedData}

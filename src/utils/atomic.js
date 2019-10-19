@@ -168,9 +168,10 @@ export const dataMapper = (fetchedData, mobile) => {
       (mediaData.image || mediaData.video || mediaData.gif)
     ) {
       convertedSources.push(mediaData);
-      // if (convertedSources.length % 12 === 0) {
-      //   const affilateAd = addBanner();
-      // }
+      if (convertedSources.length % 6 === 0) {
+        const affiliatedAd = createBannerImage();
+        convertedSources.push(affiliatedAd);
+      }
     }
     return null;
   });
@@ -181,12 +182,19 @@ export const dataMapper = (fetchedData, mobile) => {
   return convertedSources;
 };
 
-const addBanner = item => {
-  return {
-    source: item.url,
-    affiliateLink: "https://www.google.se",
-    low: item.low,
-    high: item.high
-    // className: imageRatioCalculator(item.resolution.height, item.resolution.width)
-  };
+const createBannerImage = () => {
+  const affilliates = [
+    {
+      name: "test",
+      title: "hej",
+      image: {
+        source: "https://www.computerhope.com/jargon/r/random-dice.jpg",
+        affiliateLink: "https://www.google.se",
+        low: "https://www.computerhope.com/jargon/r/random-dice.jpg",
+        high: "https://www.computerhope.com/jargon/r/random-dice.jpg",
+        className: imageRatioCalculator(300, 300)
+      }
+    }
+  ];
+  return _.sample(affilliates);
 };

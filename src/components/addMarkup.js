@@ -165,6 +165,7 @@ class AddMarkup extends Component {
                 key={i}
               >
                 <Image
+                  affiliateLink={image.affiliateLink}
                   permalink={permalink}
                   title={title}
                   setLoadedData={this.setLoadedData}

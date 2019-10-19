@@ -386,7 +386,6 @@ input {
 
 .gridElement {
   position: relative;
-  max-height: 100vh;
   display: flex;
   background-color: transparent;
   width: 100%;

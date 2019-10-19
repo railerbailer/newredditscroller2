@@ -53,7 +53,11 @@ const Image = props => {
         <h4 className="addToCollectionModal">
           <Icon type="bank" /> <span>Add to bank</span>
           <Icon
-            style={{ float: "right", fontSize: 20, padding: "2px 10px 10px 15px" }}
+            style={{
+              float: "right",
+              fontSize: 20,
+              padding: "2px 10px 10px 15px"
+            }}
             onClick={() => setDropDown(false)}
             type="close"
           />
@@ -75,6 +79,7 @@ const Image = props => {
       <img
         onBlur={() => setDropDown(false)}
         onLoad={() => setLoadedData(loadedData + 2)}
+        onError={() => console.log("Image error")}
         onClick={() => {
           setDropDown(false);
           toggleFullscreen(index);

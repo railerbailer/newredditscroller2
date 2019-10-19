@@ -1,4 +1,11 @@
-import { gifsArray, sfwarray, straight, artArray, foodArray, animalsArray } from "../subreddits";
+import {
+  gifsArray,
+  sfwarray,
+  straight,
+  artArray,
+  foodArray,
+  animalsArray
+} from "../subreddits";
 import _ from "lodash";
 
 export const dataHandler = value => {
@@ -15,10 +22,17 @@ export const dataHandler = value => {
     return foodArray;
   } else if (lowerCaseCategory === "animals") {
     return animalsArray;
-  } else if (lowerCaseCategory === "search" || lowerCaseCategory === "allsubreddits") {
-    return _.uniq(sfwarray.concat(artArray, foodArray, animalsArray, straight, gifsArray));
+  } else if (
+    lowerCaseCategory === "search" ||
+    lowerCaseCategory === "allsubreddits"
+  ) {
+    return _.uniq(
+      sfwarray.concat(artArray, foodArray, animalsArray, straight, gifsArray)
+    );
   } else {
-    return _.uniq(sfwarray.concat(artArray, foodArray, animalsArray, gifsArray));
+    return _.uniq(
+      sfwarray.concat(artArray, foodArray, animalsArray, gifsArray)
+    );
   }
 };
 
@@ -51,7 +65,7 @@ export const imageRatioCalculator = (height, width) => {
   if (ratio >= 1.5) return "superTall";
 };
 
-export const dataMapper = async (fetchedData, mobile) => {
+export const dataMapper = (fetchedData, mobile) => {
   let convertedSources = [];
   fetchedData.map((item, i) => {
     let mediaData = {};
@@ -73,11 +87,17 @@ export const dataMapper = async (fetchedData, mobile) => {
       preview.reddit_video_preview &&
       preview.reddit_video_preview.scrubber_media_url
     ) {
-      imageRatioCalculator(preview.reddit_video_preview.height, preview.reddit_video_preview.width);
+      imageRatioCalculator(
+        preview.reddit_video_preview.height,
+        preview.reddit_video_preview.width
+      );
       mediaData.video = {};
       mediaData.video.url = preview.reddit_video_preview.scrubber_media_url;
       if (mediaData.video.url.includes("DASH_96"))
-        mediaData.video.url = mediaData.video.url.replace("DASH_96", "DASH_240");
+        mediaData.video.url = mediaData.video.url.replace(
+          "DASH_96",
+          "DASH_240"
+        );
       mediaData.video.height = preview.reddit_video_preview.height;
       mediaData.video.width = preview.reddit_video_preview.width;
       mediaData.video.className = imageRatioCalculator(
@@ -98,7 +118,10 @@ export const dataMapper = async (fetchedData, mobile) => {
     } else if (isGif) {
       mediaData.gif = {};
       mediaData.gif.url = data.url.replace(".gifv", ".gif");
-      mediaData.gif.className = imageRatioCalculator(thumbnail_height, thumbnail_width);
+      mediaData.gif.className = imageRatioCalculator(
+        thumbnail_height,
+        thumbnail_width
+      );
       mediaData.domain = data.domain || "";
       mediaData.title = data.title;
       mediaData.thumbnail = thumbnail;
@@ -126,7 +149,11 @@ export const dataMapper = async (fetchedData, mobile) => {
           if (mobile && (!high && !low)) {
             mediaData.image = null;
           }
-          if (!low && !high && !data.url.includes("imgur" && post_hint === "link")) {
+          if (
+            !low &&
+            !high &&
+            !data.url.includes("imgur" && post_hint === "link")
+          ) {
             mediaData.image = null;
           }
           return null;
@@ -141,6 +168,9 @@ export const dataMapper = async (fetchedData, mobile) => {
       (mediaData.image || mediaData.video || mediaData.gif)
     ) {
       convertedSources.push(mediaData);
+      // if (convertedSources.length % 12 === 0) {
+      //   const affilateAd = addBanner();
+      // }
     }
     return null;
   });
@@ -149,4 +179,14 @@ export const dataMapper = async (fetchedData, mobile) => {
   // }
 
   return convertedSources;
+};
+
+const addBanner = item => {
+  return {
+    source: item.url,
+    affiliateLink: "https://www.google.se",
+    low: item.low,
+    high: item.high
+    // className: imageRatioCalculator(item.resolution.height, item.resolution.width)
+  };
 };

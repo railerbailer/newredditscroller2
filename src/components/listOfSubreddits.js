@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Link, Redirect } from "react-router-dom";
-
+import { Link } from "react-router-dom";
 const ListOfSubreddits = ({ title, subreddits }) => {
   const [showMore, setShowMore] = useState(20);
   const fixedTitle = title
@@ -11,7 +10,6 @@ const ListOfSubreddits = ({ title, subreddits }) => {
 
   return (
     <div className="subredditsList">
-      <Redirect to="/subreddits" />
       <h2>
         {fixedTitle} ({subreddits.length})
       </h2>
@@ -21,7 +19,10 @@ const ListOfSubreddits = ({ title, subreddits }) => {
         </Link>
       ))}
       {subreddits.length > 20 && (
-        <button className="showMoreButton" onClick={() => setShowMore(showMore + 15)}>
+        <button
+          className="showMoreButton"
+          onClick={() => setShowMore(showMore + 15)}
+        >
           Show more
         </button>
       )}

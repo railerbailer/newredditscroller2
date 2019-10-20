@@ -1,26 +1,36 @@
 import React, { useState } from "react";
 import { Icon, Dropdown, Menu, message } from "antd";
+import GoogleAnalytics from "react-ga";
 
-const Image = props => {
+const trackImage = url => {
+  console.log("tracking", url);
+  if (process.env.NODE_ENV !== "development")
+    GoogleAnalytics.event({
+      category: "affiliateImage",
+      action: `Clicked ${url}`
+    });
+};
+
+const Image = ({
+  className,
+  src,
+  toggleFullscreen,
+  index,
+  ratioClassName,
+  toggleIsModalVisible,
+  addMediaToCollection,
+  firebaseId,
+  fullscreen,
+  setLoadedData,
+  loadedData,
+  permalink,
+  title,
+  collections,
+  affiliateLink
+}) => {
   const [isDropDownShowing, setDropDown] = useState(false);
-  const {
-    className,
-    src,
-    toggleFullscreen,
-    index,
-    ratioClassName,
-    toggleIsModalVisible,
-    addMediaToCollection,
-    firebaseId,
-    fullscreen,
-    setLoadedData,
-    loadedData,
-    permalink,
-    title
-  } = props;
 
   const menu = () => {
-    let collections = props.collections;
     const lists = Object.keys(collections).reverse();
     const srcKey = className === "gif" ? "url" : "low";
     const listMenuItem = lists.map(list => (
@@ -53,7 +63,11 @@ const Image = props => {
         <h4 className="addToCollectionModal">
           <Icon type="bank" /> <span>Add to bank</span>
           <Icon
-            style={{ float: "right", fontSize: 20, padding: "2px 10px 10px 15px" }}
+            style={{
+              float: "right",
+              fontSize: 20,
+              padding: "2px 10px 10px 15px"
+            }}
             onClick={() => setDropDown(false)}
             type="close"
           />
@@ -71,10 +85,27 @@ const Image = props => {
   };
 
   return (
-    <React.Fragment>
+    <>
+      {affiliateLink && (
+        <a
+          onClick={e => affiliateLink && trackImage(e.target.href || e.target)}
+          href={affiliateLink}
+          target={affiliateLink && "_blank"}
+          style={{
+            width: "100%",
+            height: "100%",
+            position: "absolute",
+            zIndex: 999999999999
+          }}
+        >
+          .
+        </a>
+      )}
       <img
+        {...{ name: "hej" }}
         onBlur={() => setDropDown(false)}
         onLoad={() => setLoadedData(loadedData + 2)}
+        onError={() => console.log("Image error")}
         onClick={() => {
           setDropDown(false);
           toggleFullscreen(index);
@@ -111,11 +142,11 @@ const Image = props => {
           <Icon
             style={{ zIndex: fullscreen ? 999 : 2 }}
             className="addNewMediaIcon"
-            type={isDropDownShowing ? "up" : "bank"}
+            type={isDropDownShowing ? "up" : !affiliateLink && "bank"}
           />
         </div>
       </Dropdown>
-    </React.Fragment>
+    </>
   );
 };
 

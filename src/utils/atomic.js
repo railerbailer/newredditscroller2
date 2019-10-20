@@ -1,4 +1,11 @@
-import { gifsArray, sfwarray, straight, artArray, foodArray, animalsArray } from "../subreddits";
+import {
+  gifsArray,
+  sfwarray,
+  straight,
+  artArray,
+  foodArray,
+  animalsArray
+} from "../subreddits";
 import _ from "lodash";
 
 export const dataHandler = value => {
@@ -15,10 +22,17 @@ export const dataHandler = value => {
     return foodArray;
   } else if (lowerCaseCategory === "animals") {
     return animalsArray;
-  } else if (lowerCaseCategory === "search" || lowerCaseCategory === "allsubreddits") {
-    return _.uniq(sfwarray.concat(artArray, foodArray, animalsArray, straight, gifsArray));
+  } else if (
+    lowerCaseCategory === "search" ||
+    lowerCaseCategory === "allsubreddits"
+  ) {
+    return _.uniq(
+      sfwarray.concat(artArray, foodArray, animalsArray, straight, gifsArray)
+    );
   } else {
-    return _.uniq(sfwarray.concat(artArray, foodArray, animalsArray, gifsArray));
+    return _.uniq(
+      sfwarray.concat(artArray, foodArray, animalsArray, gifsArray)
+    );
   }
 };
 
@@ -51,7 +65,7 @@ export const imageRatioCalculator = (height, width) => {
   if (ratio >= 1.5) return "superTall";
 };
 
-export const dataMapper = async (fetchedData, mobile) => {
+export const dataMapper = (fetchedData, mobile) => {
   let convertedSources = [];
   fetchedData.map((item, i) => {
     let mediaData = {};
@@ -73,11 +87,17 @@ export const dataMapper = async (fetchedData, mobile) => {
       preview.reddit_video_preview &&
       preview.reddit_video_preview.scrubber_media_url
     ) {
-      imageRatioCalculator(preview.reddit_video_preview.height, preview.reddit_video_preview.width);
+      imageRatioCalculator(
+        preview.reddit_video_preview.height,
+        preview.reddit_video_preview.width
+      );
       mediaData.video = {};
       mediaData.video.url = preview.reddit_video_preview.scrubber_media_url;
       if (mediaData.video.url.includes("DASH_96"))
-        mediaData.video.url = mediaData.video.url.replace("DASH_96", "DASH_240");
+        mediaData.video.url = mediaData.video.url.replace(
+          "DASH_96",
+          "DASH_240"
+        );
       mediaData.video.height = preview.reddit_video_preview.height;
       mediaData.video.width = preview.reddit_video_preview.width;
       mediaData.video.className = imageRatioCalculator(
@@ -98,7 +118,10 @@ export const dataMapper = async (fetchedData, mobile) => {
     } else if (isGif) {
       mediaData.gif = {};
       mediaData.gif.url = data.url.replace(".gifv", ".gif");
-      mediaData.gif.className = imageRatioCalculator(thumbnail_height, thumbnail_width);
+      mediaData.gif.className = imageRatioCalculator(
+        thumbnail_height,
+        thumbnail_width
+      );
       mediaData.domain = data.domain || "";
       mediaData.title = data.title;
       mediaData.thumbnail = thumbnail;
@@ -126,7 +149,11 @@ export const dataMapper = async (fetchedData, mobile) => {
           if (mobile && (!high && !low)) {
             mediaData.image = null;
           }
-          if (!low && !high && !data.url.includes("imgur" && post_hint === "link")) {
+          if (
+            !low &&
+            !high &&
+            !data.url.includes("imgur" && post_hint === "link")
+          ) {
             mediaData.image = null;
           }
           return null;
@@ -141,6 +168,10 @@ export const dataMapper = async (fetchedData, mobile) => {
       (mediaData.image || mediaData.video || mediaData.gif)
     ) {
       convertedSources.push(mediaData);
+      if (convertedSources.length % 8 === 0 || convertedSources.length === 1) {
+        const affiliatedAd = createBannerImage();
+        convertedSources.push(affiliatedAd);
+      }
     }
     return null;
   });
@@ -149,4 +180,70 @@ export const dataMapper = async (fetchedData, mobile) => {
   // }
 
   return convertedSources;
+};
+
+const createBannerImage = () => {
+  const affilliates = [
+    {
+      name: "test",
+      title: "Survey for free stuff",
+      image: {
+        source: "https://www.imglnkd.com/2680/008231B_PSRV_18_ALL_EN_71_L.jpg",
+        affiliateLink:
+          "https://t.grtyo.com/3ty8c5z01s?url_id=0&aff_id=112473&offer_id=2680&bo=2786,2787,2788,2789,2790&file_id=366160",
+        low: "https://www.imglnkd.com/2680/008231B_PSRV_18_ALL_EN_71_L.jpg",
+        high: "https://www.imglnkd.com/2680/008231B_PSRV_18_ALL_EN_71_L.jpg",
+        className: imageRatioCalculator(250, 400)
+      }
+    },
+    {
+      title: "Click for more info",
+      gif: {
+        source: "https://www.imglnkd.com/3785/005831A_GDAT_18_ALL_EN_71_L.gif",
+        url: "https://www.imglnkd.com/3785/005831A_GDAT_18_ALL_EN_71_L.gif",
+        affiliateLink:
+          "https://t.mobtyb.com/lw7cqwmj0g?url_id=0&aff_id=112473&offer_id=3785&bo=2753,2754,2755,2756&file_id=334484&po=6456",
+        low: "https://www.imglnkd.com/3785/005831A_GDAT_18_ALL_EN_71_L.gif",
+        high: "https://www.imglnkd.com/3785/005831A_GDAT_18_ALL_EN_71_L.gif",
+        className: imageRatioCalculator(250, 400)
+      }
+    },
+    {
+      title: "Click for more info",
+      gif: {
+        source: "https://www.imglnkd.com/3785/006699A_GDAT_18_ALL_EN_71_L.gif",
+        url: "https://www.imglnkd.com/3785/006699A_GDAT_18_ALL_EN_71_L.gif",
+        affiliateLink:
+          "https://t.mobtyb.com/431u2zk5fk?url_id=0&aff_id=112473&offer_id=3785&bo=2753,2754,2755,2756&file_id=334490&po=6456",
+        low: "https://www.imglnkd.com/3785/006699A_GDAT_18_ALL_EN_71_L.gif",
+        high: "https://www.imglnkd.com/3785/006699A_GDAT_18_ALL_EN_71_L.gif",
+        className: imageRatioCalculator(250, 400)
+      }
+    },
+    {
+      title: "Click for more info",
+      image: {
+        source: "https://www.imglnkd.com/6132/008542A_SXEM_18_ALL_EN_71_L.jpg",
+        url: "https://www.imglnkd.com/6132/008542A_SXEM_18_ALL_EN_71_L.jpg",
+        affiliateLink:
+          "https://t.grtyi.com/6b6blyferk?url_id=0&aff_id=112473&offer_id=6132&bo=3511,3512,3521,3522&file_id=377731",
+        low: "https://www.imglnkd.com/6132/008542A_SXEM_18_ALL_EN_71_L.jpg",
+        high: "https://www.imglnkd.com/6132/008542A_SXEM_18_ALL_EN_71_L.jpg",
+        className: imageRatioCalculator(250, 400)
+      }
+    },
+    {
+      title: "Click for more info",
+      gif: {
+        source: "https://www.imglnkd.com/6132/008541A_SXEM_18_ALL_EN_71_L.gif",
+        url: "https://www.imglnkd.com/6132/008541A_SXEM_18_ALL_EN_71_L.gif",
+        affiliateLink:
+          "https://t.grtyi.com/d339lamu9s?url_id=0&aff_id=112473&offer_id=6132&bo=3511,3512,3521,3522&file_id=377741",
+        low: "https://www.imglnkd.com/6132/008541A_SXEM_18_ALL_EN_71_L.gif",
+        high: "https://www.imglnkd.com/6132/008541A_SXEM_18_ALL_EN_71_L.gif",
+        className: imageRatioCalculator(250, 400)
+      }
+    }
+  ];
+  return _.sample(affilliates);
 };

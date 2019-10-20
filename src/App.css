@@ -386,7 +386,6 @@ input {
 
 .gridElement {
   position: relative;
-  max-height: 100vh;
   display: flex;
   background-color: transparent;
   width: 100%;
@@ -577,7 +576,8 @@ p {
   grid-template-areas:
     "1 continue 2"
     "3 header 4"
-    "5 menu 6";
+    "5 menu 6"
+    "7 browse 8";
   grid-gap: 10px;
 }
 
@@ -618,6 +618,12 @@ button {
   font-size: 2.1875rem;
   white-space: nowrap;
   background-color: #40a9ff;
+}
+.item3 {
+  grid-area: browse;
+  font-size: 2;
+  z-index: 123123901230123910;
+  text-align: center;
 }
 
 .fullscreen-nextButton {

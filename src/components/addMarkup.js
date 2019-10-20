@@ -15,7 +15,6 @@ class AddMarkup extends Component {
   componentDidUpdate(prevProps) {
     const { activeElement } = this.state;
     if (this.props.fullscreen !== prevProps.fullscreen) {
-      console.log("didupdate");
       this[`gridElement${activeElement}`] &&
         this[`gridElement${activeElement}`].scrollIntoView({
           block: "center"
@@ -29,7 +28,8 @@ class AddMarkup extends Component {
     this.setState({ activeElement: value });
   };
 
-  setLoadedData = value => this.setState({ loadedData: this.state.loadedData + 1 });
+  setLoadedData = value =>
+    this.setState({ loadedData: this.state.loadedData + 1 });
 
   getElementIndex = (index, ref) => {
     this.setActiveElement(index);
@@ -52,11 +52,14 @@ class AddMarkup extends Component {
           console.log("error", error);
         }
       }
-      this.setActiveElement(haveMoreContent ? activeElement + 1 : activeElement);
+      this.setActiveElement(
+        haveMoreContent ? activeElement + 1 : activeElement
+      );
 
       return;
     }
-    html.length !== activeElement + 1 && this.setActiveElement(activeElement + 1);
+    html.length !== activeElement + 1 &&
+      this.setActiveElement(activeElement + 1);
   }, 200);
   handleKeyDown = e => {
     if (e.key === "ArrowDown") {
@@ -125,7 +128,9 @@ class AddMarkup extends Component {
     if (!isOnlyGifsShowing && isOnlyPicsShowing)
       filteredData = dataSource.filter(item => item.image);
     else if (!isOnlyPicsShowing && isOnlyGifsShowing)
-      filteredData = dataSource.filter(item => item.video).filter(item => item.gif || item.video);
+      filteredData = dataSource
+        .filter(item => item.video)
+        .filter(item => item.gif || item.video);
     else if (isOnlyPicsShowing && isOnlyGifsShowing) filteredData = dataSource;
     else filteredData = dataSource;
     html = filteredData
@@ -160,6 +165,7 @@ class AddMarkup extends Component {
                 key={i}
               >
                 <Image
+                  affiliateLink={image.affiliateLink}
                   permalink={permalink}
                   title={title}
                   setLoadedData={this.setLoadedData}
@@ -220,7 +226,7 @@ class AddMarkup extends Component {
             </div>
           );
         }
-        if (gif && !mobile) {
+        if (gif && (!mobile || gif.affiliateLink)) {
           const gifId = this.getIdFromUrl(gif.url);
           return (
             <div
@@ -237,6 +243,7 @@ class AddMarkup extends Component {
                 throttle={0}
               >
                 <Image
+                  affiliateLink={gif.affiliateLink}
                   permalink={permalink}
                   title={title}
                   setLoadedData={this.setLoadedData}
@@ -263,7 +270,13 @@ class AddMarkup extends Component {
   };
   render() {
     const { activeElement } = this.state;
-    const { fullscreen, isLoadingMore, collectionsMode, activeCollection, isLoading } = this.props;
+    const {
+      fullscreen,
+      isLoadingMore,
+      collectionsMode,
+      activeCollection,
+      isLoading
+    } = this.props;
     this.renderHtml();
     return (
       <Swipeable
@@ -275,7 +288,10 @@ class AddMarkup extends Component {
         {html.length &&
           (fullscreen ? (
             <div
-              style={{ opacity: isLoading ? 0.1 : 1, transition: "opacity 400ms" }}
+              style={{
+                opacity: isLoading ? 0.1 : 1,
+                transition: "opacity 400ms"
+              }}
               className="fullscreenScroll"
             >
               <Icon
@@ -300,17 +316,26 @@ class AddMarkup extends Component {
               {activeElement > 5 && html[activeElement + 3]}
               {(!mobile || activeElement > 9) && html[activeElement + 4]} */}
 
-              <div className="fullscreenButtonNext" onClick={() => this.getNextElement()}>
+              <div
+                className="fullscreenButtonNext"
+                onClick={() => this.getNextElement()}
+              >
                 <Icon autoFocus type="up" />
                 <span>Show more</span>
               </div>
               {!this.props.isSearchActivated && (
-                <button className="inputFocus" ref={button => button && button.focus()} />
+                <button
+                  className="inputFocus"
+                  ref={button => button && button.focus()}
+                />
               )}
             </div>
           ) : (
             <div
-              style={{ opacity: isLoading ? 0.1 : 1, transition: "opacity 400ms" }}
+              style={{
+                opacity: isLoading ? 0.1 : 1,
+                transition: "opacity 400ms"
+              }}
               className="gridMedia"
             >
               {html}
@@ -324,23 +349,28 @@ class AddMarkup extends Component {
 
         {!fullscreen && (
           <div className="loadMoreWrapper">
-            {!collectionsMode && !activeCollection.length && !isLoading && html.length && (
-              <Button
-                onClick={async () => {
-                  try {
-                    await this.props.loadMore();
-                  } catch (error) {
-                    console.log("error", error);
+            {!collectionsMode &&
+              !activeCollection.length &&
+              !isLoading &&
+              html.length && (
+                <Button
+                  onClick={async () => {
+                    try {
+                      await this.props.loadMore();
+                    } catch (error) {
+                      console.log("error", error);
+                    }
+                    this.renderHtml();
+                  }}
+                  type="primary"
+                  icon={
+                    this.props.isLoadingMore ? "loading" : "loading-3-quarters"
                   }
-                  this.renderHtml();
-                }}
-                type="primary"
-                icon={this.props.isLoadingMore ? "loading" : "loading-3-quarters"}
-                className="loadMoreButton"
-              >
-                Show more
-              </Button>
-            )}
+                  className="loadMoreButton"
+                >
+                  Show more
+                </Button>
+              )}
           </div>
         )}
       </Swipeable>

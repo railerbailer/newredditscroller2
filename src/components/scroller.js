@@ -55,11 +55,13 @@ class Scroller extends Component {
     this.props.firebase.auth.onAuthStateChanged(user => {
       if (user) {
         this.setState({ user: user });
-        this.props.firebase.db.ref(`users/${user.uid}`).on("value", snapshot => {
-          const collections = _.get(snapshot.val(), "collections", {});
-          snapshot.val() && this.setState({ userCollections: collections });
-          // Object.values(snapshot.val().collections).some(collection => this.props.match.params.subreddit === collection)
-        });
+        this.props.firebase.db
+          .ref(`users/${user.uid}`)
+          .on("value", snapshot => {
+            const collections = _.get(snapshot.val(), "collections", {});
+            snapshot.val() && this.setState({ userCollections: collections });
+            // Object.values(snapshot.val().collections).some(collection => this.props.match.params.subreddit === collection)
+          });
         // this.props.firebase.db.ref(`public`).on("value", snapshot => {
         //   const collections = _.get(snapshot.val(), "collections", {});
         //   const collectionsArray = _.flatMap(Object.values(collections).map(item => Object.values(item)));
@@ -78,22 +80,26 @@ class Scroller extends Component {
     if (this.props.match.params.subreddit === "allsubreddits") {
       return this.changeCat("", "allsubreddits");
     }
-    this.props.match.params.subreddit && this.getSubreddit(this.props.match.params.subreddit);
+    this.props.match.params.subreddit &&
+      this.getSubreddit(this.props.match.params.subreddit);
   }
 
   setSources = value => (sources = value);
   setNewListName = listName => this.setState({ newListName: listName });
   toggleShowListInput = bool => this.setState({ showListInput: bool });
   toggleAutoPlayVideo = bool => this.setState({ autoPlayVideo: bool });
-  setActiveCollection = collection => this.setState({ activeCollection: collection });
+  setActiveCollection = collection =>
+    this.setState({ activeCollection: collection });
   toggleIsLoading = state => this.setState({ isLoading: state });
   toggleFullscreen = () =>
     !this.state.isSearchActivated &&
     this.setState({ fullscreenActive: !this.state.fullscreenActive });
-  toggleIsModalVisible = () => this.setState({ isModalVisible: !this.state.isModalVisible });
+  toggleIsModalVisible = () =>
+    this.setState({ isModalVisible: !this.state.isModalVisible });
   toggleSearchButton = value => this.setState({ isSearchActivated: value });
   categorySet = val => this.setState({ category: val });
-  setAutoCompleteDataSource = value => this.setState({ autoCompleteDataSource: value });
+  setAutoCompleteDataSource = value =>
+    this.setState({ autoCompleteDataSource: value });
   toggleDropDown = value => this.setState({ isDropDownShowing: value });
   toggleGifsOnly = async () => {
     this.setState({
@@ -171,7 +177,9 @@ class Scroller extends Component {
   changeCat = (e, cat) => {
     this.categorySet(cat);
     this.getSubreddit(shuffleArray(dataHandler(cat)));
-    message.info(`Category is ${cat}, press or swipe right to shuffle subreddit`);
+    message.info(
+      `Category is ${cat}, press or swipe right to shuffle subreddit`
+    );
     this.setState({ isDropDownShowing: false });
   };
 
@@ -208,7 +216,9 @@ class Scroller extends Component {
       <Swipeable
         className={`wrapper`}
         onKeyDown={
-          !isModalVisible && !showListInput && !isSearchActivated ? this.handleKeyDown : undefined
+          !isModalVisible && !showListInput && !isSearchActivated
+            ? this.handleKeyDown
+            : undefined
         }
         onSwipedLeft={this.swipedLeft}
         onSwipedRight={this.swipedRight}
@@ -237,6 +247,7 @@ class Scroller extends Component {
           />
           <GoBackButton goBackFunc={this.goBackinHistory} />
           <MainDropDownMenu
+            isLoadingFetch={this.state.isLoading}
             autoPlayVideo={autoPlayVideo}
             toggleAutoPlayVideo={this.toggleAutoPlayVideo}
             isDropDownShowing={isDropDownShowing}
@@ -265,10 +276,17 @@ class Scroller extends Component {
         >
           {reload > 6 && (
             <div
-              onClick={() => this.getSubreddit(shuffleArray(dataHandler(this.state.category)))}
+              onClick={() =>
+                this.getSubreddit(
+                  shuffleArray(dataHandler(this.state.category))
+                )
+              }
               className="internetProblemReload"
             >
-              <Icon style={{ color: "white", fontSize: 30 }} type="disconnect" />
+              <Icon
+                style={{ color: "white", fontSize: 30 }}
+                type="disconnect"
+              />
               <p>Press to reload</p>
             </div>
           )}
@@ -304,9 +322,13 @@ class Scroller extends Component {
               </div>
             )}
 
-            <div style={{ opacity: isSearchActivated ? 0.1 : 1 }} className="subredditNameDiv">
+            <div
+              style={{ opacity: isSearchActivated ? 0.1 : 1 }}
+              className="subredditNameDiv"
+            >
               <h2 className="subredditName">
-                {activeCollection.length ? activeCollection : subreddit} <Icon type="tag-o" />
+                {activeCollection.length ? activeCollection : subreddit}{" "}
+                <Icon type="tag-o" />
               </h2>
             </div>
           </React.Fragment>
@@ -317,16 +339,19 @@ class Scroller extends Component {
   }
 
   getSubreddit = async (subreddit, notShowLoad) => {
+    console.log(this.props.match);
     await this.setState({ subreddit: subreddit, isLoading: !notShowLoad });
     sources = [];
-    await fetch(`https://www.reddit.com/r/${this.state.subreddit}.json?limit=100`)
+    await fetch(
+      `https://www.reddit.com/r/${this.state.subreddit}.json?limit=100`
+    )
       .then(response => response.json())
       .then(async jsonData => {
         reload = 0;
         this.setState({
           after: jsonData.data.after
         });
-        sources = await dataMapper(jsonData.data.children, this.state.mobile);
+        sources = dataMapper(jsonData.data.children, this.state.mobile);
         if (sources.length) {
           this.pushToHistory(`/subreddits/${this.state.subreddit}`);
         }
@@ -334,24 +359,25 @@ class Scroller extends Component {
       })
 
       .catch(async () => {
-        try {
-          reload = reload + 1;
-          if (reload < 10) await this.getSubreddit(shuffleArray(dataHandler(this.state.category)));
-          else
-            alert(
-              "Could not load data, check your internet connection. Firefox incognito mode may be causing this issue."
-            );
-        } catch (error) {
-          console.log("error", error);
+        reload = reload + 1;
+        if (reload < 5 && !sources.length)
+          await this.getSubreddit(
+            shuffleArray(dataHandler(this.state.category))
+          );
+        else {
+          alert(
+            "Could not load data, check your internet connection. Firefox incognito mode may be causing this issue."
+          );
         }
       });
-    if (reload < 10) {
-      if (!sources.length) {
-        await this.getSubreddit(shuffleArray(dataHandler(this.state.category)));
-      } else {
-        this.setState({ isLoading: false });
-      }
-    }
+    // if (reload < 10) {
+    //   if (!sources.length) {
+    //     await this.getSubreddit(shuffleArray(dataHandler(this.state.category)));
+    //   } else {
+    //     this.setState({ isLoading: false });
+    //   }
+    // }
+    this.setState({ isLoading: false });
   };
 
   moreSubreddits = async () => {
@@ -364,12 +390,12 @@ class Scroller extends Component {
         this.setState({
           after: jsonData.data.after
         });
-        let afterData = await dataMapper(jsonData.data.children, this.state.mobile);
+        let afterData = dataMapper(jsonData.data.children, this.state.mobile);
         // const haveVideoOrGif = afterData.length && afterData.some(media => media.gif || media.video);
         sources = sources.concat(afterData);
       })
       .catch(error => {
-        console.log("error", error);
+        message.info(`Can't get more media.`);
       });
     this.setState({ isLoadingMore: false });
   };

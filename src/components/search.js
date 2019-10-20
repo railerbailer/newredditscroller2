@@ -16,23 +16,29 @@ const SearchComponent = props => {
     if (!value) {
       value = "Type your search";
     }
-    let searchAbleData = collectionMode ? publicCollections.filter(item => item) : dataHandler("search");
-    let result = searchAbleData.filter(str => str.toLowerCase().includes(value.toLowerCase()));
+    let searchAbleData = collectionMode
+      ? publicCollections.filter(item => item)
+      : dataHandler("search");
+    let result = searchAbleData.filter(str =>
+      str.toLowerCase().includes(value.toLowerCase())
+    );
     result = result.reverse();
     result.push(value);
     result = result.reverse();
     setAutoCompleteDataSource(result.slice(0, 7));
   };
-  const onSelect = value => {
-    getSubreddit(value);
-    toggleSearchButton();
+  const onSelect = async value => {
+    await getSubreddit(value);
+    toggleSearchButton(false);
   };
   return (
     <div className="searchWrapper">
       <Transition in={isSearchActivated} unmountOnExit mountOnEnter timeout={0}>
         {status => (
           <AutoComplete
-            placeholder={collectionMode ? "Search collection" : "Search subreddit"}
+            placeholder={
+              collectionMode ? "Search collection" : "Search subreddit"
+            }
             autoFocus
             className={`autocomplete--${status}`}
             dataSource={autoCompleteDataSource}
@@ -43,9 +49,18 @@ const SearchComponent = props => {
         )}
       </Transition>
 
-      <Transition in={!isSearchActivated} unmountOnExit mountOnEnter timeout={0}>
+      <Transition
+        in={!isSearchActivated}
+        unmountOnExit
+        mountOnEnter
+        timeout={0}
+      >
         {status => (
-          <Button ghost className={`searchButton--${status}`} onClick={() => toggleSearchButton(true)}>
+          <Button
+            ghost
+            className={`searchButton--${status}`}
+            onClick={() => toggleSearchButton(true)}
+          >
             <Icon type="search" />
           </Button>
         )}

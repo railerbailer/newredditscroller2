@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import FloatingBalls from "./floatingBalls";
 import ConsentForAge from "./consentForAge";
 import { Helmet } from "react-helmet";
+import { Link } from "react-router-dom";
 
 class ChooseCategory extends Component {
   state = {
@@ -37,9 +38,14 @@ class ChooseCategory extends Component {
           <h2 className="item0">
             Scroll more than 1.000.000 of pics and gifs!
             <br />
-            <p style={{ marginBottom: "-20px", fontSize: ".8em" }}>Pick a domain</p>
+            <p style={{ marginBottom: "-20px", fontSize: ".8em" }}>
+              Pick a domain
+            </p>
           </h2>
-          <button onClick={() => this.setState({ accepted: false })} className="item1">
+          <button
+            onClick={() => this.setState({ accepted: false })}
+            className="item1"
+          >
             NSFW (18+)
           </button>
 
@@ -51,6 +57,9 @@ class ChooseCategory extends Component {
           >
             Safe for work
           </button>
+          <Link className="item3" to="/subreddits">
+            Browse all subreddits
+          </Link>
         </div>
         <div
           style={{

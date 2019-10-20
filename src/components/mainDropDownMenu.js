@@ -1,38 +1,40 @@
 import React, { useState } from "react";
 import { Menu, Button, Icon, Input, Modal, message, Drawer } from "antd";
-const MainDropDownMenu = props => {
+const MainDropDownMenu = ({
+  toggleGifsOnly,
+  togglePicsOnly,
+  toggleIsModalVisible,
+  setSources,
+  setActiveCollection,
+  toggleShowListInput,
+  isLoadingFetch,
+  isOnlyGifsShowing,
+  isOnlyPicsShowing,
+  showListInput,
+  category,
+  userCollections,
+  activeCollection,
+  user,
+  isDropDownShowing,
+  toggleDropDown,
+  firebase,
+  pushToHistory,
+  changeCat,
+  autoPlayVideo,
+  toggleAutoPlayVideo
+}) => {
   const [newListName, setNewListName] = useState("");
-
-  const {
-    toggleGifsOnly,
-    togglePicsOnly,
-    toggleIsModalVisible,
-    setSources,
-    setActiveCollection,
-    toggleShowListInput,
-    isOnlyGifsShowing,
-    isOnlyPicsShowing,
-    showListInput,
-    category,
-    userCollections,
-    activeCollection,
-    user,
-    isDropDownShowing,
-    toggleDropDown,
-    firebase,
-    pushToHistory,
-    changeCat,
-    autoPlayVideo,
-    toggleAutoPlayVideo
-    // collectionsMode
-  } = props;
   const addNewList = async () => {
-    const nameExists = Object.keys(userCollections).some(name => name === newListName);
+    const nameExists = Object.keys(userCollections).some(
+      name => name === newListName
+    );
     if (nameExists) {
       alert("You already have a collection with that name");
       return;
     }
-    await firebase.updateDataOnUser("collections", { [newListName]: Date.now() });
+    await firebase.updateDataOnUser("collections", {
+      [newListName]: Date.now()
+    });
 
     toggleShowListInput(false);
     setNewListName("");
@@ -48,7 +50,9 @@ const MainDropDownMenu = props => {
   };
   const showLink = async collection => {
     const collectionData =
-      Object.entries(userCollections[collection]).length !== 0 ? userCollections[collection] : null;
+      Object.entries(userCollections[collection]).length !== 0
+        ? userCollections[collection]
+        : null;
     await firebase.updateCollectionToPublic({
       [collection]: {
         accepted: false,
@@ -223,7 +227,10 @@ const MainDropDownMenu = props => {
         className="iconSetting"
         onClick={() => toggleDropDown(!isDropDownShowing)}
       >
-        <Icon type={isDropDownShowing ? "menu-unfold" : "menu-fold"} className="chooseCat" />
+        <Icon
+          type={isDropDownShowing ? "menu-unfold" : "menu-fold"}
+          className="chooseCat"
+        />
       </div>
       <Drawer
         zIndex={99999999999}
@@ -244,7 +251,11 @@ const MainDropDownMenu = props => {
               </Button>
               <Button
                 onClick={togglePicsOnly}
-                style={{ color: "lightgrey", borderRadius: 0, backgroundColor: filledBgPic }}
+                style={{
+                  color: "lightgrey",
+                  borderRadius: 0,
+                  backgroundColor: filledBgPic
+                }}
               >
                 Pics
               </Button>
@@ -283,12 +294,16 @@ const MainDropDownMenu = props => {
         width={300}
       >
         <Menu>
-          <Menu.Item onClick={() => pushToHistory("/subreddits")}>
-            <h4>
+          <Menu.Item
+            disabled={isLoadingFetch}
+            onClick={() => pushToHistory("/subreddits")}
+          >
+            <div>
               <Icon type="global" /> Browse all subreddits
-            </h4>
+            </div>
           </Menu.Item>
           <Menu.Item
+            disabled={isLoadingFetch}
             style={{ color: category === "nsfw" ? "#1890ff" : "" }}
             onClick={() => {
               setActiveCollection("");
@@ -303,6 +318,7 @@ const MainDropDownMenu = props => {
             </div>
           </Menu.Item>
           <Menu.Item
+            disabled={isLoadingFetch}
             style={{ color: category === "sfw" ? "#1890ff" : "" }}
             onClick={() => {
               pushToHistory("/subreddits/sfw");
@@ -318,6 +334,7 @@ const MainDropDownMenu = props => {
           </Menu.Item>
           <Menu.Divider />
           <Menu.Item
+            disabled={isLoadingFetch}
             onClick={() => {
               pushToHistory("/collections");
               toggleDropDown(false);
@@ -328,16 +345,18 @@ const MainDropDownMenu = props => {
             </div>
           </Menu.Item>
           <Menu.Divider />
-          <Menu.Item>
+          <Menu.Item disabled={isLoadingFetch}>
             <h4>
               <Icon type="bank" /> My banks{!user && " (Log in required)"}
             </h4>
           </Menu.Item>
           {user && (
-            <Menu.Item>
+            <Menu.Item disabled={isLoadingFetch}>
               <Icon
                 onClick={() =>
-                  newListName.length ? addNewList() : toggleShowListInput(!showListInput)
+                  newListName.length
+                    ? addNewList()
+                    : toggleShowListInput(!showListInput)
                 }
                 type={
                   showListInput
@@ -373,12 +392,12 @@ const MainDropDownMenu = props => {
           )}
           {user && listMenuItem}
           <Menu.Divider />
-          <Menu.Item onClick={showFeedbackModal}>
+          <Menu.Item disabled={isLoadingFetch} onClick={showFeedbackModal}>
             <Icon type="bulb" />
             Feedback
           </Menu.Item>
           <Menu.Divider />
-          <Menu.Item>
+          <Menu.Item disabled={isLoadingFetch}>
             {user ? (
               <div onClick={() => logOut()}>
                 <Icon type="logout" /> Log out{" "}
@@ -390,7 +409,8 @@ const MainDropDownMenu = props => {
                   toggleIsModalVisible();
                 }}
               >
-                <Icon onClick={() => toggleDropDown(false)} type="login" /> Log in or register
+                <Icon onClick={() => toggleDropDown(false)} type="login" /> Log
+                in or register
               </div>
             )}
           </Menu.Item>

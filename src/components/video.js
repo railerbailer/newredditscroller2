@@ -19,7 +19,10 @@ class Video extends Component {
         ? this.videoPlayer && this.videoPlayer.pause()
         : this.videoPlayer && this.videoPlayer.play();
     }
-    if (this.props.fullscreen && this.props.activeElement !== prevProps.activeElement) {
+    if (
+      this.props.fullscreen &&
+      this.props.activeElement !== prevProps.activeElement
+    ) {
       console.log("UPDATING VIDEO");
       this.videoPlayer && this.videoPlayer.play();
     }
@@ -28,19 +31,8 @@ class Video extends Component {
     this.props.fullscreen &&
       this.props.activeElement === 0 &&
       setTimeout(() => this.videoPlayer && this.videoPlayer.play(), 1000);
-    // console.log(this.props.index, this.props.activeElement);
-    // console.log(this.props.index === this.props.activeElement);
-    // this.props.fullscreen && this.props.index === 0 && this.togglePlaying();
-    // this.props.index === this.props.activeElement && this.togglePlaying();
-    // if (this.props.fullscreen) {
-    //   if (!this.props.mobile || this.props.autoPlayVideo) {
-    //     const timeout = this.props.mobile ? 1500 : 500;
-    //     this.autoPlayVideoTimer = setTimeout(() => this.togglePlaying(), timeout);
-    //   }
-    // }
   }
   componentWillUnmount() {
-    console.log("unmount");
     window.stop();
   }
   toggleIsDropDownShowing = value => {
@@ -89,7 +81,11 @@ class Video extends Component {
         <h4 className="addToCollectionModal">
           <Icon type="bank" /> <span>Add to bank</span>
           <Icon
-            style={{ float: "right", fontSize: 20, padding: "2px 10px 10px 15px" }}
+            style={{
+              float: "right",
+              fontSize: 20,
+              padding: "2px 10px 10px 15px"
+            }}
             onClick={() => this.setState({ isDropDownShowing: false })}
             type="close"
           />
@@ -142,7 +138,9 @@ class Video extends Component {
           onClick={() => {
             toggleFullscreen(index);
             if (fullscreen) {
-              this.setState({ isPlaying: false }, () => this.videoPlayer.pause());
+              this.setState({ isPlaying: false }, () =>
+                this.videoPlayer.pause()
+              );
             } else if (!fullscreen) {
               this.setState({ isPlaying: true }, () => this.videoPlayer.play());
             }
@@ -160,14 +158,21 @@ class Video extends Component {
               { isPlaying: true, fadeOut: !this.state.fadeOut },
               () =>
                 !fullscreen &&
-                (this.timer = setTimeout(() => this.videoPlayer && this.videoPlayer.pause(), 25000))
+                (this.timer = setTimeout(
+                  () => this.videoPlayer && this.videoPlayer.pause(),
+                  25000
+                ))
             )
           }
-          onPause={() => this.setState({ isPlaying: false }, clearTimeout(this.timer))}
+          onPause={() =>
+            this.setState({ isPlaying: false }, clearTimeout(this.timer))
+          }
           loop={true}
           preload={"metadata"}
         >
-          {!mobile && <source src={`${srcWithoutDash}DASH_720`} type="video/mp4" />}
+          {!mobile && (
+            <source src={`${srcWithoutDash}DASH_720`} type="video/mp4" />
+          )}
           {<source src={`${srcWithoutDash}DASH_600_K`} type="video/mp4" />}
           {<source src={`${srcWithoutDash}DASH_480`} type="video/mp4" />}
           {<source src={`${srcWithoutDash}DASH_360`} type="video/mp4" />}
@@ -186,8 +191,13 @@ class Video extends Component {
           </a>
         )}
         <Dropdown
-          overlayStyle={{ zIndex: fullscreen ? 1231231231231231 : 2, minWidth: "200px" }}
-          onBlur={() => setTimeout((() => this.toggleIsDropDownShowing(false), 500))}
+          overlayStyle={{
+            zIndex: fullscreen ? 1231231231231231 : 2,
+            minWidth: "200px"
+          }}
+          onBlur={() =>
+            setTimeout((() => this.toggleIsDropDownShowing(false), 500))
+          }
           overlayClassName="mediaAddDropdown"
           placement="topRight"
           visible={this.state.isDropDownShowing}
@@ -195,7 +205,9 @@ class Video extends Component {
         >
           <div
             style={{ zIndex: fullscreen ? 1231231231231231 : 2 }}
-            onClick={() => this.toggleIsDropDownShowing(!this.state.isDropDownShowing)}
+            onClick={() =>
+              this.toggleIsDropDownShowing(!this.state.isDropDownShowing)
+            }
             className="addNewMediaIcon"
             onBlur={() => this.toggleIsDropDownShowing(false)}
           >
@@ -207,9 +219,17 @@ class Video extends Component {
           </div>
         </Dropdown>
         {!this.state.isPlaying ? (
-          <Icon className="playButton" type={"youtube"} onClick={() => this.togglePlaying()} />
+          <Icon
+            className="playButton"
+            type={"youtube"}
+            onClick={() => this.togglePlaying()}
+          />
         ) : !this.state.videoLoaded ? (
-          <Icon className="playButton" type={"loading"} onClick={() => this.togglePlaying()} />
+          <Icon
+            className="playButton"
+            type={"loading"}
+            onClick={() => this.togglePlaying()}
+          />
         ) : (
           <Icon
             className="playButton"

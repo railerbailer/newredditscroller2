@@ -88,7 +88,7 @@ const Image = ({
     <>
       {affiliateLink && (
         <a
-          onClick={e => affiliateLink && trackImage(e.target.src)}
+          onClick={e => affiliateLink && trackImage(e.target.href || e.target)}
           href={affiliateLink}
           target={affiliateLink && "_blank"}
           style={{
@@ -97,7 +97,9 @@ const Image = ({
             position: "absolute",
             zIndex: 999999999999
           }}
-        />
+        >
+          .
+        </a>
       )}
       <img
         {...{ name: "hej" }}

@@ -168,7 +168,7 @@ export const dataMapper = (fetchedData, mobile) => {
       (mediaData.image || mediaData.video || mediaData.gif)
     ) {
       convertedSources.push(mediaData);
-      if (convertedSources.length % 12 === 0) {
+      if (convertedSources.length % 8 === 0 || convertedSources.length === 1) {
         const affiliatedAd = createBannerImage();
         convertedSources.push(affiliatedAd);
       }
@@ -193,10 +193,11 @@ const createBannerImage = () => {
           "https://t.grtyo.com/3ty8c5z01s?url_id=0&aff_id=112473&offer_id=2680&bo=2786,2787,2788,2789,2790&file_id=366160",
         low: "https://www.imglnkd.com/2680/008231B_PSRV_18_ALL_EN_71_L.jpg",
         high: "https://www.imglnkd.com/2680/008231B_PSRV_18_ALL_EN_71_L.jpg",
-        className: imageRatioCalculator(250, 300)
+        className: imageRatioCalculator(250, 400)
       }
     },
     {
+      title: "Click for more info",
       gif: {
         source: "https://www.imglnkd.com/3785/005831A_GDAT_18_ALL_EN_71_L.gif",
         url: "https://www.imglnkd.com/3785/005831A_GDAT_18_ALL_EN_71_L.gif",
@@ -204,10 +205,11 @@ const createBannerImage = () => {
           "https://t.mobtyb.com/lw7cqwmj0g?url_id=0&aff_id=112473&offer_id=3785&bo=2753,2754,2755,2756&file_id=334484&po=6456",
         low: "https://www.imglnkd.com/3785/005831A_GDAT_18_ALL_EN_71_L.gif",
         high: "https://www.imglnkd.com/3785/005831A_GDAT_18_ALL_EN_71_L.gif",
-        className: imageRatioCalculator(250, 300)
+        className: imageRatioCalculator(250, 400)
       }
     },
     {
+      title: "Click for more info",
       gif: {
         source: "https://www.imglnkd.com/3785/006699A_GDAT_18_ALL_EN_71_L.gif",
         url: "https://www.imglnkd.com/3785/006699A_GDAT_18_ALL_EN_71_L.gif",
@@ -215,10 +217,11 @@ const createBannerImage = () => {
           "https://t.mobtyb.com/431u2zk5fk?url_id=0&aff_id=112473&offer_id=3785&bo=2753,2754,2755,2756&file_id=334490&po=6456",
         low: "https://www.imglnkd.com/3785/006699A_GDAT_18_ALL_EN_71_L.gif",
         high: "https://www.imglnkd.com/3785/006699A_GDAT_18_ALL_EN_71_L.gif",
-        className: imageRatioCalculator(250, 300)
+        className: imageRatioCalculator(250, 400)
       }
     },
     {
+      title: "Click for more info",
       image: {
         source: "https://www.imglnkd.com/6132/008542A_SXEM_18_ALL_EN_71_L.jpg",
         url: "https://www.imglnkd.com/6132/008542A_SXEM_18_ALL_EN_71_L.jpg",
@@ -226,10 +229,11 @@ const createBannerImage = () => {
           "https://t.grtyi.com/6b6blyferk?url_id=0&aff_id=112473&offer_id=6132&bo=3511,3512,3521,3522&file_id=377731",
         low: "https://www.imglnkd.com/6132/008542A_SXEM_18_ALL_EN_71_L.jpg",
         high: "https://www.imglnkd.com/6132/008542A_SXEM_18_ALL_EN_71_L.jpg",
-        className: imageRatioCalculator(250, 300)
+        className: imageRatioCalculator(250, 400)
       }
     },
     {
+      title: "Click for more info",
       gif: {
         source: "https://www.imglnkd.com/6132/008541A_SXEM_18_ALL_EN_71_L.gif",
         url: "https://www.imglnkd.com/6132/008541A_SXEM_18_ALL_EN_71_L.gif",
@@ -237,7 +241,7 @@ const createBannerImage = () => {
           "https://t.grtyi.com/d339lamu9s?url_id=0&aff_id=112473&offer_id=6132&bo=3511,3512,3521,3522&file_id=377741",
         low: "https://www.imglnkd.com/6132/008541A_SXEM_18_ALL_EN_71_L.gif",
         high: "https://www.imglnkd.com/6132/008541A_SXEM_18_ALL_EN_71_L.gif",
-        className: imageRatioCalculator(250, 300)
+        className: imageRatioCalculator(250, 400)
       }
     }
   ];

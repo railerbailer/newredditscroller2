@@ -243,6 +243,18 @@ const createBannerImage = () => {
         high: "https://www.imglnkd.com/6132/008541A_SXEM_18_ALL_EN_71_L.gif",
         className: imageRatioCalculator(250, 400)
       }
+    },
+    {
+      title: "Click for more info",
+      gif: {
+        source: "https://www.imglnkd.com/2994/008617A_ROYA_18_ALL_EN_71_L.gif",
+        url: "https://www.imglnkd.com/2994/008617A_ROYA_18_ALL_EN_71_L.gif",
+        affiliateLink:
+          "https://t.hrtyj.com/lsd36dyzr4?url_id=0&aff_id=112473&offer_id=2994&bo=2779,2778,2777,2776,2775&file_id=383057&po=6533",
+        low: "https://www.imglnkd.com/2994/008617A_ROYA_18_ALL_EN_71_L.gif",
+        high: "https://www.imglnkd.com/2994/008617A_ROYA_18_ALL_EN_71_L.gif",
+        className: imageRatioCalculator(250, 400)
+      }
     }
   ];
   return _.sample(affilliates);

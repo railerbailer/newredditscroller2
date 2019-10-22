@@ -168,7 +168,7 @@ export const dataMapper = (fetchedData, mobile) => {
       (mediaData.image || mediaData.video || mediaData.gif)
     ) {
       convertedSources.push(mediaData);
-      if (convertedSources.length % 8 === 0 || convertedSources.length === 1) {
+      if (convertedSources.length % 8 === 0) {
         const affiliatedAd = createBannerImage();
         convertedSources.push(affiliatedAd);
       }
